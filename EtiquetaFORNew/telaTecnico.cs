@@ -281,39 +281,47 @@ namespace EtiquetaFORNew
             listViewDispositivos.Columns.Add("Status", 100);
         }
 
-        private void BuscarDispositivosNaoInstalados()
+        private void BuscarDispositivosDeImpressoras()
         {
             try
             {
-                ManagementObjectSearcher searcher = new ManagementObjectSearcher("SELECT * FROM Win32_PnPEntity");
+                listViewDispositivos.Items.Clear();
+
+                var searcher = new ManagementObjectSearcher("SELECT * FROM Win32_PnPEntity WHERE DeviceID LIKE '%USB%'");
 
                 foreach (ManagementObject obj in searcher.Get())
                 {
-                    string nome = obj["Name"]?.ToString();
-                    string deviceId = obj["DeviceID"]?.ToString();
-                    string status = obj["Status"]?.ToString();
+                    string nome = obj["Name"]?.ToString() ?? "Desconhecido";
+                    string deviceId = obj["DeviceID"]?.ToString() ?? "-";
                     int? erro = obj["ConfigManagerErrorCode"] as int?;
+                    string statusTexto = erro == 0 ? "Instalado" : "Sem driver / Problema";
 
-                    if (deviceId != null && deviceId.Contains("USB") && erro != 0)
+                    // Filtra apenas impressoras USB pelo DeviceID
+                    if (deviceId.StartsWith("USBPRINT", StringComparison.OrdinalIgnoreCase))
                     {
-                        var item = new ListViewItem(new[] { nome, deviceId, status ?? "Desconhecido" });
+                        var item = new ListViewItem(new[] { nome, deviceId, statusTexto });
+                        item.Tag = deviceId;
                         listViewDispositivos.Items.Add(item);
                     }
                 }
 
                 if (listViewDispositivos.Items.Count == 0)
-                    MessageBox.Show("Nenhum dispositivo novo ou sem driver foi encontrado.", "Procurar dispositivos");
+                    MessageBox.Show("Nenhuma impressora USB detectada.", "Procurar impressoras", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Erro ao buscar dispositivos: " + ex.Message);
+                MessageBox.Show("Erro ao buscar impressoras: " + ex.Message, "Erro", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
+
 
         private void btnProcurar_Click(object sender, EventArgs e)
         {
             listViewDispositivos.Items.Clear();
-            BuscarDispositivosNaoInstalados();
+            BuscarDispositivosDeImpressoras();
+            //BuscarDispositivosNaoInstalados();
+
+
         }
 
         private void btnInstalarDriver_Click(object sender, EventArgs e)
@@ -329,6 +337,38 @@ namespace EtiquetaFORNew
 
             // Exemplo de execução:
             // System.Diagnostics.Process.Start(@"C:\Drivers\instalador.exe");
+        }
+        private void BuscarDispositivosNaoInstalados()
+        {
+            try
+            {
+                // Obtém todos os dispositivos Plug and Play
+                ManagementObjectSearcher searcher = new ManagementObjectSearcher("SELECT * FROM Win32_PnPEntity");
+
+                foreach (ManagementObject obj in searcher.Get())
+                {
+                    string nome = obj["Name"]?.ToString();
+                    string deviceId = obj["DeviceID"]?.ToString();
+                    string status = obj["Status"]?.ToString();
+                    int? erro = obj["ConfigManagerErrorCode"] as int?;
+
+                    // Filtra dispositivos USB e com erro (sem driver)
+                    if (deviceId != null && deviceId.Contains("USB") && erro != 0)
+                    {
+                        var item = new ListViewItem(new[] { nome, deviceId, status ?? "Desconhecido" });
+                        listViewDispositivos.Items.Add(item);
+                    }
+                }
+
+                if (listViewDispositivos.Items.Count == 0)
+                {
+                    MessageBox.Show("Nenhum dispositivo novo ou sem driver foi encontrado.", "Procurar dispositivos");
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Erro ao buscar dispositivos: " + ex.Message);
+            }
         }
     }
 }
