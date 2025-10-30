@@ -14,7 +14,7 @@ namespace EtiquetaFORNew
         public Main()
         {
             InitializeComponent();
-
+            //testerepositorio
             senhaBox.UseSystemPasswordChar = true; // Oculta caracteres
             senhaBox.KeyDown += senhaBox_KeyDown;  // Detecta F11
             this.Text = AppInfo.GetTituloAplicacao();
