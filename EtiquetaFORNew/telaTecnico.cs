@@ -27,6 +27,7 @@ namespace EtiquetaFORNew
             btnInstalarDriver.Visible = false;
             btnProcurar.Visible = false;
             listViewDispositivos.Visible = false;
+            button1.Visible = false;
 
             // Limpar valores
             comboBox1.SelectedIndex = -1;

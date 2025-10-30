@@ -18,6 +18,9 @@ namespace EtiquetaFORNew
             senhaBox.UseSystemPasswordChar = true; // Oculta caracteres
             senhaBox.KeyDown += senhaBox_KeyDown;  // Detecta F11
             this.Text = AppInfo.GetTituloAplicacao();
+            this.KeyPreview = true; // faz o formulário "enxergar" as teclas antes dos campos
+            // Conecta o evento KeyDown
+            this.KeyDown += Main_KeyDown;
 
             LoadUsuarios();
         }
@@ -185,7 +188,7 @@ namespace EtiquetaFORNew
             if (e.KeyCode == Keys.Enter)
             {
                 e.SuppressKeyPress = true; // evita beep
-                this.SelectNextControl(this.ActiveControl, true, true, true, true);
+                this.SelectNextControl(this.ActiveControl, true, true, true, true); // simula o Tab
             }
         }
 
@@ -215,6 +218,7 @@ namespace EtiquetaFORNew
             configuracoes tela = new configuracoes();
             tela.ShowDialog();
         }
+
     }
 
     // Classe para mapear configuração do JSON
@@ -226,4 +230,6 @@ namespace EtiquetaFORNew
         public string Senha { get; set; }
         public string Banco { get; set; }
     }
+
+
 }
