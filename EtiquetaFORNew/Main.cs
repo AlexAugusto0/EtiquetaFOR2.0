@@ -120,7 +120,7 @@ namespace EtiquetaFORNew
                             MessageBox.Show($"✅ Bem-vindo, {nomeVendedor}!", "Login realizado", MessageBoxButtons.OK, MessageBoxIcon.Information);
 
                             // Abre a próxima tela e esconde a principal
-                            telaEntrada Entrada = new telaEntrada();
+                            FormPrincipal Entrada = new FormPrincipal();
                             Entrada.Show();
                             this.Hide();
                         }

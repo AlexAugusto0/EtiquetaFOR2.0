@@ -172,11 +172,36 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Classes.cs" />
     <Compile Include="configuracoes.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="configuracoes.Designer.cs">
       <DependentUpon>configuracoes.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FormDesign.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FormDesign.Designer.cs">
+      <DependentUpon>FormDesign.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FormImpressao.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FormImpressao.Designer.cs">
+      <DependentUpon>FormImpressao.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FormListaTemplates.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FormNomeTemplate.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FormPrincipal.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FormPrincipal.Designer.cs">
+      <DependentUpon>FormPrincipal.cs</DependentUpon>
     </Compile>
     <Compile Include="telaTecnico.cs">
       <SubType>Form</SubType>
@@ -198,6 +223,7 @@
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="TemplateManager.cs" />
     <EmbeddedResource Include="configuracoes.resx">
       <DependentUpon>configuracoes.cs</DependentUpon>
     </EmbeddedResource>
@@ -260,4 +286,7 @@
     </PropertyGroup>
     <Error Condition="!Exists('..\packages\Microsoft.Data.SqlClient.SNI.6.0.2\build\net462\Microsoft.Data.SqlClient.SNI.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Microsoft.Data.SqlClient.SNI.6.0.2\build\net462\Microsoft.Data.SqlClient.SNI.targets'))" />
   </Target>
+  <PropertyGroup>
+    <DesignTimeVisible>true</DesignTimeVisible>
+  </PropertyGroup>
 </Project>
