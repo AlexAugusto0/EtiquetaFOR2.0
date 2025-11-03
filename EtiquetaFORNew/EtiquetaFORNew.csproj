@@ -278,6 +278,24 @@
   <ItemGroup>
     <None Include="Resources\olho_senha.png" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\LogoLogin1.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Engrenagem.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\SoftcomTecnologia1.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\SoftcomTecnologia2.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\EtiquetaFOR %282%29.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\EtiquetaFOR %282%291.png" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="..\packages\Microsoft.Data.SqlClient.SNI.6.0.2\build\net462\Microsoft.Data.SqlClient.SNI.targets" Condition="Exists('..\packages\Microsoft.Data.SqlClient.SNI.6.0.2\build\net462\Microsoft.Data.SqlClient.SNI.targets')" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">

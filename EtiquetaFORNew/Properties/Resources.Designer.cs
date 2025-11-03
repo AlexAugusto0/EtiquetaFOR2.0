@@ -73,9 +73,39 @@ namespace EtiquetaFORNew.Properties {
         /// <summary>
         ///   Consulta um recurso localizado do tipo System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap Engrenagem {
+            get {
+                object obj = ResourceManager.GetObject("Engrenagem", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Consulta um recurso localizado do tipo System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap EtiquetaFOR {
             get {
                 object obj = ResourceManager.GetObject("EtiquetaFOR", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Consulta um recurso localizado do tipo System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap EtiquetaFOR__2_ {
+            get {
+                object obj = ResourceManager.GetObject("EtiquetaFOR (2)", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Consulta um recurso localizado do tipo System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap EtiquetaFOR__2_1 {
+            get {
+                object obj = ResourceManager.GetObject("EtiquetaFOR (2)1", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -103,6 +133,16 @@ namespace EtiquetaFORNew.Properties {
         /// <summary>
         ///   Consulta um recurso localizado do tipo System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap LogoLogin {
+            get {
+                object obj = ResourceManager.GetObject("LogoLogin", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Consulta um recurso localizado do tipo System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap olho_senha {
             get {
                 object obj = ResourceManager.GetObject("olho_senha", resourceCulture);
@@ -116,6 +156,26 @@ namespace EtiquetaFORNew.Properties {
         internal static System.Drawing.Bitmap SoftcomTecnologia {
             get {
                 object obj = ResourceManager.GetObject("SoftcomTecnologia", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Consulta um recurso localizado do tipo System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap SoftcomTecnologia1 {
+            get {
+                object obj = ResourceManager.GetObject("SoftcomTecnologia1", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Consulta um recurso localizado do tipo System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap SoftcomTecnologia2 {
+            get {
+                object obj = ResourceManager.GetObject("SoftcomTecnologia2", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
