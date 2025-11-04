@@ -3,6 +3,8 @@ using Newtonsoft.Json;
 using System;
 using System.Data;
 using System.Data.SqlClient;
+using System.Drawing;
+using System.Drawing.Drawing2D;
 using System.IO;
 using System.Reflection;
 using System.Windows.Forms;
@@ -28,6 +30,9 @@ namespace EtiquetaFORNew
         private void Main_Load(object sender, EventArgs e)
         {
             usuarioBox.Focus();
+            ArredondarPainel(panel1,30);
+            ArredondarPainel(panel2, 30);
+            panel1.Resize += (s, ev) => ArredondarPainel(panel1, 30);
         }
 
         private void pictureBox2_Click(object sender, EventArgs e)
@@ -117,7 +122,7 @@ namespace EtiquetaFORNew
 
                         if (!string.IsNullOrEmpty(nomeVendedor))
                         {
-                            MessageBox.Show($"✅ Bem-vindo, {nomeVendedor}!", "Login realizado", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                            //MessageBox.Show($"✅ Bem-vindo, {nomeVendedor}!", "Login realizado", MessageBoxButtons.OK, MessageBoxIcon.Information);
 
                             // Abre a próxima tela e esconde a principal
                             FormPrincipal Entrada = new FormPrincipal();
@@ -218,6 +223,30 @@ namespace EtiquetaFORNew
             configuracoes tela = new configuracoes();
             tela.ShowDialog();
         }
+        private void ArredondarPainel(Panel panel, int raio)
+        {
+            // Impede erro se o painel ainda não tiver tamanho
+            if (panel.Width < 1 || panel.Height < 1)
+                return;
+
+            // Cria o caminho com cantos arredondados
+            using (GraphicsPath path = new GraphicsPath())
+            {
+                int diametro = raio * 2;
+                Rectangle rect = new Rectangle(0, 0, diametro, diametro);
+
+                path.AddArc(rect, 180, 90);
+                rect.X = panel.Width - diametro;
+                path.AddArc(rect, 270, 90);
+                rect.Y = panel.Height - diametro;
+                path.AddArc(rect, 0, 90);
+                rect.X = 0;
+                path.AddArc(rect, 90, 90);
+                path.CloseFigure();
+
+                panel.Region = new Region(path);
+            }
+        }
 
     }
 
@@ -230,6 +259,7 @@ namespace EtiquetaFORNew
         public string Senha { get; set; }
         public string Banco { get; set; }
     }
+
 
 
 }
