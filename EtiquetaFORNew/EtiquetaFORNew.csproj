@@ -227,6 +227,12 @@
     <EmbeddedResource Include="configuracoes.resx">
       <DependentUpon>configuracoes.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="FormDesign.resx">
+      <DependentUpon>FormDesign.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FormPrincipal.resx">
+      <DependentUpon>FormPrincipal.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="telaEntrada.resx">
       <DependentUpon>telaEntrada.cs</DependentUpon>
     </EmbeddedResource>
@@ -295,6 +301,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\EtiquetaFOR %282%291.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\icone-novo-2025_PNG1.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="..\packages\Microsoft.Data.SqlClient.SNI.6.0.2\build\net462\Microsoft.Data.SqlClient.SNI.targets" Condition="Exists('..\packages\Microsoft.Data.SqlClient.SNI.6.0.2\build\net462\Microsoft.Data.SqlClient.SNI.targets')" />

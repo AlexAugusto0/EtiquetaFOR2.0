@@ -3,12 +3,6 @@
     partial class FormPrincipal
     {
         private System.ComponentModel.IContainer components = null;
-        private System.Windows.Forms.Panel panelTop;
-        private System.Windows.Forms.Label lblTitulo;
-        private System.Windows.Forms.Button btnDesigner;
-        private System.Windows.Forms.Button btnImprimir;
-        private System.Windows.Forms.Button btnSalvarTemplate;
-        private System.Windows.Forms.Button btnCarregarTemplate;
         private System.Windows.Forms.GroupBox groupProduto;
         private System.Windows.Forms.Label lblNome;
         private System.Windows.Forms.TextBox txtNome;
@@ -38,22 +32,18 @@
 
         private void InitializeComponent()
         {
-            this.panelTop = new System.Windows.Forms.Panel();
-            this.lblTitulo = new System.Windows.Forms.Label();
-            this.btnDesigner = new System.Windows.Forms.Button();
-            this.btnImprimir = new System.Windows.Forms.Button();
-            this.btnSalvarTemplate = new System.Windows.Forms.Button();
-            this.btnCarregarTemplate = new System.Windows.Forms.Button();
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FormPrincipal));
             this.groupProduto = new System.Windows.Forms.GroupBox();
-            this.lblNome = new System.Windows.Forms.Label();
-            this.txtNome = new System.Windows.Forms.TextBox();
-            this.lblCodigo = new System.Windows.Forms.Label();
-            this.txtCodigo = new System.Windows.Forms.TextBox();
-            this.lblPreco = new System.Windows.Forms.Label();
-            this.txtPreco = new System.Windows.Forms.TextBox();
-            this.lblQtd = new System.Windows.Forms.Label();
-            this.numQtd = new System.Windows.Forms.NumericUpDown();
+            this.panel1 = new System.Windows.Forms.Panel();
             this.btnAdicionar = new System.Windows.Forms.Button();
+            this.numQtd = new System.Windows.Forms.NumericUpDown();
+            this.lblQtd = new System.Windows.Forms.Label();
+            this.txtPreco = new System.Windows.Forms.TextBox();
+            this.lblPreco = new System.Windows.Forms.Label();
+            this.txtCodigo = new System.Windows.Forms.TextBox();
+            this.lblCodigo = new System.Windows.Forms.Label();
+            this.txtNome = new System.Windows.Forms.TextBox();
+            this.lblNome = new System.Windows.Forms.Label();
             this.dgvProdutos = new System.Windows.Forms.DataGridView();
             this.colSelecionar = new System.Windows.Forms.DataGridViewCheckBoxColumn();
             this.colNome = new System.Windows.Forms.DataGridViewTextBoxColumn();
@@ -61,194 +51,56 @@
             this.colPreco = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.colQuantidade = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.colRemover = new System.Windows.Forms.DataGridViewButtonColumn();
-            this.panelTop.SuspendLayout();
+            this.lblTitulo = new System.Windows.Forms.Label();
+            this.btnDesigner = new System.Windows.Forms.Button();
+            this.btnImprimir = new System.Windows.Forms.Button();
+            this.panelTop = new System.Windows.Forms.Panel();
+            this.panel2 = new System.Windows.Forms.Panel();
+            this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.groupProduto.SuspendLayout();
+            this.panel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numQtd)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.dgvProdutos)).BeginInit();
+            this.panelTop.SuspendLayout();
+            this.panel2.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.SuspendLayout();
-            // 
-            // panelTop
-            // 
-            this.panelTop.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(52)))), ((int)(((byte)(73)))), ((int)(((byte)(94)))));
-            this.panelTop.Controls.Add(this.btnCarregarTemplate);
-            this.panelTop.Controls.Add(this.btnSalvarTemplate);
-            this.panelTop.Controls.Add(this.btnImprimir);
-            this.panelTop.Controls.Add(this.btnDesigner);
-            this.panelTop.Controls.Add(this.lblTitulo);
-            this.panelTop.Dock = System.Windows.Forms.DockStyle.Top;
-            this.panelTop.Location = new System.Drawing.Point(0, 0);
-            this.panelTop.Name = "panelTop";
-            this.panelTop.Size = new System.Drawing.Size(900, 80);
-            this.panelTop.TabIndex = 0;
-            // 
-            // lblTitulo
-            // 
-            this.lblTitulo.AutoSize = true;
-            this.lblTitulo.Font = new System.Drawing.Font("Segoe UI", 16F, System.Drawing.FontStyle.Bold);
-            this.lblTitulo.ForeColor = System.Drawing.Color.White;
-            this.lblTitulo.Location = new System.Drawing.Point(20, 10);
-            this.lblTitulo.Name = "lblTitulo";
-            this.lblTitulo.Size = new System.Drawing.Size(287, 30);
-            this.lblTitulo.TabIndex = 0;
-            this.lblTitulo.Text = "SISTEMA DE ETIQUETAS";
-            // 
-            // btnDesigner
-            // 
-            this.btnDesigner.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(46)))), ((int)(((byte)(204)))), ((int)(((byte)(113)))));
-            this.btnDesigner.FlatAppearance.BorderSize = 0;
-            this.btnDesigner.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnDesigner.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
-            this.btnDesigner.ForeColor = System.Drawing.Color.White;
-            this.btnDesigner.Location = new System.Drawing.Point(20, 45);
-            this.btnDesigner.Name = "btnDesigner";
-            this.btnDesigner.Size = new System.Drawing.Size(180, 30);
-            this.btnDesigner.TabIndex = 1;
-            this.btnDesigner.Text = "Designer de Etiqueta";
-            this.btnDesigner.UseVisualStyleBackColor = false;
-            this.btnDesigner.Click += new System.EventHandler(this.btnDesigner_Click);
-            // 
-            // btnImprimir
-            // 
-            this.btnImprimir.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(52)))), ((int)(((byte)(152)))), ((int)(((byte)(219)))));
-            this.btnImprimir.FlatAppearance.BorderSize = 0;
-            this.btnImprimir.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnImprimir.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
-            this.btnImprimir.ForeColor = System.Drawing.Color.White;
-            this.btnImprimir.Location = new System.Drawing.Point(210, 45);
-            this.btnImprimir.Name = "btnImprimir";
-            this.btnImprimir.Size = new System.Drawing.Size(150, 30);
-            this.btnImprimir.TabIndex = 2;
-            this.btnImprimir.Text = "Imprimir Etiquetas";
-            this.btnImprimir.UseVisualStyleBackColor = false;
-            this.btnImprimir.Click += new System.EventHandler(this.btnImprimir_Click);
-            // 
-            // btnSalvarTemplate
-            // 
-            this.btnSalvarTemplate.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(39)))), ((int)(((byte)(174)))), ((int)(((byte)(96)))));
-            this.btnSalvarTemplate.FlatAppearance.BorderSize = 0;
-            this.btnSalvarTemplate.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnSalvarTemplate.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
-            this.btnSalvarTemplate.ForeColor = System.Drawing.Color.White;
-            this.btnSalvarTemplate.Location = new System.Drawing.Point(370, 45);
-            this.btnSalvarTemplate.Name = "btnSalvarTemplate";
-            this.btnSalvarTemplate.Size = new System.Drawing.Size(140, 30);
-            this.btnSalvarTemplate.TabIndex = 3;
-            this.btnSalvarTemplate.Text = "💾 Salvar Template";
-            this.btnSalvarTemplate.UseVisualStyleBackColor = false;
-            this.btnSalvarTemplate.Click += new System.EventHandler(this.btnSalvarTemplate_Click);
-            // 
-            // btnCarregarTemplate
-            // 
-            this.btnCarregarTemplate.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(241)))), ((int)(((byte)(196)))), ((int)(((byte)(15)))));
-            this.btnCarregarTemplate.FlatAppearance.BorderSize = 0;
-            this.btnCarregarTemplate.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnCarregarTemplate.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
-            this.btnCarregarTemplate.ForeColor = System.Drawing.Color.White;
-            this.btnCarregarTemplate.Location = new System.Drawing.Point(520, 45);
-            this.btnCarregarTemplate.Name = "btnCarregarTemplate";
-            this.btnCarregarTemplate.Size = new System.Drawing.Size(160, 30);
-            this.btnCarregarTemplate.TabIndex = 4;
-            this.btnCarregarTemplate.Text = "📂 Carregar Template";
-            this.btnCarregarTemplate.UseVisualStyleBackColor = false;
-            this.btnCarregarTemplate.Click += new System.EventHandler(this.btnCarregarTemplate_Click);
             // 
             // groupProduto
             // 
-            this.groupProduto.Controls.Add(this.btnAdicionar);
-            this.groupProduto.Controls.Add(this.numQtd);
-            this.groupProduto.Controls.Add(this.lblQtd);
-            this.groupProduto.Controls.Add(this.txtPreco);
-            this.groupProduto.Controls.Add(this.lblPreco);
-            this.groupProduto.Controls.Add(this.txtCodigo);
-            this.groupProduto.Controls.Add(this.lblCodigo);
-            this.groupProduto.Controls.Add(this.txtNome);
-            this.groupProduto.Controls.Add(this.lblNome);
+            this.groupProduto.BackColor = System.Drawing.Color.White;
+            this.groupProduto.Controls.Add(this.panel1);
             this.groupProduto.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
-            this.groupProduto.Location = new System.Drawing.Point(10, 90);
+            this.groupProduto.Location = new System.Drawing.Point(3, 3);
             this.groupProduto.Name = "groupProduto";
-            this.groupProduto.Size = new System.Drawing.Size(860, 100);
+            this.groupProduto.Size = new System.Drawing.Size(851, 124);
             this.groupProduto.TabIndex = 1;
             this.groupProduto.TabStop = false;
             this.groupProduto.Text = "Adicionar Produto";
             // 
-            // lblNome
+            // panel1
             // 
-            this.lblNome.AutoSize = true;
-            this.lblNome.Font = new System.Drawing.Font("Segoe UI", 9F);
-            this.lblNome.Location = new System.Drawing.Point(10, 30);
-            this.lblNome.Name = "lblNome";
-            this.lblNome.Size = new System.Drawing.Size(43, 15);
-            this.lblNome.TabIndex = 0;
-            this.lblNome.Text = "Nome:";
-            // 
-            // txtNome
-            // 
-            this.txtNome.Location = new System.Drawing.Point(70, 27);
-            this.txtNome.Name = "txtNome";
-            this.txtNome.Size = new System.Drawing.Size(200, 23);
-            this.txtNome.TabIndex = 1;
-            // 
-            // lblCodigo
-            // 
-            this.lblCodigo.AutoSize = true;
-            this.lblCodigo.Font = new System.Drawing.Font("Segoe UI", 9F);
-            this.lblCodigo.Location = new System.Drawing.Point(280, 30);
-            this.lblCodigo.Name = "lblCodigo";
-            this.lblCodigo.Size = new System.Drawing.Size(49, 15);
-            this.lblCodigo.TabIndex = 2;
-            this.lblCodigo.Text = "Código:";
-            // 
-            // txtCodigo
-            // 
-            this.txtCodigo.Location = new System.Drawing.Point(340, 27);
-            this.txtCodigo.Name = "txtCodigo";
-            this.txtCodigo.Size = new System.Drawing.Size(120, 23);
-            this.txtCodigo.TabIndex = 3;
-            // 
-            // lblPreco
-            // 
-            this.lblPreco.AutoSize = true;
-            this.lblPreco.Font = new System.Drawing.Font("Segoe UI", 9F);
-            this.lblPreco.Location = new System.Drawing.Point(470, 30);
-            this.lblPreco.Name = "lblPreco";
-            this.lblPreco.Size = new System.Drawing.Size(40, 15);
-            this.lblPreco.TabIndex = 4;
-            this.lblPreco.Text = "Preço:";
-            // 
-            // txtPreco
-            // 
-            this.txtPreco.Location = new System.Drawing.Point(520, 27);
-            this.txtPreco.Name = "txtPreco";
-            this.txtPreco.Size = new System.Drawing.Size(100, 23);
-            this.txtPreco.TabIndex = 5;
-            // 
-            // lblQtd
-            // 
-            this.lblQtd.AutoSize = true;
-            this.lblQtd.Font = new System.Drawing.Font("Segoe UI", 9F);
-            this.lblQtd.Location = new System.Drawing.Point(630, 30);
-            this.lblQtd.Name = "lblQtd";
-            this.lblQtd.Size = new System.Drawing.Size(32, 15);
-            this.lblQtd.TabIndex = 6;
-            this.lblQtd.Text = "Qtd:";
-            // 
-            // numQtd
-            // 
-            this.numQtd.Location = new System.Drawing.Point(670, 27);
-            this.numQtd.Maximum = new decimal(new int[] { 1000, 0, 0, 0 });
-            this.numQtd.Minimum = new decimal(new int[] { 1, 0, 0, 0 });
-            this.numQtd.Name = "numQtd";
-            this.numQtd.Size = new System.Drawing.Size(60, 23);
-            this.numQtd.TabIndex = 7;
-            this.numQtd.Value = new decimal(new int[] { 1, 0, 0, 0 });
+            this.panel1.Controls.Add(this.btnAdicionar);
+            this.panel1.Controls.Add(this.numQtd);
+            this.panel1.Controls.Add(this.lblQtd);
+            this.panel1.Controls.Add(this.txtPreco);
+            this.panel1.Controls.Add(this.lblPreco);
+            this.panel1.Controls.Add(this.txtCodigo);
+            this.panel1.Controls.Add(this.lblCodigo);
+            this.panel1.Controls.Add(this.txtNome);
+            this.panel1.Controls.Add(this.lblNome);
+            this.panel1.Location = new System.Drawing.Point(6, 19);
+            this.panel1.Name = "panel1";
+            this.panel1.Size = new System.Drawing.Size(838, 74);
+            this.panel1.TabIndex = 0;
             // 
             // btnAdicionar
             // 
-            this.btnAdicionar.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(46)))), ((int)(((byte)(204)))), ((int)(((byte)(113)))));
+            this.btnAdicionar.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(143)))), ((int)(((byte)(0)))));
             this.btnAdicionar.FlatAppearance.BorderSize = 0;
             this.btnAdicionar.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnAdicionar.ForeColor = System.Drawing.Color.White;
-            this.btnAdicionar.Location = new System.Drawing.Point(750, 25);
+            this.btnAdicionar.ForeColor = System.Drawing.Color.Black;
+            this.btnAdicionar.Location = new System.Drawing.Point(747, 6);
             this.btnAdicionar.Name = "btnAdicionar";
             this.btnAdicionar.Size = new System.Drawing.Size(90, 25);
             this.btnAdicionar.TabIndex = 8;
@@ -256,11 +108,96 @@
             this.btnAdicionar.UseVisualStyleBackColor = false;
             this.btnAdicionar.Click += new System.EventHandler(this.btnAdicionar_Click);
             // 
+            // numQtd
+            // 
+            this.numQtd.Location = new System.Drawing.Point(667, 8);
+            this.numQtd.Maximum = new decimal(new int[] {
+            1000,
+            0,
+            0,
+            0});
+            this.numQtd.Minimum = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            this.numQtd.Name = "numQtd";
+            this.numQtd.Size = new System.Drawing.Size(60, 23);
+            this.numQtd.TabIndex = 7;
+            this.numQtd.Value = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            // 
+            // lblQtd
+            // 
+            this.lblQtd.AutoSize = true;
+            this.lblQtd.Font = new System.Drawing.Font("Segoe UI", 9F);
+            this.lblQtd.Location = new System.Drawing.Point(627, 11);
+            this.lblQtd.Name = "lblQtd";
+            this.lblQtd.Size = new System.Drawing.Size(30, 15);
+            this.lblQtd.TabIndex = 6;
+            this.lblQtd.Text = "Qtd:";
+            // 
+            // txtPreco
+            // 
+            this.txtPreco.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(240)))), ((int)(((byte)(235)))), ((int)(((byte)(255)))));
+            this.txtPreco.Location = new System.Drawing.Point(517, 8);
+            this.txtPreco.Name = "txtPreco";
+            this.txtPreco.Size = new System.Drawing.Size(100, 23);
+            this.txtPreco.TabIndex = 5;
+            // 
+            // lblPreco
+            // 
+            this.lblPreco.AutoSize = true;
+            this.lblPreco.Font = new System.Drawing.Font("Segoe UI", 9F);
+            this.lblPreco.Location = new System.Drawing.Point(467, 11);
+            this.lblPreco.Name = "lblPreco";
+            this.lblPreco.Size = new System.Drawing.Size(40, 15);
+            this.lblPreco.TabIndex = 4;
+            this.lblPreco.Text = "Preço:";
+            // 
+            // txtCodigo
+            // 
+            this.txtCodigo.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(240)))), ((int)(((byte)(235)))), ((int)(((byte)(255)))));
+            this.txtCodigo.Location = new System.Drawing.Point(337, 8);
+            this.txtCodigo.Name = "txtCodigo";
+            this.txtCodigo.Size = new System.Drawing.Size(120, 23);
+            this.txtCodigo.TabIndex = 3;
+            // 
+            // lblCodigo
+            // 
+            this.lblCodigo.AutoSize = true;
+            this.lblCodigo.Font = new System.Drawing.Font("Segoe UI", 9F);
+            this.lblCodigo.Location = new System.Drawing.Point(277, 11);
+            this.lblCodigo.Name = "lblCodigo";
+            this.lblCodigo.Size = new System.Drawing.Size(49, 15);
+            this.lblCodigo.TabIndex = 2;
+            this.lblCodigo.Text = "Código:";
+            // 
+            // txtNome
+            // 
+            this.txtNome.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(240)))), ((int)(((byte)(235)))), ((int)(((byte)(255)))));
+            this.txtNome.Location = new System.Drawing.Point(67, 8);
+            this.txtNome.Name = "txtNome";
+            this.txtNome.Size = new System.Drawing.Size(200, 23);
+            this.txtNome.TabIndex = 1;
+            // 
+            // lblNome
+            // 
+            this.lblNome.AutoSize = true;
+            this.lblNome.Font = new System.Drawing.Font("Segoe UI", 9F);
+            this.lblNome.Location = new System.Drawing.Point(7, 11);
+            this.lblNome.Name = "lblNome";
+            this.lblNome.Size = new System.Drawing.Size(43, 15);
+            this.lblNome.TabIndex = 0;
+            this.lblNome.Text = "Nome:";
+            // 
             // dgvProdutos
             // 
             this.dgvProdutos.AllowUserToAddRows = false;
             this.dgvProdutos.BackgroundColor = System.Drawing.Color.White;
-            this.dgvProdutos.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.dgvProdutos.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.dgvProdutos.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.colSelecionar,
@@ -269,8 +206,7 @@
             this.colPreco,
             this.colQuantidade,
             this.colRemover});
-            this.dgvProdutos.Location = new System.Drawing.Point(10, 200);
-            this.dgvProdutos.MultiSelect = true;
+            this.dgvProdutos.Location = new System.Drawing.Point(11, 237);
             this.dgvProdutos.Name = "dgvProdutos";
             this.dgvProdutos.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
             this.dgvProdutos.Size = new System.Drawing.Size(860, 340);
@@ -318,25 +254,115 @@
             this.colRemover.UseColumnTextForButtonValue = true;
             this.colRemover.Width = 80;
             // 
+            // lblTitulo
+            // 
+            this.lblTitulo.AutoSize = true;
+            this.lblTitulo.BackColor = System.Drawing.Color.Transparent;
+            this.lblTitulo.Font = new System.Drawing.Font("Segoe UI", 16F, System.Drawing.FontStyle.Bold);
+            this.lblTitulo.ForeColor = System.Drawing.Color.Black;
+            this.lblTitulo.Location = new System.Drawing.Point(68, 6);
+            this.lblTitulo.Name = "lblTitulo";
+            this.lblTitulo.Size = new System.Drawing.Size(260, 30);
+            this.lblTitulo.TabIndex = 0;
+            this.lblTitulo.Text = "SISTEMA DE ETIQUETAS";
+            // 
+            // btnDesigner
+            // 
+            this.btnDesigner.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(241)))), ((int)(((byte)(196)))), ((int)(((byte)(15)))));
+            this.btnDesigner.FlatAppearance.BorderSize = 0;
+            this.btnDesigner.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnDesigner.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
+            this.btnDesigner.ForeColor = System.Drawing.Color.Black;
+            this.btnDesigner.Location = new System.Drawing.Point(20, 45);
+            this.btnDesigner.Name = "btnDesigner";
+            this.btnDesigner.Size = new System.Drawing.Size(180, 30);
+            this.btnDesigner.TabIndex = 1;
+            this.btnDesigner.Text = "Designer de Etiqueta";
+            this.btnDesigner.UseVisualStyleBackColor = false;
+            this.btnDesigner.Click += new System.EventHandler(this.btnDesigner_Click);
+            // 
+            // btnImprimir
+            // 
+            this.btnImprimir.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(241)))), ((int)(((byte)(196)))), ((int)(((byte)(15)))));
+            this.btnImprimir.FlatAppearance.BorderSize = 0;
+            this.btnImprimir.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnImprimir.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
+            this.btnImprimir.ForeColor = System.Drawing.Color.Black;
+            this.btnImprimir.Location = new System.Drawing.Point(210, 45);
+            this.btnImprimir.Name = "btnImprimir";
+            this.btnImprimir.Size = new System.Drawing.Size(150, 30);
+            this.btnImprimir.TabIndex = 2;
+            this.btnImprimir.Text = "Imprimir Etiquetas";
+            this.btnImprimir.UseVisualStyleBackColor = false;
+            this.btnImprimir.Click += new System.EventHandler(this.btnImprimir_Click);
+            // 
+            // panelTop
+            // 
+            this.panelTop.BackColor = System.Drawing.Color.White;
+            this.panelTop.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.panelTop.Controls.Add(this.btnImprimir);
+            this.panelTop.Controls.Add(this.btnDesigner);
+            this.panelTop.Controls.Add(this.lblTitulo);
+            this.panelTop.Controls.Add(this.pictureBox1);
+            this.panelTop.Location = new System.Drawing.Point(12, 12);
+            this.panelTop.Name = "panelTop";
+            this.panelTop.Size = new System.Drawing.Size(860, 85);
+            this.panelTop.TabIndex = 0;
+            // 
+            // panel2
+            // 
+            this.panel2.BackColor = System.Drawing.Color.Transparent;
+            this.panel2.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.panel2.Controls.Add(this.groupProduto);
+            this.panel2.Location = new System.Drawing.Point(12, 103);
+            this.panel2.Name = "panel2";
+            this.panel2.Size = new System.Drawing.Size(859, 128);
+            this.panel2.TabIndex = 3;
+            // 
+            // pictureBox1
+            // 
+            this.pictureBox1.Image = global::EtiquetaFORNew.Properties.Resources.icone_novo_2025_PNG1;
+            this.pictureBox1.Location = new System.Drawing.Point(18, 3);
+            this.pictureBox1.Name = "pictureBox1";
+            this.pictureBox1.Size = new System.Drawing.Size(63, 35);
+            this.pictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
+            this.pictureBox1.TabIndex = 5;
+            this.pictureBox1.TabStop = false;
+            // 
             // FormPrincipal
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(900, 600);
+            this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(240)))), ((int)(((byte)(235)))), ((int)(((byte)(255)))));
+            this.ClientSize = new System.Drawing.Size(887, 589);
             this.Controls.Add(this.dgvProdutos);
-            this.Controls.Add(this.groupProduto);
             this.Controls.Add(this.panelTop);
+            this.Controls.Add(this.panel2);
             this.Font = new System.Drawing.Font("Segoe UI", 9F);
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "FormPrincipal";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-            this.Text = "Sistema de Etiquetas - Menu Principal";
-            this.panelTop.ResumeLayout(false);
-            this.panelTop.PerformLayout();
+            this.Text = "EtiquetaFor v1.0 - Menu Principal";
+            this.Load += new System.EventHandler(this.FormPrincipal_Load);
             this.groupProduto.ResumeLayout(false);
-            this.groupProduto.PerformLayout();
+            this.panel1.ResumeLayout(false);
+            this.panel1.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numQtd)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.dgvProdutos)).EndInit();
+            this.panelTop.ResumeLayout(false);
+            this.panelTop.PerformLayout();
+            this.panel2.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
             this.ResumeLayout(false);
+
         }
+
+        private System.Windows.Forms.Label lblTitulo;
+        private System.Windows.Forms.Button btnDesigner;
+        private System.Windows.Forms.Button btnImprimir;
+        private System.Windows.Forms.Panel panelTop;
+        private System.Windows.Forms.PictureBox pictureBox1;
+        private System.Windows.Forms.Panel panel1;
+        private System.Windows.Forms.Panel panel2;
     }
 }

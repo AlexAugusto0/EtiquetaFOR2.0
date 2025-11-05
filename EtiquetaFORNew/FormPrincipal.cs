@@ -1,7 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Windows.Forms;
 using System.Drawing;
+using System.Drawing.Drawing2D;
+using System.Windows.Forms;
 
 namespace EtiquetaFORNew
 {
@@ -15,8 +16,18 @@ namespace EtiquetaFORNew
             InitializeComponent();
             template = new TemplateEtiqueta();
             CarregarUltimoTemplate();
+            this.DoubleBuffered = true;
+            this.Load += FormPrincipal_Load; // 🔹 adiciona o evento Load
         }
-
+        private void FormPrincipal_Load(object sender, EventArgs e)
+        {
+            // Aplica arredondamento nos botões desejados
+            //ArredondarBotao(btnSalvarTemplate, 12);
+            //ArredondarBotao(btnCarregarTemplate, 12);
+            ArredondarBotao(btnDesigner, 12);
+            ArredondarBotao(btnImprimir, 12);
+            ArredondarBotao(btnAdicionar, 12);
+        }
         private void CarregarUltimoTemplate()
         {
             var ultimoTemplate = TemplateManager.CarregarUltimoTemplate();
@@ -26,44 +37,9 @@ namespace EtiquetaFORNew
             }
         }
 
-        private void btnSalvarTemplate_Click(object sender, EventArgs e)
-        {
-            if (template.Elementos.Count == 0)
-            {
-                MessageBox.Show("Crie um template no Designer primeiro!", "Atenção",
-                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                return;
-            }
+        
 
-            var formNome = new FormNomeTemplate();
-            if (formNome.ShowDialog() == DialogResult.OK)
-            {
-                string nomeTemplate = formNome.NomeTemplate;
-
-                if (TemplateManager.SalvarTemplate(template, nomeTemplate))
-                {
-                    MessageBox.Show($"Template '{nomeTemplate}' salvo com sucesso!\n\nLocal: {TemplateManager.ObterPastaTemplates()}",
-                        "Sucesso", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                }
-            }
-        }
-
-        private void btnCarregarTemplate_Click(object sender, EventArgs e)
-        {
-            var formLista = new FormListaTemplates();
-            if (formLista.ShowDialog() == DialogResult.OK)
-            {
-                string nomeTemplate = formLista.TemplateSelecionado;
-
-                var templateCarregado = TemplateManager.CarregarTemplate(nomeTemplate);
-                if (templateCarregado != null)
-                {
-                    template = templateCarregado;
-                    MessageBox.Show($"Template '{nomeTemplate}' carregado com sucesso!",
-                        "Sucesso", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                }
-            }
-        }
+        
 
         private void btnDesigner_Click(object sender, EventArgs e)
         {
@@ -155,6 +131,50 @@ namespace EtiquetaFORNew
             }
 
             return selecionados;
+        }
+        protected override void OnPaintBackground(PaintEventArgs e)
+        {
+            base.OnPaintBackground(e);
+
+            using (LinearGradientBrush brush = new LinearGradientBrush(
+                this.ClientRectangle,
+                Color.White,   // cor inicial (topo)
+                Color.White,   // temporário (será substituído abaixo)
+                LinearGradientMode.Vertical))
+            {
+                // Cria um gradiente personalizado
+                ColorBlend blend = new ColorBlend();
+
+                // Posições variam de 0.0 (topo) a 1.0 (base)
+                blend.Positions = new float[] { 0.0f, 0.85f, 1.0f };
+                //               ↑ topo   ↑ onde começa o amarelo   ↑ base
+
+                // Cores correspondentes às posições
+                blend.Colors = new Color[] {
+            Color.FromArgb(240, 235, 255),       // branco topo
+            Color.FromArgb(240, 235, 255),  // transição suave
+            Color.FromArgb(255, 255, 200, 50)    // amarelo/alaranjado base
+        };
+
+                brush.InterpolationColors = blend;
+
+                e.Graphics.FillRectangle(brush, this.ClientRectangle);
+            }
+        }
+        public static void ArredondarBotao(Button botao, int raio)
+        {
+            GraphicsPath path = new GraphicsPath();
+            Rectangle rect = botao.ClientRectangle;
+
+            int d = raio * 2;
+
+            path.AddArc(rect.X, rect.Y, d, d, 180, 90);
+            path.AddArc(rect.Right - d, rect.Y, d, d, 270, 90);
+            path.AddArc(rect.Right - d, rect.Bottom - d, d, d, 0, 90);
+            path.AddArc(rect.X, rect.Bottom - d, d, d, 90, 90);
+            path.CloseFigure();
+
+            botao.Region = new Region(path);
         }
     }
 }

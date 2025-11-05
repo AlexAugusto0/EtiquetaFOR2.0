@@ -206,7 +206,7 @@ namespace EtiquetaFORNew
         {
             public static string GetTituloAplicacao()
             {
-                string nome = Assembly.GetExecutingAssembly().GetName().Name;
+                string nome = "EtiquetaFOR";//Assembly.GetExecutingAssembly().GetName().Name;
                 return $"{nome} - v1.0";
             }
         }
