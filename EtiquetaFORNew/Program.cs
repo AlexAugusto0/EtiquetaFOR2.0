@@ -17,6 +17,7 @@ namespace EtiquetaFORNew
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
             Application.Run(new Main());
+            //testeGit
         }
     }
 }
