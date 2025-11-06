@@ -63,6 +63,16 @@ namespace EtiquetaFORNew.Properties {
         /// <summary>
         ///   Consulta um recurso localizado do tipo System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap Banco_de_dados {
+            get {
+                object obj = ResourceManager.GetObject("Banco de dados", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Consulta um recurso localizado do tipo System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap ChatGPT_Image_24_de_out__de_2025__09_11_06 {
             get {
                 object obj = ResourceManager.GetObject("ChatGPT Image 24 de out. de 2025, 09_11_06", resourceCulture);

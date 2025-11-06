@@ -47,7 +47,9 @@ namespace EtiquetaFORNew
             this.btnTestar = new System.Windows.Forms.Button();
             this.btnSalvar = new System.Windows.Forms.Button();
             this.btnCancelar = new System.Windows.Forms.Button();
+            this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.groupBox1.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.SuspendLayout();
             // 
             // lblTitulo
@@ -62,6 +64,7 @@ namespace EtiquetaFORNew
             // 
             // groupBox1
             // 
+            this.groupBox1.BackColor = System.Drawing.SystemColors.ScrollBar;
             this.groupBox1.Controls.Add(this.chkMostrarSenha);
             this.groupBox1.Controls.Add(this.txtTimeout);
             this.groupBox1.Controls.Add(this.lblTimeout);
@@ -87,7 +90,7 @@ namespace EtiquetaFORNew
             // chkMostrarSenha
             // 
             this.chkMostrarSenha.AutoSize = true;
-            this.chkMostrarSenha.Location = new System.Drawing.Point(160, 187);
+            this.chkMostrarSenha.Location = new System.Drawing.Point(424, 166);
             this.chkMostrarSenha.Name = "chkMostrarSenha";
             this.chkMostrarSenha.Size = new System.Drawing.Size(95, 17);
             this.chkMostrarSenha.TabIndex = 13;
@@ -131,16 +134,16 @@ namespace EtiquetaFORNew
             // 
             // txtSenha
             // 
-            this.txtSenha.Location = new System.Drawing.Point(16, 161);
+            this.txtSenha.Location = new System.Drawing.Point(16, 123);
             this.txtSenha.Name = "txtSenha";
-            this.txtSenha.Size = new System.Drawing.Size(538, 20);
+            this.txtSenha.Size = new System.Drawing.Size(392, 20);
             this.txtSenha.TabIndex = 8;
             this.txtSenha.UseSystemPasswordChar = true;
             // 
             // lblSenha
             // 
             this.lblSenha.AutoSize = true;
-            this.lblSenha.Location = new System.Drawing.Point(13, 145);
+            this.lblSenha.Location = new System.Drawing.Point(13, 107);
             this.lblSenha.Name = "lblSenha";
             this.lblSenha.Size = new System.Drawing.Size(45, 13);
             this.lblSenha.TabIndex = 7;
@@ -148,15 +151,15 @@ namespace EtiquetaFORNew
             // 
             // txtUsuario
             // 
-            this.txtUsuario.Location = new System.Drawing.Point(16, 122);
+            this.txtUsuario.Location = new System.Drawing.Point(16, 84);
             this.txtUsuario.Name = "txtUsuario";
-            this.txtUsuario.Size = new System.Drawing.Size(538, 20);
+            this.txtUsuario.Size = new System.Drawing.Size(392, 20);
             this.txtUsuario.TabIndex = 6;
             // 
             // lblUsuario
             // 
             this.lblUsuario.AutoSize = true;
-            this.lblUsuario.Location = new System.Drawing.Point(13, 106);
+            this.lblUsuario.Location = new System.Drawing.Point(13, 68);
             this.lblUsuario.Name = "lblUsuario";
             this.lblUsuario.Size = new System.Drawing.Size(50, 13);
             this.lblUsuario.TabIndex = 5;
@@ -164,7 +167,7 @@ namespace EtiquetaFORNew
             // 
             // btnListarBancos
             // 
-            this.btnListarBancos.Location = new System.Drawing.Point(414, 81);
+            this.btnListarBancos.Location = new System.Drawing.Point(16, 189);
             this.btnListarBancos.Name = "btnListarBancos";
             this.btnListarBancos.Size = new System.Drawing.Size(140, 23);
             this.btnListarBancos.TabIndex = 14;
@@ -175,7 +178,7 @@ namespace EtiquetaFORNew
             // cmbBancoDados
             // 
             this.cmbBancoDados.FormattingEnabled = true;
-            this.cmbBancoDados.Location = new System.Drawing.Point(16, 83);
+            this.cmbBancoDados.Location = new System.Drawing.Point(16, 162);
             this.cmbBancoDados.Name = "cmbBancoDados";
             this.cmbBancoDados.Size = new System.Drawing.Size(392, 21);
             this.cmbBancoDados.TabIndex = 4;
@@ -183,7 +186,7 @@ namespace EtiquetaFORNew
             // lblBancoDados
             // 
             this.lblBancoDados.AutoSize = true;
-            this.lblBancoDados.Location = new System.Drawing.Point(13, 67);
+            this.lblBancoDados.Location = new System.Drawing.Point(13, 146);
             this.lblBancoDados.Name = "lblBancoDados";
             this.lblBancoDados.Size = new System.Drawing.Size(94, 13);
             this.lblBancoDados.TabIndex = 3;
@@ -207,7 +210,7 @@ namespace EtiquetaFORNew
             // 
             // btnTestar
             // 
-            this.btnTestar.Location = new System.Drawing.Point(16, 210);
+            this.btnTestar.Location = new System.Drawing.Point(392, 210);
             this.btnTestar.Name = "btnTestar";
             this.btnTestar.Size = new System.Drawing.Size(150, 30);
             this.btnTestar.TabIndex = 3;
@@ -235,6 +238,16 @@ namespace EtiquetaFORNew
             this.btnCancelar.UseVisualStyleBackColor = true;
             this.btnCancelar.Click += new System.EventHandler(this.btnCancelar_Click);
             // 
+            // pictureBox1
+            // 
+            this.pictureBox1.Image = global::EtiquetaFORNew.Properties.Resources.Banco_de_dados;
+            this.pictureBox1.Location = new System.Drawing.Point(297, 1);
+            this.pictureBox1.Name = "pictureBox1";
+            this.pictureBox1.Size = new System.Drawing.Size(41, 28);
+            this.pictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
+            this.pictureBox1.TabIndex = 8;
+            this.pictureBox1.TabStop = false;
+            // 
             // ConfigForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -244,6 +257,7 @@ namespace EtiquetaFORNew
             this.Controls.Add(this.btnCancelar);
             this.Controls.Add(this.btnSalvar);
             this.Controls.Add(this.lblTitulo);
+            this.Controls.Add(this.pictureBox1);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
             this.MaximizeBox = false;
             this.MinimizeBox = false;
@@ -252,6 +266,7 @@ namespace EtiquetaFORNew
             this.Text = "Configuração do Banco de Dados";
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -278,5 +293,6 @@ namespace EtiquetaFORNew
         private System.Windows.Forms.TextBox txtTimeout;
         private System.Windows.Forms.Label lblTimeout;
         private System.Windows.Forms.CheckBox chkMostrarSenha;
+        private System.Windows.Forms.PictureBox pictureBox1;
     }
 }
