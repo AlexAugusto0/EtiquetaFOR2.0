@@ -1,4 +1,5 @@
 ﻿using EtiquetaFORNew;
+using EtiquetaFORNew.Data;
 using Newtonsoft.Json;
 using System;
 using System.Data;
@@ -220,7 +221,8 @@ namespace EtiquetaFORNew
 
         private void pictureBox4_Click(object sender, EventArgs e)
         {
-            configuracoes tela = new configuracoes();
+            //configuracoes tela = new configuracoes();
+            ConfigForm tela = new ConfigForm();
             tela.ShowDialog();
         }
         private void ArredondarPainel(Panel panel, int raio)
@@ -247,6 +249,90 @@ namespace EtiquetaFORNew
                 panel.Region = new Region(path);
             }
         }
+        private void btnConfig_Click(object sender, EventArgs e)
+        {
+            using (var configForm = new ConfigForm())
+            {
+                // Abre como modal e espera
+                if (configForm.ShowDialog() == DialogResult.OK)
+                {
+                    // 🔁 Recarrega os dados ou atualiza conexão
+                    RecarregarConfiguracao();
+                }
+            }
+        }
+        public void RecarregarConfiguracao()
+        {
+            try
+            {
+                var config = DatabaseConfig.LoadConfiguration();
+                if (config == null)
+                {
+                    MessageBox.Show("Nenhuma configuração encontrada.");
+                    return;
+                }
+
+                // Atualiza labels informativos (se existirem)
+                //lblServidorAtual.Text = config.Servidor;
+                //lblBancoAtual.Text = config.Banco;
+
+                // Atualiza campos de login
+                //if (!string.IsNullOrEmpty(config.Usuario))
+                //    usuarioBox.Text = config.Usuario;
+
+                //if (!string.IsNullOrEmpty(config.Senha))
+                //    senhaBox.Text = config.Senha;
+
+                // Reabre conexão
+                InicializarConexao();
+
+                MessageBox.Show("Configurações e conexão atualizadas com sucesso!",
+                    "Sucesso", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Erro ao recarregar configuração: " + ex.Message,
+                    "Erro", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+        private void InicializarConexao()
+        {
+            try
+            {
+                var config = DatabaseConfig.LoadConfiguration();
+
+                if (config == null)
+                {
+                    MessageBox.Show("Configuração do banco não encontrada. Configure o sistema primeiro.",
+                        "Atenção", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return;
+                }
+
+                string servidorCompleto = string.IsNullOrEmpty(config.Porta)
+                    ? config.Servidor
+                    : $"{config.Servidor},{config.Porta}";
+
+                string connectionString =
+                    $"Server={servidorCompleto};Database={config.Banco};User Id={config.Usuario};Password={config.Senha};TrustServerCertificate=True;";
+
+                using (SqlConnection conexao = new SqlConnection(connectionString))
+                {
+                    conexao.Open();
+                    // Teste de conexão bem-sucedido
+                    conexao.Close();
+                }
+
+                // Após conexão bem-sucedida, recarrega usuários na ComboBox
+                LoadUsuarios();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Erro ao tentar conectar com o banco de dados:\n{ex.Message}",
+                    "Erro", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+
 
     }
 

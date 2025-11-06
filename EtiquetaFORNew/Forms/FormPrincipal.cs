@@ -27,6 +27,7 @@ namespace EtiquetaFORNew
             ArredondarBotao(btnDesigner, 12);
             ArredondarBotao(btnImprimir, 12);
             ArredondarBotao(btnAdicionar, 12);
+            ArredondarBotao(btnCarregarTemplate, 12);
         }
         private void CarregarUltimoTemplate()
         {
@@ -175,6 +176,22 @@ namespace EtiquetaFORNew
             path.CloseFigure();
 
             botao.Region = new Region(path);
+        }
+        private void btnCarregarTemplate_Click(object sender, EventArgs e)
+        {
+            var formLista = new FormListaTemplates();
+            if (formLista.ShowDialog() == DialogResult.OK)
+            {
+                string nomeTemplate = formLista.TemplateSelecionado;
+
+                var templateCarregado = TemplateManager.CarregarTemplate(nomeTemplate);
+                if (templateCarregado != null)
+                {
+                    template = templateCarregado;
+                    MessageBox.Show($"Template '{nomeTemplate}' carregado com sucesso!",
+                        "Sucesso", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                }
+            }
         }
     }
 }
