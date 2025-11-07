@@ -38,13 +38,6 @@ namespace EtiquetaFORNew
             InicializarListView();
         }
 
-        public class ImpressoraInfo
-        {
-            public string Nome { get; set; }
-            public string ImagemPath { get; set; }  // Caminho local da imagem
-            public string DriverLink { get; set; }  // URL do driver
-        }
-
         private void checkBox1_CheckedChanged(object sender, EventArgs e)
         {
             if (checkBox1.Checked)
@@ -55,11 +48,13 @@ namespace EtiquetaFORNew
                 panel2.Visible = true;
                 listViewDispositivos.Visible = true;
                 pictureBox1.Visible = false;
+                comboBox1.Visible = false;
+                button1.Visible = false;
             }
             else
             {
                 comboBox1.Visible = false;
-                pictureBox1.Visible = true;
+                pictureBox1.Visible = false;
                 panel2.Visible = false;
                 button1.Visible = false;
                 btnProcurar.Visible = false;
@@ -78,6 +73,8 @@ namespace EtiquetaFORNew
                 panel2.Visible = true;
                 button1.Visible = true;
                 listViewDispositivos.Visible = false;
+                btnProcurar.Visible = false;
+                btnInstalarDriver.Visible = false;
             }
             else
             {
@@ -89,153 +86,48 @@ namespace EtiquetaFORNew
             }
         }
 
+        /// <summary>
+        /// Carrega as impressoras usando o ImpressoraManager
+        /// </summary>
         private void CarregarImpressoras()
         {
-            impressoras.Clear();
+            try
+            {
+                // Carrega as impressoras do JSON
+                impressoras = ImpressoraManager.CarregarImpressoras();
 
-            // Exemplo de impressoras predefinidas
-            impressoras.Add(new ImpressoraInfo
-            {
-                Nome = "Elgin L42",
-                ImagemPath = @"C:\Users\alex.augusto\source\repos\EtiquetaFORNew\EtiquetaFORNew\Impressoras\Elgin L42.jpg",
-                DriverLink = "https://d2u2qhufg0q9tn.cloudfront.net/assets/arquivos/imgCard_64d36466-f8b8-4987-a297-b018497a4d81_2018-02-01_15-17-080_06667000.zip\r\n"
-            });
+                if (impressoras == null || impressoras.Count == 0)
+                {
+                    MessageBox.Show(
+                        "Nenhuma impressora foi carregada. Verifique o arquivo impressoras.json",
+                        "Aviso",
+                        MessageBoxButtons.OK,
+                        MessageBoxIcon.Warning);
+                    impressoras = new List<ImpressoraInfo>();
+                    return;
+                }
 
-            impressoras.Add(new ImpressoraInfo
-            {
-                Nome = "Elgin L42 Pro",
-                ImagemPath = @"C:\Users\alex.augusto\source\repos\EtiquetaFORNew\EtiquetaFORNew\Impressoras\Elgin L42 Pro.jpg",
-                DriverLink = "https://d2u2qhufg0q9tn.cloudfront.net/assets/arquivos/imgCard_7c0b58ab-800a-42ac-a345-4e300179d18a_ELGIN_2022.1.exe"
-            });
-            impressoras.Add(new ImpressoraInfo
-            {
-                Nome = "Elgin L42 Pro Full",
-                ImagemPath = @"C:\Users\alex.augusto\source\repos\EtiquetaFORNew\EtiquetaFORNew\Impressoras\Elgin L42 Pro Full.jpg",
-                DriverLink = "https://d2u2qhufg0q9tn.cloudfront.net/assets/arquivos/manual_32c69365-1128-4451-b2d7-dd16d4a5282b_L42PROFULL_Windows_driver.zip"
-            });
-            impressoras.Add(new ImpressoraInfo
-            {
-                Nome = "Elgin L42 DT",
-                ImagemPath = @"C:\Users\alex.augusto\source\repos\EtiquetaFORNew\EtiquetaFORNew\Impressoras\Elgin L42 DT.jpg",
-                DriverLink = "https://d2u2qhufg0q9tn.cloudfront.net/assets/arquivos/imgCard_74bc386e-2aa0-41da-bbeb-03e9183afa4c_Driver%20Windows%20L42DT_7.4.3_M-5.exe"
-            });
-            impressoras.Add(new ImpressoraInfo
-            {
-                Nome = "Argox OS-214 PLUS",
-                ImagemPath = @"C:\Users\alex.augusto\source\repos\EtiquetaFORNew\EtiquetaFORNew\Impressoras\Argox OS-214 PLUS.jpg",
-                DriverLink = "https://www.argox.com/docfile/drivers/Argox_11.5.0.exe"
-            });
-            impressoras.Add(new ImpressoraInfo
-            {
-                Nome = "Argox OS-2140",
-                ImagemPath = @"C:\Users\alex.augusto\source\repos\EtiquetaFORNew\EtiquetaFORNew\Argox OS-2140.jpg",
-                DriverLink = "https://www.argox.com/docfile/drivers/Argox_11.5.0.exe"
-            });
-            impressoras.Add(new ImpressoraInfo
-            {
-                Nome = "C3Tech IT200",
-                ImagemPath = @"C:\Users\alex.augusto\source\repos\EtiquetaFORNew\EtiquetaFORNew\C3Tech IT200.jpg",
-                DriverLink = "https://c3technology.com.br/download/DRIVES%20IT-200.rar"
-            });
-            impressoras.Add(new ImpressoraInfo
-            {
-                Nome = "Tanca TLP 300",
-                ImagemPath = @"C:\Users\alex.augusto\source\repos\EtiquetaFORNew\EtiquetaFORNew\Tanca TLP 300.jpg",
-                DriverLink = "https://www.tanca.com.br/assets/conteudo/drivers/TLP-300/Driver_Windows_TLP300.zip"
-            });
-            impressoras.Add(new ImpressoraInfo
-            {
-                Nome = "Zebra GC420t",
-                ImagemPath = @"C:\Users\alex.augusto\source\repos\EtiquetaFORNew\EtiquetaFORNew\Impressoras\Zebra GC420t.jpg",
-                DriverLink = "https://drive.google.com/file/d/1gBrLn5GGH0N6EwRVNUeqhE5Y03okiobA/view?usp=sharing"
-            });
-            impressoras.Add(new ImpressoraInfo
-            {
-                Nome = "Zebra TLP 2844",
-                ImagemPath = @"C:\Users\alex.augusto\source\repos\EtiquetaFORNew\EtiquetaFORNew\Zebra TLP 2844.jpg",
-                DriverLink = "https://drive.google.com/file/d/1gBrLn5GGH0N6EwRVNUeqhE5Y03okiobA/view?usp=sharing"
-            });
-            impressoras.Add(new ImpressoraInfo
-            {
-                Nome = "Zebra ZD220 / ZD230",
-                ImagemPath = @"C:\Users\alex.augusto\source\repos\EtiquetaFORNew\EtiquetaFORNew\Impressoras\Zebra ZD220 ZD230.jpg",
-                DriverLink = "https://drive.google.com/file/d/1325ZphEiD3ZHXuONL6grqXsZbMxlXqPL/view?usp=sharing"
-            });
-            impressoras.Add(new ImpressoraInfo
-            {
-                Nome = "Zebra ZD220 / ZD230",
-                ImagemPath = @"C:\Users\alex.augusto\source\repos\EtiquetaFORNew\EtiquetaFORNew\Impressoras\Zebra ZD220 ZD230.jpg",
-                DriverLink = "https://drive.google.com/file/d/1325ZphEiD3ZHXuONL6grqXsZbMxlXqPL/view?usp=sharing"
-            });
-            impressoras.Add(new ImpressoraInfo
-            {
-                Nome = "Coibel WKDY-80D",
-                ImagemPath = @"C:\Users\alex.augusto\source\repos\EtiquetaFORNew\EtiquetaFORNew\Impressoras\Coibel WKDY-80D KNUP IM-604.jpg",
-                DriverLink = "https://drive.google.com/file/d/1FMDWZRKpAG8EMR70Wm33Brz9vMExeFY9/view?usp=sharing"
-            });
-            impressoras.Add(new ImpressoraInfo
-            {
-                Nome = "Knup IM-604",
-                ImagemPath = @"C:\Users\alex.augusto\source\repos\EtiquetaFORNew\EtiquetaFORNew\Impressoras\Coibel WKDY-80D KNUP IM-604.jpg",
-                DriverLink = "https://drive.google.com/file/d/1FMDWZRKpAG8EMR70Wm33Brz9vMExeFY9/view?usp=sharing"
-            });
-            impressoras.Add(new ImpressoraInfo
-            {
-                Nome = "Tomate MDK 2054L",
-                ImagemPath = @"C:\Users\alex.augusto\source\repos\EtiquetaFORNew\EtiquetaFORNew\Impressoras\Tomate MDK 2054L.jpg",
-                DriverLink = "https://drive.google.com/file/d/1IE5PTPdtlMEIQmB4aTC9M2tSvfd1f2Ef/view?usp=sharing"
-            });
-            impressoras.Add(new ImpressoraInfo
-            {
-                Nome = "Tomate MDK 2054N",
-                ImagemPath = @"C:\Users\alex.augusto\source\repos\EtiquetaFORNew\EtiquetaFORNew\Impressoras\Tomate MDK 2054N.jpg",
-                DriverLink = "https://drive.google.com/file/d/1IE5PTPdtlMEIQmB4aTC9M2tSvfd1f2Ef/view?usp=sharing"
-            });
-            impressoras.Add(new ImpressoraInfo
-            {
-                Nome = "Tomate MDK 2074A",
-                ImagemPath = @"C:\Users\alex.augusto\source\repos\EtiquetaFORNew\EtiquetaFORNew\Impressoras\Tomate MDK 2074A.jpg",
-                DriverLink = "https://drive.google.com/file/d/1IE5PTPdtlMEIQmB4aTC9M2tSvfd1f2Ef/view?usp=sharing"
-            });
-            impressoras.Add(new ImpressoraInfo
-            {
-                Nome = "Tomate MDK 005",
-                ImagemPath = @"C:\Users\alex.augusto\source\repos\EtiquetaFORNew\EtiquetaFORNew\Impressoras\Tomate MDK 005.jpg",
-                DriverLink = "https://drive.google.com/file/d/1Qm-zplzJ8QJBxqnmx_0_T-2E0GZQ6u3s/view?usp=sharing"
-            });
-            impressoras.Add(new ImpressoraInfo
-            {
-                Nome = "Tomate MDK 006",
-                ImagemPath = @"C:\Users\alex.augusto\source\repos\EtiquetaFORNew\EtiquetaFORNew\Impressoras\Tomate MDK 006.jpg",
-                DriverLink = "https://drive.google.com/file/d/1aggvdhwuUAYKgcigVzY-zwUubRJ9S7ZP/view?usp=sharing"
-            });
-            impressoras.Add(new ImpressoraInfo
-            {
-                Nome = "Tomate MDK 007",
-                ImagemPath = @"C:\Users\alex.augusto\source\repos\EtiquetaFORNew\EtiquetaFORNew\Impressoras\Tomate MDK 007.jpg",
-                DriverLink = "https://drive.google.com/file/d/1Gj61G5vjCt6N9xktPWNdYTq1noEzWyYg/view?usp=sharing"
-            });
-            impressoras.Add(new ImpressoraInfo
-            {
-                Nome = "Tomate MDK 022",
-                ImagemPath = @"C:\Users\alex.augusto\source\repos\EtiquetaFORNew\EtiquetaFORNew\Impressoras\Tomate MDK 022.jpg",
-                DriverLink = "https://drive.google.com/file/d/1FMDWZRKpAG8EMR70Wm33Brz9vMExeFY9/view?usp=sharing"
-            });
+                // Limpa e adiciona itens no ComboBox
+                comboBox1.Items.Clear();
+                foreach (var imp in impressoras)
+                    comboBox1.Items.Add(imp.Nome);
 
-            // Adicione as demais impressoras da mesma forma...
+                // Registrar o evento antes de definir SelectedIndex
+                comboBox1.SelectedIndexChanged -= comboBox1_SelectedIndexChanged; // garante que não haja duplicidade
+                comboBox1.SelectedIndexChanged += comboBox1_SelectedIndexChanged;
 
-            // Limpa e adiciona itens no ComboBox
-            comboBox1.Items.Clear();
-            foreach (var imp in impressoras)
-                comboBox1.Items.Add(imp.Nome);
-
-            // **Registrar o evento antes de definir SelectedIndex**
-            comboBox1.SelectedIndexChanged -= comboBox1_SelectedIndexChanged; // garante que não haja duplicidade
-            comboBox1.SelectedIndexChanged += comboBox1_SelectedIndexChanged;
-
-            // Define o item selecionado (dispara o evento imediatamente)
-            if (comboBox1.Items.Count > 0)
-                comboBox1.SelectedIndex = 0;
+                // Define o item selecionado (dispara o evento imediatamente)
+                if (comboBox1.Items.Count > 0)
+                    comboBox1.SelectedIndex = 0;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(
+                    $"Erro ao carregar impressoras: {ex.Message}",
+                    "Erro",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Error);
+            }
         }
 
         private void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
@@ -247,14 +139,38 @@ namespace EtiquetaFORNew
 
             if (info != null)
             {
-                // Atualiza a imagem
-                pictureBox1.Image = System.IO.File.Exists(info.ImagemPath)
-                    ? Image.FromFile(info.ImagemPath)
-                    : null;
+                // Atualiza a imagem usando o método da classe ImpressoraInfo
+                try
+                {
+                    // Libera a imagem anterior se existir
+                    if (pictureBox1.Image != null)
+                    {
+                        var imagemAnterior = pictureBox1.Image;
+                        pictureBox1.Image = null;
+                        imagemAnterior.Dispose();
+                    }
+
+                    // Carrega a nova imagem
+                    pictureBox1.Image = info.ObterImagem();
+
+                    // Se não conseguiu carregar a imagem, mostra uma mensagem no PictureBox
+                    if (pictureBox1.Image == null)
+                    {
+                        // Você pode criar uma imagem placeholder aqui se desejar
+                        // ou apenas deixar vazio
+                    }
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(
+                        $"Erro ao carregar imagem da impressora: {ex.Message}",
+                        "Aviso",
+                        MessageBoxButtons.OK,
+                        MessageBoxIcon.Warning);
+                }
 
                 // Atualiza o link do botão
-                button1.Tag = info.DriverLink;
-
+                button1.Tag = info.DriverUrl;
             }
         }
 
@@ -264,18 +180,34 @@ namespace EtiquetaFORNew
             {
                 try
                 {
+                    // Remove possíveis quebras de linha ou espaços extras
+                    url = url.Trim();
                     System.Diagnostics.Process.Start(url);
                 }
                 catch (Exception ex)
                 {
-                    MessageBox.Show("Não foi possível abrir o link:\n" + ex.Message, "Erro", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBox.Show(
+                        $"Não foi possível abrir o link:\n{ex.Message}",
+                        "Erro",
+                        MessageBoxButtons.OK,
+                        MessageBoxIcon.Error);
                 }
+            }
+            else
+            {
+                MessageBox.Show(
+                    "Nenhum link de driver disponível para esta impressora.",
+                    "Aviso",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Information);
             }
         }
 
         private void InicializarListView()
         {
             listViewDispositivos.View = View.Details;
+            listViewDispositivos.FullRowSelect = true;
+            listViewDispositivos.GridLines = true;
             listViewDispositivos.Columns.Add("Nome", 250);
             listViewDispositivos.Columns.Add("Device ID", 300);
             listViewDispositivos.Columns.Add("Status", 100);
@@ -301,47 +233,86 @@ namespace EtiquetaFORNew
                     {
                         var item = new ListViewItem(new[] { nome, deviceId, statusTexto });
                         item.Tag = deviceId;
+
+                        // Destaca em vermelho se houver problema
+                        if (erro != 0)
+                        {
+                            item.ForeColor = Color.Red;
+                        }
+
                         listViewDispositivos.Items.Add(item);
                     }
                 }
 
                 if (listViewDispositivos.Items.Count == 0)
-                    MessageBox.Show("Nenhuma impressora USB detectada.", "Procurar impressoras", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                {
+                    MessageBox.Show(
+                        "Nenhuma impressora USB detectada.",
+                        "Procurar impressoras",
+                        MessageBoxButtons.OK,
+                        MessageBoxIcon.Information);
+                }
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Erro ao buscar impressoras: " + ex.Message, "Erro", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show(
+                    $"Erro ao buscar impressoras: {ex.Message}",
+                    "Erro",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Error);
             }
         }
-
 
         private void btnProcurar_Click(object sender, EventArgs e)
         {
             listViewDispositivos.Items.Clear();
             BuscarDispositivosDeImpressoras();
-            //BuscarDispositivosNaoInstalados();
-
-
         }
 
         private void btnInstalarDriver_Click(object sender, EventArgs e)
         {
             if (listViewDispositivos.SelectedItems.Count == 0)
             {
-                MessageBox.Show("Selecione um dispositivo na lista para instalar o driver.");
+                MessageBox.Show(
+                    "Selecione um dispositivo na lista para instalar o driver.",
+                    "Aviso",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Warning);
                 return;
             }
 
             string nomeDispositivo = listViewDispositivos.SelectedItems[0].SubItems[0].Text;
-            MessageBox.Show("Iniciando instalação do driver para: " + nomeDispositivo);
+            string deviceId = listViewDispositivos.SelectedItems[0].Tag?.ToString() ?? "";
 
-            // Exemplo de execução:
-            // System.Diagnostics.Process.Start(@"C:\Drivers\instalador.exe");
+            // Aqui você pode implementar a lógica de instalação do driver
+            // Por exemplo, procurar na lista de impressoras qual driver baixar
+
+            MessageBox.Show(
+                $"Função de instalação automática de driver em desenvolvimento.\n\n" +
+                $"Dispositivo: {nomeDispositivo}\n" +
+                $"Device ID: {deviceId}\n\n" +
+                $"Por favor, use a aba 'Consultar Modelos' para baixar o driver manualmente.",
+                "Informação",
+                MessageBoxButtons.OK,
+                MessageBoxIcon.Information);
+
+            // Exemplo de como implementar:
+            // 1. Identificar o modelo da impressora pelo nome ou deviceId
+            // 2. Buscar na lista de impressoras o driver correspondente
+            // 3. Fazer download do driver
+            // 4. Executar o instalador silenciosamente
+            // System.Diagnostics.Process.Start(@"C:\Drivers\instalador.exe", "/S");
         }
+
+        /// <summary>
+        /// Método auxiliar para buscar dispositivos não instalados (não utilizado atualmente)
+        /// </summary>
         private void BuscarDispositivosNaoInstalados()
         {
             try
             {
+                listViewDispositivos.Items.Clear();
+
                 // Obtém todos os dispositivos Plug and Play
                 ManagementObjectSearcher searcher = new ManagementObjectSearcher("SELECT * FROM Win32_PnPEntity");
 
@@ -355,20 +326,45 @@ namespace EtiquetaFORNew
                     // Filtra dispositivos USB e com erro (sem driver)
                     if (deviceId != null && deviceId.Contains("USB") && erro != 0)
                     {
-                        var item = new ListViewItem(new[] { nome, deviceId, status ?? "Desconhecido" });
+                        var item = new ListViewItem(new[] { nome ?? "Desconhecido", deviceId, status ?? "Desconhecido" });
+                        item.Tag = deviceId;
+                        item.ForeColor = Color.Red;
                         listViewDispositivos.Items.Add(item);
                     }
                 }
 
                 if (listViewDispositivos.Items.Count == 0)
                 {
-                    MessageBox.Show("Nenhum dispositivo novo ou sem driver foi encontrado.", "Procurar dispositivos");
+                    MessageBox.Show(
+                        "Nenhum dispositivo novo ou sem driver foi encontrado.",
+                        "Procurar dispositivos",
+                        MessageBoxButtons.OK,
+                        MessageBoxIcon.Information);
                 }
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Erro ao buscar dispositivos: " + ex.Message);
+                MessageBox.Show(
+                    $"Erro ao buscar dispositivos: {ex.Message}",
+                    "Erro",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Error);
             }
+        }
+
+        /// <summary>
+        /// Cleanup ao fechar o form
+        /// </summary>
+        protected override void OnFormClosing(FormClosingEventArgs e)
+        {
+            // Libera a imagem do PictureBox
+            if (pictureBox1.Image != null)
+            {
+                pictureBox1.Image.Dispose();
+                pictureBox1.Image = null;
+            }
+
+            base.OnFormClosing(e);
         }
     }
 }
