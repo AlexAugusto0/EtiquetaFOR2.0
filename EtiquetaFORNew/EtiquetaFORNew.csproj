@@ -134,6 +134,7 @@
     <Reference Include="System.IdentityModel.Tokens.Jwt, Version=7.7.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\System.IdentityModel.Tokens.Jwt.7.7.1\lib\net472\System.IdentityModel.Tokens.Jwt.dll</HintPath>
     </Reference>
+    <Reference Include="System.IO.Compression.FileSystem" />
     <Reference Include="System.IO.FileSystem.AccessControl, Version=5.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>..\packages\System.IO.FileSystem.AccessControl.5.0.0\lib\net461\System.IO.FileSystem.AccessControl.dll</HintPath>
     </Reference>
@@ -196,6 +197,7 @@
     </Compile>
     <Compile Include="Data\DatabaseConfig.cs" />
     <Compile Include="Data\NFCeRepository.cs" />
+    <Compile Include="Driverinstaller.cs" />
     <Compile Include="Forms\configuracoes.cs">
       <SubType>Form</SubType>
     </Compile>

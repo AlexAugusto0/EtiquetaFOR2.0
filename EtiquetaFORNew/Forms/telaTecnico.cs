@@ -7,18 +7,20 @@ using System.Linq;
 using System.Management;
 using System.Text;
 using System.Windows.Forms;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement.Button;
 
 namespace EtiquetaFORNew
 {
     public partial class telaTecnico : Form
     {
         private List<ImpressoraInfo> impressoras = new List<ImpressoraInfo>();
+        private DriverInstaller driverInstaller;
 
         public telaTecnico()
         {
             InitializeComponent();
+
+            // Inicializa o instalador de drivers
+            driverInstaller = new DriverInstaller(this);
 
             // Esconder controles inicialmente
             comboBox1.Visible = false;
@@ -113,10 +115,10 @@ namespace EtiquetaFORNew
                     comboBox1.Items.Add(imp.Nome);
 
                 // Registrar o evento antes de definir SelectedIndex
-                comboBox1.SelectedIndexChanged -= comboBox1_SelectedIndexChanged; // garante que não haja duplicidade
+                comboBox1.SelectedIndexChanged -= comboBox1_SelectedIndexChanged;
                 comboBox1.SelectedIndexChanged += comboBox1_SelectedIndexChanged;
 
-                // Define o item selecionado (dispara o evento imediatamente)
+                // Define o item selecionado
                 if (comboBox1.Items.Count > 0)
                     comboBox1.SelectedIndex = 0;
             }
@@ -139,7 +141,6 @@ namespace EtiquetaFORNew
 
             if (info != null)
             {
-                // Atualiza a imagem usando o método da classe ImpressoraInfo
                 try
                 {
                     // Libera a imagem anterior se existir
@@ -153,11 +154,13 @@ namespace EtiquetaFORNew
                     // Carrega a nova imagem
                     pictureBox1.Image = info.ObterImagem();
 
-                    // Se não conseguiu carregar a imagem, mostra uma mensagem no PictureBox
                     if (pictureBox1.Image == null)
                     {
-                        // Você pode criar uma imagem placeholder aqui se desejar
-                        // ou apenas deixar vazio
+                        pictureBox1.SizeMode = PictureBoxSizeMode.CenterImage;
+                    }
+                    else
+                    {
+                        pictureBox1.SizeMode = PictureBoxSizeMode.Zoom;
                     }
                 }
                 catch (Exception ex)
@@ -174,15 +177,21 @@ namespace EtiquetaFORNew
             }
         }
 
+        /// <summary>
+        /// Botão para abrir link do driver no navegador (modo consulta)
+        /// </summary>
         private void button1_Click(object sender, EventArgs e)
         {
             if (button1.Tag is string url && !string.IsNullOrWhiteSpace(url))
             {
                 try
                 {
-                    // Remove possíveis quebras de linha ou espaços extras
                     url = url.Trim();
-                    System.Diagnostics.Process.Start(url);
+                    System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo
+                    {
+                        FileName = url,
+                        UseShellExecute = true
+                    });
                 }
                 catch (Exception ex)
                 {
@@ -228,16 +237,21 @@ namespace EtiquetaFORNew
                     int? erro = obj["ConfigManagerErrorCode"] as int?;
                     string statusTexto = erro == 0 ? "Instalado" : "Sem driver / Problema";
 
-                    // Filtra apenas impressoras USB pelo DeviceID
+                    // Filtra apenas impressoras USB
                     if (deviceId.StartsWith("USBPRINT", StringComparison.OrdinalIgnoreCase))
                     {
                         var item = new ListViewItem(new[] { nome, deviceId, statusTexto });
-                        item.Tag = deviceId;
+                        item.Tag = new { DeviceId = deviceId, Info = obj };
 
                         // Destaca em vermelho se houver problema
                         if (erro != 0)
                         {
                             item.ForeColor = Color.Red;
+                            item.Font = new Font(item.Font, FontStyle.Bold);
+                        }
+                        else
+                        {
+                            item.ForeColor = Color.Green;
                         }
 
                         listViewDispositivos.Items.Add(item);
@@ -247,8 +261,20 @@ namespace EtiquetaFORNew
                 if (listViewDispositivos.Items.Count == 0)
                 {
                     MessageBox.Show(
-                        "Nenhuma impressora USB detectada.",
+                        "Nenhuma impressora USB detectada.\n\n" +
+                        "Verifique se:\n" +
+                        "• A impressora está ligada\n" +
+                        "• O cabo USB está conectado\n" +
+                        "• O Windows detectou o dispositivo",
                         "Procurar impressoras",
+                        MessageBoxButtons.OK,
+                        MessageBoxIcon.Information);
+                }
+                else
+                {
+                    MessageBox.Show(
+                        $"{listViewDispositivos.Items.Count} impressora(s) USB encontrada(s).",
+                        "Busca Concluída",
                         MessageBoxButtons.OK,
                         MessageBoxIcon.Information);
                 }
@@ -269,101 +295,235 @@ namespace EtiquetaFORNew
             BuscarDispositivosDeImpressoras();
         }
 
+        /// <summary>
+        /// Botão de instalar driver - IMPLEMENTAÇÃO COMPLETA
+        /// </summary>
         private void btnInstalarDriver_Click(object sender, EventArgs e)
         {
             if (listViewDispositivos.SelectedItems.Count == 0)
             {
                 MessageBox.Show(
                     "Selecione um dispositivo na lista para instalar o driver.",
-                    "Aviso",
+                    "Nenhum Dispositivo Selecionado",
                     MessageBoxButtons.OK,
                     MessageBoxIcon.Warning);
                 return;
             }
 
             string nomeDispositivo = listViewDispositivos.SelectedItems[0].SubItems[0].Text;
-            string deviceId = listViewDispositivos.SelectedItems[0].Tag?.ToString() ?? "";
 
-            // Aqui você pode implementar a lógica de instalação do driver
-            // Por exemplo, procurar na lista de impressoras qual driver baixar
+            // Tenta identificar a impressora automaticamente pelo nome
+            var impressoraEncontrada = TentarIdentificarImpressora(nomeDispositivo);
 
-            MessageBox.Show(
-                $"Função de instalação automática de driver em desenvolvimento.\n\n" +
-                $"Dispositivo: {nomeDispositivo}\n" +
-                $"Device ID: {deviceId}\n\n" +
-                $"Por favor, use a aba 'Consultar Modelos' para baixar o driver manualmente.",
-                "Informação",
-                MessageBoxButtons.OK,
-                MessageBoxIcon.Information);
+            if (impressoraEncontrada != null)
+            {
+                // Encontrou correspondência automática
+                DialogResult resultado = MessageBox.Show(
+                    $"Dispositivo detectado: {nomeDispositivo}\n\n" +
+                    $"Impressora identificada: {impressoraEncontrada.Nome}\n\n" +
+                    $"Deseja baixar e instalar o driver automaticamente?",
+                    "Driver Identificado",
+                    MessageBoxButtons.YesNo,
+                    MessageBoxIcon.Question);
 
-            // Exemplo de como implementar:
-            // 1. Identificar o modelo da impressora pelo nome ou deviceId
-            // 2. Buscar na lista de impressoras o driver correspondente
-            // 3. Fazer download do driver
-            // 4. Executar o instalador silenciosamente
-            // System.Diagnostics.Process.Start(@"C:\Drivers\instalador.exe", "/S");
+                if (resultado == DialogResult.Yes)
+                {
+                    driverInstaller.BaixarEInstalarDriver(impressoraEncontrada);
+                }
+            }
+            else
+            {
+                // Não identificou automaticamente - mostra lista para seleção manual
+                MostrarSelecaoManualDriver(nomeDispositivo);
+            }
         }
 
         /// <summary>
-        /// Método auxiliar para buscar dispositivos não instalados (não utilizado atualmente)
+        /// Tenta identificar a impressora pelo nome do dispositivo
         /// </summary>
-        private void BuscarDispositivosNaoInstalados()
+        private ImpressoraInfo TentarIdentificarImpressora(string nomeDispositivo)
         {
-            try
+            string nomeNormalizado = nomeDispositivo.ToLower().Replace(" ", "");
+
+            foreach (var impressora in impressoras)
             {
-                listViewDispositivos.Items.Clear();
+                string nomeImpressoraNormalizado = impressora.Nome.ToLower().Replace(" ", "");
 
-                // Obtém todos os dispositivos Plug and Play
-                ManagementObjectSearcher searcher = new ManagementObjectSearcher("SELECT * FROM Win32_PnPEntity");
-
-                foreach (ManagementObject obj in searcher.Get())
+                // Verifica se há correspondência parcial
+                if (nomeNormalizado.Contains(nomeImpressoraNormalizado) ||
+                    nomeImpressoraNormalizado.Contains(nomeNormalizado))
                 {
-                    string nome = obj["Name"]?.ToString();
-                    string deviceId = obj["DeviceID"]?.ToString();
-                    string status = obj["Status"]?.ToString();
-                    int? erro = obj["ConfigManagerErrorCode"] as int?;
+                    return impressora;
+                }
 
-                    // Filtra dispositivos USB e com erro (sem driver)
-                    if (deviceId != null && deviceId.Contains("USB") && erro != 0)
+                // Verifica partes do nome
+                string[] partesDispositivo = nomeDispositivo.ToLower().Split(' ');
+                string[] partesImpressora = impressora.Nome.ToLower().Split(' ');
+
+                int correspondencias = partesDispositivo.Count(pd =>
+                    partesImpressora.Any(pi => pi.Contains(pd) || pd.Contains(pi)));
+
+                if (correspondencias >= 2)
+                {
+                    return impressora;
+                }
+            }
+
+            return null;
+        }
+
+        /// <summary>
+        /// Mostra formulário para seleção manual do driver
+        /// </summary>
+        private void MostrarSelecaoManualDriver(string nomeDispositivo)
+        {
+            using (FormSelecaoDriver formSelecao = new FormSelecaoDriver(impressoras, nomeDispositivo))
+            {
+                if (formSelecao.ShowDialog(this) == DialogResult.OK)
+                {
+                    var impressoraSelecionada = formSelecao.ImpressoraSelecionada;
+                    if (impressoraSelecionada != null)
                     {
-                        var item = new ListViewItem(new[] { nome ?? "Desconhecido", deviceId, status ?? "Desconhecido" });
-                        item.Tag = deviceId;
-                        item.ForeColor = Color.Red;
-                        listViewDispositivos.Items.Add(item);
+                        driverInstaller.BaixarEInstalarDriver(impressoraSelecionada);
                     }
                 }
-
-                if (listViewDispositivos.Items.Count == 0)
-                {
-                    MessageBox.Show(
-                        "Nenhum dispositivo novo ou sem driver foi encontrado.",
-                        "Procurar dispositivos",
-                        MessageBoxButtons.OK,
-                        MessageBoxIcon.Information);
-                }
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(
-                    $"Erro ao buscar dispositivos: {ex.Message}",
-                    "Erro",
-                    MessageBoxButtons.OK,
-                    MessageBoxIcon.Error);
             }
         }
 
-        /// <summary>
-        /// Cleanup ao fechar o form
-        /// </summary>
         protected override void OnFormClosing(FormClosingEventArgs e)
         {
-            // Libera a imagem do PictureBox
+            // Libera recursos
             if (pictureBox1.Image != null)
             {
                 pictureBox1.Image.Dispose();
                 pictureBox1.Image = null;
             }
 
+            base.OnFormClosing(e);
+        }
+    }
+
+    /// <summary>
+    /// Formulário para seleção manual do driver
+    /// </summary>
+    public class FormSelecaoDriver : Form
+    {
+        private ComboBox comboImpressoras;
+        private Button btnOK;
+        private Button btnCancelar;
+        private Label lblInfo;
+        private PictureBox picturePreview;
+
+        public ImpressoraInfo ImpressoraSelecionada { get; private set; }
+
+        public FormSelecaoDriver(List<ImpressoraInfo> impressoras, string nomeDispositivo)
+        {
+            InitializeComponent(nomeDispositivo);
+            CarregarImpressoras(impressoras);
+        }
+
+        private void InitializeComponent(string nomeDispositivo)
+        {
+            this.Text = "Selecionar Driver Manualmente";
+            this.Size = new Size(500, 350);
+            this.FormBorderStyle = FormBorderStyle.FixedDialog;
+            this.StartPosition = FormStartPosition.CenterParent;
+            this.MaximizeBox = false;
+            this.MinimizeBox = false;
+
+            Label lblTitulo = new Label
+            {
+                Text = "Não foi possível identificar automaticamente a impressora.",
+                Location = new Point(20, 20),
+                Size = new Size(450, 20),
+                Font = new Font("Segoe UI", 10, FontStyle.Bold)
+            };
+
+            lblInfo = new Label
+            {
+                Text = $"Dispositivo: {nomeDispositivo}\n\nSelecione o modelo correto da impressora:",
+                Location = new Point(20, 50),
+                Size = new Size(450, 40)
+            };
+
+            comboImpressoras = new ComboBox
+            {
+                Location = new Point(20, 100),
+                Size = new Size(450, 25),
+                DropDownStyle = ComboBoxStyle.DropDownList
+            };
+            comboImpressoras.SelectedIndexChanged += ComboImpressoras_SelectedIndexChanged;
+
+            picturePreview = new PictureBox
+            {
+                Location = new Point(20, 140),
+                Size = new Size(450, 120),
+                BorderStyle = BorderStyle.FixedSingle,
+                SizeMode = PictureBoxSizeMode.Zoom
+            };
+
+            btnOK = new Button
+            {
+                Text = "Baixar e Instalar",
+                Location = new Point(250, 275),
+                Size = new Size(110, 30),
+                DialogResult = DialogResult.OK
+            };
+            btnOK.Click += BtnOK_Click;
+
+            btnCancelar = new Button
+            {
+                Text = "Cancelar",
+                Location = new Point(370, 275),
+                Size = new Size(100, 30),
+                DialogResult = DialogResult.Cancel
+            };
+
+            this.Controls.AddRange(new Control[] {
+                lblTitulo, lblInfo, comboImpressoras, picturePreview, btnOK, btnCancelar
+            });
+
+            this.AcceptButton = btnOK;
+            this.CancelButton = btnCancelar;
+        }
+
+        private void CarregarImpressoras(List<ImpressoraInfo> impressoras)
+        {
+            comboImpressoras.Items.Clear();
+            foreach (var imp in impressoras)
+            {
+                comboImpressoras.Items.Add(imp);
+            }
+            comboImpressoras.DisplayMember = "Nome";
+
+            if (comboImpressoras.Items.Count > 0)
+                comboImpressoras.SelectedIndex = 0;
+        }
+
+        private void ComboImpressoras_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (comboImpressoras.SelectedItem is ImpressoraInfo impressora)
+            {
+                // Atualiza preview da imagem
+                if (picturePreview.Image != null)
+                {
+                    picturePreview.Image.Dispose();
+                }
+                picturePreview.Image = impressora.ObterImagem();
+            }
+        }
+
+        private void BtnOK_Click(object sender, EventArgs e)
+        {
+            ImpressoraSelecionada = comboImpressoras.SelectedItem as ImpressoraInfo;
+        }
+
+        protected override void OnFormClosing(FormClosingEventArgs e)
+        {
+            if (picturePreview.Image != null)
+            {
+                picturePreview.Image.Dispose();
+            }
             base.OnFormClosing(e);
         }
     }
