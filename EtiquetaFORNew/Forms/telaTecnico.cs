@@ -1,11 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Drawing;
 using System.Linq;
 using System.Management;
-using System.Text;
 using System.Windows.Forms;
 
 namespace EtiquetaFORNew
@@ -22,22 +19,50 @@ namespace EtiquetaFORNew
             // Inicializa o instalador de drivers
             driverInstaller = new DriverInstaller(this);
 
-            // Esconder controles inicialmente
-            comboBox1.Visible = false;
-            pictureBox1.Visible = false;
-            panel2.Visible = false;
-            btnInstalarDriver.Visible = false;
-            btnProcurar.Visible = false;
-            listViewDispositivos.Visible = false;
-            button1.Visible = false;
-
-            // Limpar valores
-            comboBox1.SelectedIndex = -1;
-            pictureBox1.Image = null;
-
             CarregarImpressoras();
             this.Text = Main.AppInfo.GetTituloAplicacao();
             InicializarListView();
+
+            // Aplica efeitos hover nos botões
+            AplicarEfeitosHover();
+        }
+
+        private void AplicarEfeitosHover()
+        {
+            // Efeito hover para checkBox1 (Detecção Automática)
+            checkBox1.MouseEnter += (s, e) =>
+            {
+                if (!checkBox1.Checked)
+                    checkBox1.BackColor = Color.FromArgb(189, 224, 254);
+            };
+            checkBox1.MouseLeave += (s, e) =>
+            {
+                if (!checkBox1.Checked)
+                    checkBox1.BackColor = Color.FromArgb(236, 240, 241);
+            };
+
+            // Efeito hover para checkBox2 (Instalação Manual)
+            checkBox2.MouseEnter += (s, e) =>
+            {
+                if (!checkBox2.Checked)
+                    checkBox2.BackColor = Color.FromArgb(162, 238, 195);
+            };
+            checkBox2.MouseLeave += (s, e) =>
+            {
+                if (!checkBox2.Checked)
+                    checkBox2.BackColor = Color.FromArgb(236, 240, 241);
+            };
+
+            // Efeito hover para botões
+            AplicarHoverBotao(btnProcurar, Color.FromArgb(52, 152, 219), Color.FromArgb(41, 128, 185));
+            AplicarHoverBotao(btnInstalarDriver, Color.FromArgb(46, 204, 113), Color.FromArgb(39, 174, 96));
+            AplicarHoverBotao(btnDownloadDriver, Color.FromArgb(46, 204, 113), Color.FromArgb(39, 174, 96));
+        }
+
+        private void AplicarHoverBotao(Button btn, Color corNormal, Color corHover)
+        {
+            btn.MouseEnter += (s, e) => { btn.BackColor = corHover; };
+            btn.MouseLeave += (s, e) => { btn.BackColor = corNormal; };
         }
 
         private void checkBox1_CheckedChanged(object sender, EventArgs e)
@@ -45,23 +70,19 @@ namespace EtiquetaFORNew
             if (checkBox1.Checked)
             {
                 checkBox2.Checked = false;
-                btnProcurar.Visible = true;
-                btnInstalarDriver.Visible = true;
-                panel2.Visible = true;
-                listViewDispositivos.Visible = true;
-                pictureBox1.Visible = false;
-                comboBox1.Visible = false;
-                button1.Visible = false;
+
+                // Mostra modo de detecção automática
+                groupBoxDeteccao.Visible = true;
+                groupBoxManual.Visible = false;
+
+                // Atualiza cor do botão selecionado
+                checkBox1.ForeColor = Color.White;
+                checkBox2.ForeColor = Color.FromArgb(52, 73, 94);
             }
             else
             {
-                comboBox1.Visible = false;
-                pictureBox1.Visible = false;
-                panel2.Visible = false;
-                button1.Visible = false;
-                btnProcurar.Visible = false;
-                btnInstalarDriver.Visible = false;
-                listViewDispositivos.Visible = false;
+                groupBoxDeteccao.Visible = false;
+                checkBox1.ForeColor = Color.FromArgb(52, 73, 94);
             }
         }
 
@@ -70,32 +91,26 @@ namespace EtiquetaFORNew
             if (checkBox2.Checked)
             {
                 checkBox1.Checked = false;
-                comboBox1.Visible = true;
-                pictureBox1.Visible = true;
-                panel2.Visible = true;
-                button1.Visible = true;
-                listViewDispositivos.Visible = false;
-                btnProcurar.Visible = false;
-                btnInstalarDriver.Visible = false;
+
+                // Mostra modo manual
+                groupBoxManual.Visible = true;
+                groupBoxDeteccao.Visible = false;
+
+                // Atualiza cor do botão selecionado
+                checkBox2.ForeColor = Color.White;
+                checkBox1.ForeColor = Color.FromArgb(52, 73, 94);
             }
             else
             {
-                comboBox1.Visible = false;
-                pictureBox1.Visible = false;
-                panel2.Visible = false;
-                button1.Visible = false;
-                listViewDispositivos.Visible = false;
+                groupBoxManual.Visible = false;
+                checkBox2.ForeColor = Color.FromArgb(52, 73, 94);
             }
         }
 
-        /// <summary>
-        /// Carrega as impressoras usando o ImpressoraManager
-        /// </summary>
         private void CarregarImpressoras()
         {
             try
             {
-                // Carrega as impressoras do JSON
                 impressoras = ImpressoraManager.CarregarImpressoras();
 
                 if (impressoras == null || impressoras.Count == 0)
@@ -109,16 +124,13 @@ namespace EtiquetaFORNew
                     return;
                 }
 
-                // Limpa e adiciona itens no ComboBox
                 comboBox1.Items.Clear();
                 foreach (var imp in impressoras)
                     comboBox1.Items.Add(imp.Nome);
 
-                // Registrar o evento antes de definir SelectedIndex
                 comboBox1.SelectedIndexChanged -= comboBox1_SelectedIndexChanged;
                 comboBox1.SelectedIndexChanged += comboBox1_SelectedIndexChanged;
 
-                // Define o item selecionado
                 if (comboBox1.Items.Count > 0)
                     comboBox1.SelectedIndex = 0;
             }
@@ -143,7 +155,6 @@ namespace EtiquetaFORNew
             {
                 try
                 {
-                    // Libera a imagem anterior se existir
                     if (pictureBox1.Image != null)
                     {
                         var imagemAnterior = pictureBox1.Image;
@@ -151,7 +162,6 @@ namespace EtiquetaFORNew
                         imagemAnterior.Dispose();
                     }
 
-                    // Carrega a nova imagem
                     pictureBox1.Image = info.ObterImagem();
 
                     if (pictureBox1.Image == null)
@@ -166,46 +176,26 @@ namespace EtiquetaFORNew
                 catch (Exception ex)
                 {
                     MessageBox.Show(
-                        $"Erro ao carregar imagem da impressora: {ex.Message}",
+                        $"Erro ao carregar imagem: {ex.Message}",
                         "Aviso",
                         MessageBoxButtons.OK,
                         MessageBoxIcon.Warning);
                 }
 
-                // Atualiza o link do botão
-                button1.Tag = info.DriverUrl;
+                btnDownloadDriver.Tag = info;
             }
         }
 
-        /// <summary>
-        /// Botão para abrir link do driver no navegador (modo consulta)
-        /// </summary>
         private void button1_Click(object sender, EventArgs e)
         {
-            if (button1.Tag is string url && !string.IsNullOrWhiteSpace(url))
+            if (btnDownloadDriver.Tag is ImpressoraInfo impressora)
             {
-                try
-                {
-                    url = url.Trim();
-                    System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo
-                    {
-                        FileName = url,
-                        UseShellExecute = true
-                    });
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show(
-                        $"Não foi possível abrir o link:\n{ex.Message}",
-                        "Erro",
-                        MessageBoxButtons.OK,
-                        MessageBoxIcon.Error);
-                }
+                driverInstaller.BaixarEInstalarDriver(impressora);
             }
             else
             {
                 MessageBox.Show(
-                    "Nenhum link de driver disponível para esta impressora.",
+                    "Selecione uma impressora primeiro.",
                     "Aviso",
                     MessageBoxButtons.OK,
                     MessageBoxIcon.Information);
@@ -217,9 +207,9 @@ namespace EtiquetaFORNew
             listViewDispositivos.View = View.Details;
             listViewDispositivos.FullRowSelect = true;
             listViewDispositivos.GridLines = true;
-            listViewDispositivos.Columns.Add("Nome", 250);
-            listViewDispositivos.Columns.Add("Device ID", 300);
-            listViewDispositivos.Columns.Add("Status", 100);
+            listViewDispositivos.Columns.Add("Nome", 300);
+            listViewDispositivos.Columns.Add("Device ID", 350);
+            listViewDispositivos.Columns.Add("Status", 130);
         }
 
         private void BuscarDispositivosDeImpressoras()
@@ -235,23 +225,21 @@ namespace EtiquetaFORNew
                     string nome = obj["Name"]?.ToString() ?? "Desconhecido";
                     string deviceId = obj["DeviceID"]?.ToString() ?? "-";
                     int? erro = obj["ConfigManagerErrorCode"] as int?;
-                    string statusTexto = erro == 0 ? "Instalado" : "Sem driver / Problema";
+                    string statusTexto = erro == 0 ? "✓ Instalado" : "✗ Sem driver";
 
-                    // Filtra apenas impressoras USB
                     if (deviceId.StartsWith("USBPRINT", StringComparison.OrdinalIgnoreCase))
                     {
                         var item = new ListViewItem(new[] { nome, deviceId, statusTexto });
                         item.Tag = new { DeviceId = deviceId, Info = obj };
 
-                        // Destaca em vermelho se houver problema
                         if (erro != 0)
                         {
-                            item.ForeColor = Color.Red;
+                            item.ForeColor = Color.FromArgb(231, 76, 60);
                             item.Font = new Font(item.Font, FontStyle.Bold);
                         }
                         else
                         {
-                            item.ForeColor = Color.Green;
+                            item.ForeColor = Color.FromArgb(39, 174, 96);
                         }
 
                         listViewDispositivos.Items.Add(item);
@@ -266,7 +254,7 @@ namespace EtiquetaFORNew
                         "• A impressora está ligada\n" +
                         "• O cabo USB está conectado\n" +
                         "• O Windows detectou o dispositivo",
-                        "Procurar impressoras",
+                        "Nenhuma Impressora Encontrada",
                         MessageBoxButtons.OK,
                         MessageBoxIcon.Information);
                 }
@@ -295,9 +283,6 @@ namespace EtiquetaFORNew
             BuscarDispositivosDeImpressoras();
         }
 
-        /// <summary>
-        /// Botão de instalar driver - IMPLEMENTAÇÃO COMPLETA
-        /// </summary>
         private void btnInstalarDriver_Click(object sender, EventArgs e)
         {
             if (listViewDispositivos.SelectedItems.Count == 0)
@@ -311,17 +296,14 @@ namespace EtiquetaFORNew
             }
 
             string nomeDispositivo = listViewDispositivos.SelectedItems[0].SubItems[0].Text;
-
-            // Tenta identificar a impressora automaticamente pelo nome
             var impressoraEncontrada = TentarIdentificarImpressora(nomeDispositivo);
 
             if (impressoraEncontrada != null)
             {
-                // Encontrou correspondência automática
                 DialogResult resultado = MessageBox.Show(
-                    $"Dispositivo detectado: {nomeDispositivo}\n\n" +
+                    $"Dispositivo: {nomeDispositivo}\n\n" +
                     $"Impressora identificada: {impressoraEncontrada.Nome}\n\n" +
-                    $"Deseja baixar e instalar o driver automaticamente?",
+                    $"Deseja baixar e instalar o driver?",
                     "Driver Identificado",
                     MessageBoxButtons.YesNo,
                     MessageBoxIcon.Question);
@@ -333,14 +315,10 @@ namespace EtiquetaFORNew
             }
             else
             {
-                // Não identificou automaticamente - mostra lista para seleção manual
                 MostrarSelecaoManualDriver(nomeDispositivo);
             }
         }
 
-        /// <summary>
-        /// Tenta identificar a impressora pelo nome do dispositivo
-        /// </summary>
         private ImpressoraInfo TentarIdentificarImpressora(string nomeDispositivo)
         {
             string nomeNormalizado = nomeDispositivo.ToLower().Replace(" ", "");
@@ -349,14 +327,12 @@ namespace EtiquetaFORNew
             {
                 string nomeImpressoraNormalizado = impressora.Nome.ToLower().Replace(" ", "");
 
-                // Verifica se há correspondência parcial
                 if (nomeNormalizado.Contains(nomeImpressoraNormalizado) ||
                     nomeImpressoraNormalizado.Contains(nomeNormalizado))
                 {
                     return impressora;
                 }
 
-                // Verifica partes do nome
                 string[] partesDispositivo = nomeDispositivo.ToLower().Split(' ');
                 string[] partesImpressora = impressora.Nome.ToLower().Split(' ');
 
@@ -372,9 +348,6 @@ namespace EtiquetaFORNew
             return null;
         }
 
-        /// <summary>
-        /// Mostra formulário para seleção manual do driver
-        /// </summary>
         private void MostrarSelecaoManualDriver(string nomeDispositivo)
         {
             using (FormSelecaoDriver formSelecao = new FormSelecaoDriver(impressoras, nomeDispositivo))
@@ -392,7 +365,6 @@ namespace EtiquetaFORNew
 
         protected override void OnFormClosing(FormClosingEventArgs e)
         {
-            // Libera recursos
             if (pictureBox1.Image != null)
             {
                 pictureBox1.Image.Dispose();
@@ -425,62 +397,104 @@ namespace EtiquetaFORNew
         private void InitializeComponent(string nomeDispositivo)
         {
             this.Text = "Selecionar Driver Manualmente";
-            this.Size = new Size(500, 350);
+            this.Size = new Size(550, 420);
             this.FormBorderStyle = FormBorderStyle.FixedDialog;
             this.StartPosition = FormStartPosition.CenterParent;
             this.MaximizeBox = false;
             this.MinimizeBox = false;
+            this.BackColor = Color.FromArgb(240, 240, 240);
 
+            // Título
             Label lblTitulo = new Label
             {
-                Text = "Não foi possível identificar automaticamente a impressora.",
+                Text = "Seleção Manual de Driver",
                 Location = new Point(20, 20),
-                Size = new Size(450, 20),
-                Font = new Font("Segoe UI", 10, FontStyle.Bold)
+                Size = new Size(500, 25),
+                Font = new Font("Segoe UI", 12, FontStyle.Bold),
+                ForeColor = Color.FromArgb(52, 73, 94)
             };
 
+            // Info do dispositivo
             lblInfo = new Label
             {
-                Text = $"Dispositivo: {nomeDispositivo}\n\nSelecione o modelo correto da impressora:",
-                Location = new Point(20, 50),
-                Size = new Size(450, 40)
+                Text = $"Dispositivo detectado:\n{nomeDispositivo}\n\nSelecione o modelo correto da impressora:",
+                Location = new Point(20, 55),
+                Size = new Size(500, 70),
+                Font = new Font("Segoe UI", 9.5F),
+                ForeColor = Color.FromArgb(52, 73, 94)
             };
 
+            // Label "Modelo:"
+            Label lblModelo = new Label
+            {
+                Text = "Modelo da Impressora:",
+                Location = new Point(20, 125),
+                Size = new Size(200, 20),
+                Font = new Font("Segoe UI", 9.5F, FontStyle.Bold),
+                ForeColor = Color.FromArgb(52, 73, 94)
+            };
+
+            // ComboBox
             comboImpressoras = new ComboBox
             {
-                Location = new Point(20, 100),
-                Size = new Size(450, 25),
-                DropDownStyle = ComboBoxStyle.DropDownList
+                Location = new Point(20, 150),
+                Size = new Size(500, 25),
+                DropDownStyle = ComboBoxStyle.DropDownList,
+                Font = new Font("Segoe UI", 10F)
             };
             comboImpressoras.SelectedIndexChanged += ComboImpressoras_SelectedIndexChanged;
 
+            // Preview da imagem
             picturePreview = new PictureBox
             {
-                Location = new Point(20, 140),
-                Size = new Size(450, 120),
+                Location = new Point(20, 190),
+                Size = new Size(500, 150),
                 BorderStyle = BorderStyle.FixedSingle,
-                SizeMode = PictureBoxSizeMode.Zoom
+                SizeMode = PictureBoxSizeMode.Zoom,
+                BackColor = Color.White
             };
 
+            // Botão OK
             btnOK = new Button
             {
                 Text = "Baixar e Instalar",
-                Location = new Point(250, 275),
-                Size = new Size(110, 30),
-                DialogResult = DialogResult.OK
+                Location = new Point(310, 345),
+                Size = new Size(130, 35),
+                DialogResult = DialogResult.OK,
+                BackColor = Color.FromArgb(46, 204, 113),
+                ForeColor = Color.White,
+                FlatStyle = FlatStyle.Flat,
+                Font = new Font("Segoe UI", 10F, FontStyle.Bold),
+                Cursor = Cursors.Hand
             };
+            btnOK.FlatAppearance.BorderSize = 0;
             btnOK.Click += BtnOK_Click;
 
+            // Hover do botão OK
+            btnOK.MouseEnter += (s, e) => btnOK.BackColor = Color.FromArgb(39, 174, 96);
+            btnOK.MouseLeave += (s, e) => btnOK.BackColor = Color.FromArgb(46, 204, 113);
+
+            // Botão Cancelar
             btnCancelar = new Button
             {
                 Text = "Cancelar",
-                Location = new Point(370, 275),
-                Size = new Size(100, 30),
-                DialogResult = DialogResult.Cancel
+                Location = new Point(450, 345),
+                Size = new Size(80, 35),
+                DialogResult = DialogResult.Cancel,
+                BackColor = Color.FromArgb(149, 165, 166),
+                ForeColor = Color.White,
+                FlatStyle = FlatStyle.Flat,
+                Font = new Font("Segoe UI", 10F, FontStyle.Bold),
+                Cursor = Cursors.Hand
             };
+            btnCancelar.FlatAppearance.BorderSize = 0;
+
+            // Hover do botão Cancelar
+            btnCancelar.MouseEnter += (s, e) => btnCancelar.BackColor = Color.FromArgb(127, 140, 141);
+            btnCancelar.MouseLeave += (s, e) => btnCancelar.BackColor = Color.FromArgb(149, 165, 166);
 
             this.Controls.AddRange(new Control[] {
-                lblTitulo, lblInfo, comboImpressoras, picturePreview, btnOK, btnCancelar
+                lblTitulo, lblInfo, lblModelo, comboImpressoras, picturePreview, btnOK, btnCancelar
             });
 
             this.AcceptButton = btnOK;
