@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SistemaEtiquetas;
+using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Drawing2D;
@@ -191,6 +192,46 @@ namespace EtiquetaFORNew
                     MessageBox.Show($"Template '{nomeTemplate}' carregado com sucesso!",
                         "Sucesso", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 }
+            }
+        }
+
+        private void btnConfigPapel_Click(object sender, EventArgs e)
+        {
+            var configAtual = new ConfiguracaoEtiqueta
+            {
+                NomeEtiqueta = "Etiqueta Atual",
+                ImpressoraPadrao = "BTP-L42(D)",
+                PapelPadrao = "Tamanho do papel-SoftcomGondBar",
+                LarguraEtiqueta = template.Largura,
+                AlturaEtiqueta = template.Altura,
+                NumColunas = 1,
+                NumLinhas = 1,
+                EspacamentoColunas = 0,
+                EspacamentoLinhas = 0,
+                MargemSuperior = 0,
+                MargemInferior = 0,
+                MargemEsquerda = 0,
+                MargemDireita = 0
+            };
+
+            var formConfig = new FormConfigEtiqueta(configAtual);
+            if (formConfig.ShowDialog() == DialogResult.OK)
+            {
+                var config = formConfig.Configuracao;
+
+                template.Largura = config.LarguraEtiqueta;
+                template.Altura = config.AlturaEtiqueta;
+
+               // numLargura.Value = (decimal)config.LarguraEtiqueta;
+               // numAltura.Value = (decimal)config.AlturaEtiqueta;
+
+                //AtualizarTamanhoCanvas();
+
+                MessageBox.Show($"✅ Configuração de etiqueta aplicada com sucesso!\n\n" +
+                    $"📏 Dimensões: {config.LarguraEtiqueta} x {config.AlturaEtiqueta} mm\n" +
+                    $"📐 Layout: {config.NumColunas} coluna(s) x {config.NumLinhas} linha(s)\n" +
+                    $"🖨️ Impressora: {config.ImpressoraPadrao}",
+                    "Configuração Aplicada", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
         }
     }

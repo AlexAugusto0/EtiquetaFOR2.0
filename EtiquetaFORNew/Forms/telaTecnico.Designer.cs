@@ -163,9 +163,9 @@
             this.btnInstalarDriver.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnInstalarDriver.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.btnInstalarDriver.ForeColor = System.Drawing.Color.White;
-            this.btnInstalarDriver.Location = new System.Drawing.Point(210, 320);
+            this.btnInstalarDriver.Location = new System.Drawing.Point(210, 313);
             this.btnInstalarDriver.Name = "btnInstalarDriver";
-            this.btnInstalarDriver.Size = new System.Drawing.Size(180, 40);
+            this.btnInstalarDriver.Size = new System.Drawing.Size(180, 57);
             this.btnInstalarDriver.TabIndex = 2;
             this.btnInstalarDriver.Text = "⚡ Instalar Driver";
             this.btnInstalarDriver.UseVisualStyleBackColor = false;
@@ -180,9 +180,9 @@
             this.btnProcurar.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnProcurar.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.btnProcurar.ForeColor = System.Drawing.Color.White;
-            this.btnProcurar.Location = new System.Drawing.Point(15, 320);
+            this.btnProcurar.Location = new System.Drawing.Point(15, 313);
             this.btnProcurar.Name = "btnProcurar";
-            this.btnProcurar.Size = new System.Drawing.Size(180, 40);
+            this.btnProcurar.Size = new System.Drawing.Size(180, 57);
             this.btnProcurar.TabIndex = 1;
             this.btnProcurar.Text = "🔍 Procurar Impressoras";
             this.btnProcurar.UseVisualStyleBackColor = false;

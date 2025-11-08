@@ -55,9 +55,10 @@
             this.btnDesigner = new System.Windows.Forms.Button();
             this.btnImprimir = new System.Windows.Forms.Button();
             this.panelTop = new System.Windows.Forms.Panel();
+            this.btnConfigPapel = new System.Windows.Forms.Button();
+            this.btnCarregarTemplate = new System.Windows.Forms.Button();
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.panel2 = new System.Windows.Forms.Panel();
-            this.btnCarregarTemplate = new System.Windows.Forms.Button();
             this.groupProduto.SuspendLayout();
             this.panel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numQtd)).BeginInit();
@@ -301,6 +302,7 @@
             // 
             this.panelTop.BackColor = System.Drawing.Color.White;
             this.panelTop.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.panelTop.Controls.Add(this.btnConfigPapel);
             this.panelTop.Controls.Add(this.btnCarregarTemplate);
             this.panelTop.Controls.Add(this.btnImprimir);
             this.panelTop.Controls.Add(this.btnDesigner);
@@ -310,6 +312,36 @@
             this.panelTop.Name = "panelTop";
             this.panelTop.Size = new System.Drawing.Size(860, 85);
             this.panelTop.TabIndex = 0;
+            // 
+            // btnConfigPapel
+            // 
+            this.btnConfigPapel.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(241)))), ((int)(((byte)(196)))), ((int)(((byte)(15)))));
+            this.btnConfigPapel.FlatAppearance.BorderSize = 0;
+            this.btnConfigPapel.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnConfigPapel.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
+            this.btnConfigPapel.ForeColor = System.Drawing.Color.Black;
+            this.btnConfigPapel.Location = new System.Drawing.Point(559, 45);
+            this.btnConfigPapel.Name = "btnConfigPapel";
+            this.btnConfigPapel.Size = new System.Drawing.Size(150, 30);
+            this.btnConfigPapel.TabIndex = 10;
+            this.btnConfigPapel.Text = "Configurar Papel";
+            this.btnConfigPapel.UseVisualStyleBackColor = false;
+            this.btnConfigPapel.Click += new System.EventHandler(this.btnConfigPapel_Click);
+            // 
+            // btnCarregarTemplate
+            // 
+            this.btnCarregarTemplate.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(241)))), ((int)(((byte)(196)))), ((int)(((byte)(15)))));
+            this.btnCarregarTemplate.FlatAppearance.BorderSize = 0;
+            this.btnCarregarTemplate.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnCarregarTemplate.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
+            this.btnCarregarTemplate.ForeColor = System.Drawing.Color.Black;
+            this.btnCarregarTemplate.Location = new System.Drawing.Point(715, 45);
+            this.btnCarregarTemplate.Name = "btnCarregarTemplate";
+            this.btnCarregarTemplate.Size = new System.Drawing.Size(140, 30);
+            this.btnCarregarTemplate.TabIndex = 9;
+            this.btnCarregarTemplate.Text = "📂 Carregar Template";
+            this.btnCarregarTemplate.UseVisualStyleBackColor = false;
+            this.btnCarregarTemplate.Click += new System.EventHandler(this.btnCarregarTemplate_Click);
             // 
             // pictureBox1
             // 
@@ -330,21 +362,6 @@
             this.panel2.Name = "panel2";
             this.panel2.Size = new System.Drawing.Size(859, 128);
             this.panel2.TabIndex = 3;
-            // 
-            // btnCarregarTemplate
-            // 
-            this.btnCarregarTemplate.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(241)))), ((int)(((byte)(196)))), ((int)(((byte)(15)))));
-            this.btnCarregarTemplate.FlatAppearance.BorderSize = 0;
-            this.btnCarregarTemplate.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnCarregarTemplate.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
-            this.btnCarregarTemplate.ForeColor = System.Drawing.Color.Black;
-            this.btnCarregarTemplate.Location = new System.Drawing.Point(715, 45);
-            this.btnCarregarTemplate.Name = "btnCarregarTemplate";
-            this.btnCarregarTemplate.Size = new System.Drawing.Size(140, 30);
-            this.btnCarregarTemplate.TabIndex = 9;
-            this.btnCarregarTemplate.Text = "📂 Carregar Template";
-            this.btnCarregarTemplate.UseVisualStyleBackColor = false;
-            this.btnCarregarTemplate.Click += new System.EventHandler(this.btnCarregarTemplate_Click);
             // 
             // FormPrincipal
             // 
@@ -382,5 +399,6 @@
         private System.Windows.Forms.Panel panel1;
         private System.Windows.Forms.Panel panel2;
         private System.Windows.Forms.Button btnCarregarTemplate;
+        private System.Windows.Forms.Button btnConfigPapel;
     }
 }
