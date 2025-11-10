@@ -189,6 +189,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Classes.cs" />
+    <Compile Include="Data\Funcoes.cs" />
     <Compile Include="Data\SmartPrintRepository.cs" />
     <Compile Include="Forms\ConfigForm.cs">
       <SubType>Form</SubType>
