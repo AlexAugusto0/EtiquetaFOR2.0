@@ -29,6 +29,7 @@ namespace EtiquetaFORNew
             ArredondarBotao(btnImprimir, 12);
             ArredondarBotao(btnAdicionar, 12);
             ArredondarBotao(btnCarregarTemplate, 12);
+            ArredondarBotao(btnConfigPapel, 12);
         }
         private void CarregarUltimoTemplate()
         {

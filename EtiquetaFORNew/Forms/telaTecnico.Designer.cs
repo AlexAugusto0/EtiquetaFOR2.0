@@ -46,6 +46,7 @@
             this.lblModo = new System.Windows.Forms.Label();
             this.panelTitulo = new System.Windows.Forms.Panel();
             this.lblTitulo = new System.Windows.Forms.Label();
+            this.pictureBox2 = new System.Windows.Forms.PictureBox();
             this.panelPrincipal.SuspendLayout();
             this.panelConteudo.SuspendLayout();
             this.groupBoxDeteccao.SuspendLayout();
@@ -53,6 +54,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.panelModo.SuspendLayout();
             this.panelTitulo.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).BeginInit();
             this.SuspendLayout();
             // 
             // checkBox1
@@ -157,12 +159,12 @@
             // btnInstalarDriver
             // 
             this.btnInstalarDriver.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.btnInstalarDriver.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(46)))), ((int)(((byte)(204)))), ((int)(((byte)(113)))));
+            this.btnInstalarDriver.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(143)))), ((int)(((byte)(0)))));
             this.btnInstalarDriver.Cursor = System.Windows.Forms.Cursors.Hand;
             this.btnInstalarDriver.FlatAppearance.BorderSize = 0;
             this.btnInstalarDriver.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnInstalarDriver.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.btnInstalarDriver.ForeColor = System.Drawing.Color.White;
+            this.btnInstalarDriver.ForeColor = System.Drawing.Color.Black;
             this.btnInstalarDriver.Location = new System.Drawing.Point(210, 313);
             this.btnInstalarDriver.Name = "btnInstalarDriver";
             this.btnInstalarDriver.Size = new System.Drawing.Size(180, 57);
@@ -174,12 +176,12 @@
             // btnProcurar
             // 
             this.btnProcurar.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.btnProcurar.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(52)))), ((int)(((byte)(152)))), ((int)(((byte)(219)))));
+            this.btnProcurar.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(241)))), ((int)(((byte)(196)))), ((int)(((byte)(15)))));
             this.btnProcurar.Cursor = System.Windows.Forms.Cursors.Hand;
             this.btnProcurar.FlatAppearance.BorderSize = 0;
             this.btnProcurar.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnProcurar.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.btnProcurar.ForeColor = System.Drawing.Color.White;
+            this.btnProcurar.ForeColor = System.Drawing.Color.Black;
             this.btnProcurar.Location = new System.Drawing.Point(15, 313);
             this.btnProcurar.Name = "btnProcurar";
             this.btnProcurar.Size = new System.Drawing.Size(180, 57);
@@ -279,7 +281,8 @@
             // 
             // panelTitulo
             // 
-            this.panelTitulo.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(41)))), ((int)(((byte)(128)))), ((int)(((byte)(185)))));
+            this.panelTitulo.BackColor = System.Drawing.Color.DarkGray;
+            this.panelTitulo.Controls.Add(this.pictureBox2);
             this.panelTitulo.Controls.Add(this.lblTitulo);
             this.panelTitulo.Dock = System.Windows.Forms.DockStyle.Top;
             this.panelTitulo.Location = new System.Drawing.Point(20, 20);
@@ -291,12 +294,22 @@
             // 
             this.lblTitulo.AutoSize = true;
             this.lblTitulo.Font = new System.Drawing.Font("Segoe UI", 18F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblTitulo.ForeColor = System.Drawing.Color.White;
-            this.lblTitulo.Location = new System.Drawing.Point(20, 15);
+            this.lblTitulo.ForeColor = System.Drawing.Color.Black;
+            this.lblTitulo.Location = new System.Drawing.Point(63, 15);
             this.lblTitulo.Name = "lblTitulo";
             this.lblTitulo.Size = new System.Drawing.Size(254, 32);
             this.lblTitulo.TabIndex = 0;
             this.lblTitulo.Text = "Instalação de Drivers";
+            // 
+            // pictureBox2
+            // 
+            this.pictureBox2.Image = global::EtiquetaFORNew.Properties.Resources.icone_novo_2025_PNG;
+            this.pictureBox2.Location = new System.Drawing.Point(3, 3);
+            this.pictureBox2.Name = "pictureBox2";
+            this.pictureBox2.Size = new System.Drawing.Size(67, 54);
+            this.pictureBox2.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
+            this.pictureBox2.TabIndex = 1;
+            this.pictureBox2.TabStop = false;
             // 
             // telaTecnico
             // 
@@ -320,6 +333,7 @@
             this.panelModo.PerformLayout();
             this.panelTitulo.ResumeLayout(false);
             this.panelTitulo.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -343,5 +357,6 @@
         private System.Windows.Forms.ComboBox comboBox1;
         private System.Windows.Forms.PictureBox pictureBox1;
         private System.Windows.Forms.Button btnDownloadDriver;
+        private System.Windows.Forms.PictureBox pictureBox2;
     }
 }

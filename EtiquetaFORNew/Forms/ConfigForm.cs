@@ -259,13 +259,13 @@ namespace EtiquetaFORNew
             {
                 Cursor = Cursors.WaitCursor;
                 string connStr = ConstruirConnectionString();
-                NFCeRepository repo = new NFCeRepository(connStr);
+                SmartPrintRepository repo = new SmartPrintRepository(connStr);
 
                 if (repo.TestConnection())
                 {
                     MessageBox.Show("Conexão realizada com sucesso!", "Sucesso",
                         MessageBoxButtons.OK, MessageBoxIcon.Information);
-                    repo.VerificarECriarView();
+                    repo.VerificarECriarEstrutura();
                 }
                 else
                 {
