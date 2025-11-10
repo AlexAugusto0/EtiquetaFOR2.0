@@ -44,29 +44,29 @@ namespace EtiquetaFORNew
 
         private void senhaBox_KeyDown(object sender, KeyEventArgs e)
         {
-            if (e.KeyCode == Keys.F11)
-            {
-                e.SuppressKeyPress = true; // evita beep do F11
+            //if (e.KeyCode == Keys.F11)
+            //{
+            //    e.SuppressKeyPress = true; // evita beep do F11
 
-                if (senhaBox.Text == "suporte@softcom")
-                {
-                    telaTecnico tela = new telaTecnico();
-                    tela.ShowDialog();
-                    senhaBox.Clear();
-                }
-                else
-                {
-                    MessageBox.Show(
-                        "Ops! A senha digitada não confere. Verifique e tente novamente, por favor.",
-                        "Senha incorreta",
-                        MessageBoxButtons.OK,
-                        MessageBoxIcon.Warning
-                    );
+            //    if (senhaBox.Text == "suporte@softcom")
+            //    {
+            //        telaTecnico tela = new telaTecnico();
+            //        tela.ShowDialog();
+            //        senhaBox.Clear();
+            //    }
+            //    else
+            //    {
+            //        MessageBox.Show(
+            //            "Ops! A senha digitada não confere. Verifique e tente novamente, por favor.",
+            //            "Senha incorreta",
+            //            MessageBoxButtons.OK,
+            //            MessageBoxIcon.Warning
+            //        );
 
-                    senhaBox.Clear();
-                    senhaBox.Focus();
-                }
-            }
+            //        senhaBox.Clear();
+            //        senhaBox.Focus();
+            //    }
+            //}
         }
 
         private void btnLogar_Click(object sender, EventArgs e)
@@ -207,7 +207,7 @@ namespace EtiquetaFORNew
         {
             public static string GetTituloAplicacao()
             {
-                string nome = "EtiquetaFOR";//Assembly.GetExecutingAssembly().GetName().Name;
+                string nome = "SmartPrint";//Assembly.GetExecutingAssembly().GetName().Name;
                 return $"{nome} - v1.0";
             }
         }
@@ -332,8 +332,11 @@ namespace EtiquetaFORNew
             }
         }
 
-
-
+        private void pictureBox5_Click(object sender, EventArgs e)
+        {
+            telaTecnico tela = new telaTecnico();
+            tela.ShowDialog();
+        }
     }
 
     // Classe para mapear configuração do JSON

@@ -376,7 +376,7 @@
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "FormPrincipal";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-            this.Text = "EtiquetaFor v1.0 - Menu Principal";
+            this.Text = "SmartPrint v1.0 - Menu Principal";
             this.Load += new System.EventHandler(this.FormPrincipal_Load);
             this.groupProduto.ResumeLayout(false);
             this.panel1.ResumeLayout(false);
