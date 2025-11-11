@@ -88,6 +88,7 @@
             this.panelBotoes = new System.Windows.Forms.Panel();
             this.btnCancelar = new System.Windows.Forms.Button();
             this.btnSalvar = new System.Windows.Forms.Button();
+            this.btnCarregarTemplate = new System.Windows.Forms.Button();
             this.panelFerramentas.SuspendLayout();
             this.groupPresets.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numAltura)).BeginInit();
@@ -376,6 +377,7 @@
             // panelPropriedades
             // 
             this.panelPropriedades.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(44)))), ((int)(((byte)(62)))), ((int)(((byte)(80)))));
+            this.panelPropriedades.Controls.Add(this.btnCarregarTemplate);
             this.panelPropriedades.Controls.Add(this.btnSalvarTemplate);
             this.panelPropriedades.Controls.Add(this.btnCor);
             this.panelPropriedades.Controls.Add(this.chkItalico);
@@ -405,6 +407,7 @@
             this.btnSalvarTemplate.TabIndex = 4;
             this.btnSalvarTemplate.Text = "💾 Salvar Template";
             this.btnSalvarTemplate.UseVisualStyleBackColor = false;
+            this.btnSalvarTemplate.Visible = false;
             this.btnSalvarTemplate.Click += new System.EventHandler(this.btnSalvarTemplate_Click);
             // 
             // btnCor
@@ -571,6 +574,21 @@
             this.btnSalvar.Text = "Salvar Configuração";
             this.btnSalvar.UseVisualStyleBackColor = false;
             // 
+            // btnCarregarTemplate
+            // 
+            this.btnCarregarTemplate.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(241)))), ((int)(((byte)(196)))), ((int)(((byte)(15)))));
+            this.btnCarregarTemplate.FlatAppearance.BorderSize = 0;
+            this.btnCarregarTemplate.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnCarregarTemplate.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
+            this.btnCarregarTemplate.ForeColor = System.Drawing.Color.Black;
+            this.btnCarregarTemplate.Location = new System.Drawing.Point(10, 300);
+            this.btnCarregarTemplate.Name = "btnCarregarTemplate";
+            this.btnCarregarTemplate.Size = new System.Drawing.Size(140, 30);
+            this.btnCarregarTemplate.TabIndex = 8;
+            this.btnCarregarTemplate.Text = "💾 Editar Template";
+            this.btnCarregarTemplate.UseVisualStyleBackColor = false;
+            this.btnCarregarTemplate.Click += new System.EventHandler(this.btnCarregarTemplate_Click);
+            // 
             // FormDesigner
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
@@ -603,5 +621,6 @@
         }
 
         private System.Windows.Forms.Button btnSalvarTemplate;
+        private System.Windows.Forms.Button btnCarregarTemplate;
     }
 }

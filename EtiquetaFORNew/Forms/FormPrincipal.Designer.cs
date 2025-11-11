@@ -58,7 +58,7 @@
             this.panelTop = new System.Windows.Forms.Panel();
             this.btnConfigPapel = new System.Windows.Forms.Button();
             this.btnCarregarTemplate = new System.Windows.Forms.Button();
-            this.btnBuscarMercadoria = new System.Windows.Forms.Button();  // ⭐ ADICIONADO
+            this.btnBuscarMercadoria = new System.Windows.Forms.Button();
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.panel2 = new System.Windows.Forms.Panel();
             this.groupProduto.SuspendLayout();
@@ -163,7 +163,7 @@
             // 
             // txtCodigo
             // 
-            this.txtCodigo.Location = new System.Drawing.Point(360, 8);
+            this.txtCodigo.Location = new System.Drawing.Point(64, 7);
             this.txtCodigo.Name = "txtCodigo";
             this.txtCodigo.Size = new System.Drawing.Size(100, 23);
             this.txtCodigo.TabIndex = 3;
@@ -172,7 +172,7 @@
             // 
             this.lblCodigo.AutoSize = true;
             this.lblCodigo.Font = new System.Drawing.Font("Segoe UI", 9F);
-            this.lblCodigo.Location = new System.Drawing.Point(298, 11);
+            this.lblCodigo.Location = new System.Drawing.Point(2, 10);
             this.lblCodigo.Name = "lblCodigo";
             this.lblCodigo.Size = new System.Drawing.Size(49, 15);
             this.lblCodigo.TabIndex = 2;
@@ -180,7 +180,7 @@
             // 
             // txtNome
             // 
-            this.txtNome.Location = new System.Drawing.Point(54, 8);
+            this.txtNome.Location = new System.Drawing.Point(227, 7);
             this.txtNome.Name = "txtNome";
             this.txtNome.Size = new System.Drawing.Size(220, 23);
             this.txtNome.TabIndex = 1;
@@ -189,7 +189,7 @@
             // 
             this.lblNome.AutoSize = true;
             this.lblNome.Font = new System.Drawing.Font("Segoe UI", 9F);
-            this.lblNome.Location = new System.Drawing.Point(3, 11);
+            this.lblNome.Location = new System.Drawing.Point(176, 10);
             this.lblNome.Name = "lblNome";
             this.lblNome.Size = new System.Drawing.Size(43, 15);
             this.lblNome.TabIndex = 0;
@@ -292,29 +292,13 @@
             this.btnImprimir.UseVisualStyleBackColor = false;
             this.btnImprimir.Click += new System.EventHandler(this.btnImprimir_Click);
             // 
-            // btnBuscarMercadoria
-            // ⭐⭐⭐ NOVO BOTÃO ADICIONADO AQUI ⭐⭐⭐
-            // 
-            this.btnBuscarMercadoria.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(52)))), ((int)(((byte)(152)))), ((int)(((byte)(219)))));
-            this.btnBuscarMercadoria.FlatAppearance.BorderSize = 0;
-            this.btnBuscarMercadoria.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnBuscarMercadoria.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
-            this.btnBuscarMercadoria.ForeColor = System.Drawing.Color.Black;
-            this.btnBuscarMercadoria.Location = new System.Drawing.Point(370, 45);
-            this.btnBuscarMercadoria.Name = "btnBuscarMercadoria";
-            this.btnBuscarMercadoria.Size = new System.Drawing.Size(180, 30);
-            this.btnBuscarMercadoria.TabIndex = 3;
-            this.btnBuscarMercadoria.Text = "🔍 Buscar Mercadoria";
-            this.btnBuscarMercadoria.UseVisualStyleBackColor = false;
-            this.btnBuscarMercadoria.Click += new System.EventHandler(this.btnBuscarMercadoria_Click);
-            // 
             // panelTop
             // 
             this.panelTop.BackColor = System.Drawing.Color.White;
             this.panelTop.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.panelTop.Controls.Add(this.btnConfigPapel);
             this.panelTop.Controls.Add(this.btnCarregarTemplate);
-            this.panelTop.Controls.Add(this.btnBuscarMercadoria);  // ⭐ ADICIONADO
+            this.panelTop.Controls.Add(this.btnBuscarMercadoria);
             this.panelTop.Controls.Add(this.btnImprimir);
             this.panelTop.Controls.Add(this.btnDesigner);
             this.panelTop.Controls.Add(this.lblTitulo);
@@ -353,6 +337,21 @@
             this.btnCarregarTemplate.Text = "📂 Carregar Template";
             this.btnCarregarTemplate.UseVisualStyleBackColor = false;
             this.btnCarregarTemplate.Click += new System.EventHandler(this.btnCarregarTemplate_Click);
+            // 
+            // btnBuscarMercadoria
+            // 
+            this.btnBuscarMercadoria.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(52)))), ((int)(((byte)(152)))), ((int)(((byte)(219)))));
+            this.btnBuscarMercadoria.FlatAppearance.BorderSize = 0;
+            this.btnBuscarMercadoria.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnBuscarMercadoria.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
+            this.btnBuscarMercadoria.ForeColor = System.Drawing.Color.Black;
+            this.btnBuscarMercadoria.Location = new System.Drawing.Point(370, 45);
+            this.btnBuscarMercadoria.Name = "btnBuscarMercadoria";
+            this.btnBuscarMercadoria.Size = new System.Drawing.Size(180, 30);
+            this.btnBuscarMercadoria.TabIndex = 3;
+            this.btnBuscarMercadoria.Text = "🔍 Buscar Mercadoria";
+            this.btnBuscarMercadoria.UseVisualStyleBackColor = false;
+            this.btnBuscarMercadoria.Click += new System.EventHandler(this.btnBuscarMercadoria_Click);
             // 
             // pictureBox1
             // 

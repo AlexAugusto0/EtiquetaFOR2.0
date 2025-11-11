@@ -47,5 +47,21 @@ namespace EtiquetaFORNew
         public float Largura { get; set; } = 50; // mm
         public float Altura { get; set; } = 30; // mm
         public List<ElementoEtiqueta> Elementos { get; set; } = new List<ElementoEtiqueta>();
+
+        // 🔹 Caminho do arquivo do template
+        public string CaminhoArquivo { get; set; }
+
+        // 🔹 (Opcional) método para clonar o template sem perder dados
+        public TemplateEtiqueta Clone()
+        {
+            return new TemplateEtiqueta
+            {
+                Largura = this.Largura,
+                Altura = this.Altura,
+                CaminhoArquivo = this.CaminhoArquivo,
+                Elementos = new List<ElementoEtiqueta>(this.Elementos)
+            };
+        }
+
     }
 }

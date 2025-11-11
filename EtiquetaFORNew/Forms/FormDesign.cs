@@ -824,6 +824,84 @@ namespace EtiquetaFORNew
                 }
             }
         }
-        
+        private void btnCarregarTemplate_Click(object sender, EventArgs e)
+        {
+            var formLista = new FormListaTemplates();
+
+            if (formLista.ShowDialog() == DialogResult.OK)
+            {
+                string nomeTemplate = formLista.TemplateSelecionado;
+
+                var templateCarregado = TemplateManager.CarregarTemplate(nomeTemplate);
+                if (templateCarregado != null)
+                {
+                    CarregarTemplate(templateCarregado);
+
+                    MessageBox.Show($"Template '{nomeTemplate}' carregado com sucesso!",
+                        "Sucesso", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                }
+                else
+                {
+                    MessageBox.Show("Falha ao carregar o template selecionado.",
+                        "Erro", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+            }
+
+        }
+        public void CarregarTemplate(TemplateEtiqueta novoTemplate)
+        {
+            // Atualiza o template atual
+            this.template = new TemplateEtiqueta
+            {
+                Largura = novoTemplate.Largura,
+                Altura = novoTemplate.Altura,
+                Elementos = new List<ElementoEtiqueta>(novoTemplate.Elementos.Select(e => ClonarElemento(e)))
+            };
+
+            // Recarrega os controles visuais
+            CarregarConfiguracoes();
+            AtualizarListaElementos();
+
+            // Limpa seleção atual
+            elementoSelecionado = null;
+            lstElementos.ClearSelected();
+
+            // Re-renderiza o canvas
+            panelCanvas.Invalidate();
+        }
+        private void btnSalvar_Click(object sender, EventArgs e)
+{
+    try
+    {
+        // Atualiza as dimensões no objeto template
+        template.Largura = (float)numLargura.Value;
+        template.Altura = (float)numAltura.Value;
+
+        // Aqui você pode escolher onde salvar.
+        // Se quiser salvar no mesmo arquivo do template original:
+        string caminho = template.CaminhoArquivo; // precisa existir dentro de TemplateEtiqueta
+
+        // Se TemplateEtiqueta não tiver esse campo, podemos salvar sempre como “último template”
+        if (string.IsNullOrEmpty(caminho))
+        {
+            TemplateManager.SalvarUltimoTemplate(template);
+            MessageBox.Show("Template salvo com sucesso (como último template usado).", 
+                            "Sucesso", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            return;
+        }
+
+        // Caso contrário, salve no mesmo arquivo
+        TemplateManager.SalvarTemplate(template, caminho);
+
+        MessageBox.Show("Template salvo com sucesso!", 
+                        "Sucesso", MessageBoxButtons.OK, MessageBoxIcon.Information);
+    }
+    catch (Exception ex)
+    {
+        MessageBox.Show($"Erro ao salvar o template: {ex.Message}", 
+                        "Erro", MessageBoxButtons.OK, MessageBoxIcon.Error);
+    }
+}
+
     }
 }
