@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Windows.Forms;
+using EtiquetaFORNew.Data;
 
 namespace EtiquetaFORNew
 {
@@ -18,19 +19,87 @@ namespace EtiquetaFORNew
             template = new TemplateEtiqueta();
             CarregarUltimoTemplate();
             this.DoubleBuffered = true;
-            this.Load += FormPrincipal_Load; // 🔹 adiciona o evento Load
+            this.Load += FormPrincipal_Load;
         }
+
         private void FormPrincipal_Load(object sender, EventArgs e)
         {
-            // Aplica arredondamento nos botões desejados
-            //ArredondarBotao(btnSalvarTemplate, 12);
-            //ArredondarBotao(btnCarregarTemplate, 12);
+            // ========================================
+            // 🔹 INICIALIZAR BANCO LOCAL SQLITE
+            // ========================================
+            try
+            {
+                LocalDatabaseManager.InicializarBanco();
+
+                // Verificar se precisa sincronizar (mais de 24h desde última sync)
+                if (LocalDatabaseManager.PrecisaSincronizar())
+                {
+                    var result = MessageBox.Show(
+                        "Detectamos que faz mais de 24 horas desde a última sincronização.\n\n" +
+                        "Deseja sincronizar as mercadorias do SQL Server agora?",
+                        "Sincronização Recomendada",
+                        MessageBoxButtons.YesNo,
+                        MessageBoxIcon.Question);
+
+                    if (result == DialogResult.Yes)
+                    {
+                        SincronizarMercadorias();
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(
+                    $"Erro ao inicializar banco local:\n{ex.Message}\n\n" +
+                    "O sistema continuará funcionando, mas você precisará adicionar produtos manualmente.",
+                    "Aviso",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Warning);
+            }
+
+            // ========================================
+            // 🔹 ARREDONDAR BOTÕES
+            // ========================================
             ArredondarBotao(btnDesigner, 12);
             ArredondarBotao(btnImprimir, 12);
+            ArredondarBotao(btnBuscarMercadoria, 12);  // ⭐ NOVO
             ArredondarBotao(btnAdicionar, 12);
             ArredondarBotao(btnCarregarTemplate, 12);
             ArredondarBotao(btnConfigPapel, 12);
         }
+
+        // ========================================
+        // 🔹 SINCRONIZAR MERCADORIAS DO SQL SERVER
+        // ========================================
+        private void SincronizarMercadorias()
+        {
+            try
+            {
+                Cursor = Cursors.WaitCursor;
+
+                // Sincronizar todas as mercadorias (pode adicionar filtro se necessário)
+                int total = LocalDatabaseManager.SincronizarMercadorias();
+
+                Cursor = Cursors.Default;
+
+                MessageBox.Show(
+                    $"Sincronização concluída com sucesso!\n\n" +
+                    $"Total de mercadorias importadas: {total:N0}",
+                    "Sucesso",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Information);
+            }
+            catch (Exception ex)
+            {
+                Cursor = Cursors.Default;
+                MessageBox.Show(
+                    $"Erro ao sincronizar:\n{ex.Message}",
+                    "Erro",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Error);
+            }
+        }
+
         private void CarregarUltimoTemplate()
         {
             var ultimoTemplate = TemplateManager.CarregarUltimoTemplate();
@@ -40,9 +109,36 @@ namespace EtiquetaFORNew
             }
         }
 
-        
+        // ========================================
+        // ⭐ NOVO MÉTODO: BUSCAR MERCADORIA
+        // ========================================
+        private void btnBuscarMercadoria_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                var formBusca = new FormBuscaMercadoria();
 
-        
+                if (formBusca.ShowDialog() == DialogResult.OK)
+                {
+                    // Preencher os campos com a mercadoria selecionada
+                    txtNome.Text = formBusca.NomeSelecionado;
+                    txtCodigo.Text = formBusca.CodigoFabricanteSelecionado;
+                    txtPreco.Text = formBusca.PrecoSelecionado.ToString("F2");
+
+                    // Focar na quantidade para o usuário só digitar e adicionar
+                    numQtd.Focus();
+                    numQtd.Select(0, numQtd.Text.Length);
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(
+                    $"Erro ao buscar mercadoria:\n{ex.Message}",
+                    "Erro",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Error);
+            }
+        }
 
         private void btnDesigner_Click(object sender, EventArgs e)
         {
@@ -135,35 +231,30 @@ namespace EtiquetaFORNew
 
             return selecionados;
         }
+
         protected override void OnPaintBackground(PaintEventArgs e)
         {
             base.OnPaintBackground(e);
 
             using (LinearGradientBrush brush = new LinearGradientBrush(
                 this.ClientRectangle,
-                Color.White,   // cor inicial (topo)
-                Color.White,   // temporário (será substituído abaixo)
+                Color.White,
+                Color.White,
                 LinearGradientMode.Vertical))
             {
-                // Cria um gradiente personalizado
                 ColorBlend blend = new ColorBlend();
-
-                // Posições variam de 0.0 (topo) a 1.0 (base)
                 blend.Positions = new float[] { 0.0f, 0.85f, 1.0f };
-                //               ↑ topo   ↑ onde começa o amarelo   ↑ base
-
-                // Cores correspondentes às posições
                 blend.Colors = new Color[] {
-            Color.FromArgb(240, 235, 255),       // branco topo
-            Color.FromArgb(240, 235, 255),  // transição suave
-            Color.FromArgb(255, 255, 200, 50)    // amarelo/alaranjado base
-        };
+                    Color.FromArgb(240, 235, 255),
+                    Color.FromArgb(240, 235, 255),
+                    Color.FromArgb(255, 255, 200, 50)
+                };
 
                 brush.InterpolationColors = blend;
-
                 e.Graphics.FillRectangle(brush, this.ClientRectangle);
             }
         }
+
         public static void ArredondarBotao(Button botao, int raio)
         {
             GraphicsPath path = new GraphicsPath();
@@ -179,6 +270,7 @@ namespace EtiquetaFORNew
 
             botao.Region = new Region(path);
         }
+
         private void btnCarregarTemplate_Click(object sender, EventArgs e)
         {
             var formLista = new FormListaTemplates();
@@ -222,11 +314,6 @@ namespace EtiquetaFORNew
 
                 template.Largura = config.LarguraEtiqueta;
                 template.Altura = config.AlturaEtiqueta;
-
-               // numLargura.Value = (decimal)config.LarguraEtiqueta;
-               // numAltura.Value = (decimal)config.AlturaEtiqueta;
-
-                //AtualizarTamanhoCanvas();
 
                 MessageBox.Show($"✅ Configuração de etiqueta aplicada com sucesso!\n\n" +
                     $"📏 Dimensões: {config.LarguraEtiqueta} x {config.AlturaEtiqueta} mm\n" +

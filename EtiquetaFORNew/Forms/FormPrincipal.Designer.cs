@@ -20,6 +20,7 @@
         private System.Windows.Forms.DataGridViewTextBoxColumn colPreco;
         private System.Windows.Forms.DataGridViewTextBoxColumn colQuantidade;
         private System.Windows.Forms.DataGridViewButtonColumn colRemover;
+        private System.Windows.Forms.Button btnBuscarMercadoria;  // ⭐ ADICIONADO
 
         protected override void Dispose(bool disposing)
         {
@@ -57,6 +58,7 @@
             this.panelTop = new System.Windows.Forms.Panel();
             this.btnConfigPapel = new System.Windows.Forms.Button();
             this.btnCarregarTemplate = new System.Windows.Forms.Button();
+            this.btnBuscarMercadoria = new System.Windows.Forms.Button();  // ⭐ ADICIONADO
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.panel2 = new System.Windows.Forms.Panel();
             this.groupProduto.SuspendLayout();
@@ -144,17 +146,16 @@
             // 
             // txtPreco
             // 
-            this.txtPreco.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(240)))), ((int)(((byte)(235)))), ((int)(((byte)(255)))));
-            this.txtPreco.Location = new System.Drawing.Point(517, 8);
+            this.txtPreco.Location = new System.Drawing.Point(532, 8);
             this.txtPreco.Name = "txtPreco";
-            this.txtPreco.Size = new System.Drawing.Size(100, 23);
+            this.txtPreco.Size = new System.Drawing.Size(80, 23);
             this.txtPreco.TabIndex = 5;
             // 
             // lblPreco
             // 
             this.lblPreco.AutoSize = true;
             this.lblPreco.Font = new System.Drawing.Font("Segoe UI", 9F);
-            this.lblPreco.Location = new System.Drawing.Point(467, 11);
+            this.lblPreco.Location = new System.Drawing.Point(481, 11);
             this.lblPreco.Name = "lblPreco";
             this.lblPreco.Size = new System.Drawing.Size(40, 15);
             this.lblPreco.TabIndex = 4;
@@ -162,17 +163,16 @@
             // 
             // txtCodigo
             // 
-            this.txtCodigo.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(240)))), ((int)(((byte)(235)))), ((int)(((byte)(255)))));
-            this.txtCodigo.Location = new System.Drawing.Point(337, 8);
+            this.txtCodigo.Location = new System.Drawing.Point(360, 8);
             this.txtCodigo.Name = "txtCodigo";
-            this.txtCodigo.Size = new System.Drawing.Size(120, 23);
+            this.txtCodigo.Size = new System.Drawing.Size(100, 23);
             this.txtCodigo.TabIndex = 3;
             // 
             // lblCodigo
             // 
             this.lblCodigo.AutoSize = true;
             this.lblCodigo.Font = new System.Drawing.Font("Segoe UI", 9F);
-            this.lblCodigo.Location = new System.Drawing.Point(277, 11);
+            this.lblCodigo.Location = new System.Drawing.Point(298, 11);
             this.lblCodigo.Name = "lblCodigo";
             this.lblCodigo.Size = new System.Drawing.Size(49, 15);
             this.lblCodigo.TabIndex = 2;
@@ -180,17 +180,16 @@
             // 
             // txtNome
             // 
-            this.txtNome.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(240)))), ((int)(((byte)(235)))), ((int)(((byte)(255)))));
-            this.txtNome.Location = new System.Drawing.Point(67, 8);
+            this.txtNome.Location = new System.Drawing.Point(54, 8);
             this.txtNome.Name = "txtNome";
-            this.txtNome.Size = new System.Drawing.Size(200, 23);
+            this.txtNome.Size = new System.Drawing.Size(220, 23);
             this.txtNome.TabIndex = 1;
             // 
             // lblNome
             // 
             this.lblNome.AutoSize = true;
             this.lblNome.Font = new System.Drawing.Font("Segoe UI", 9F);
-            this.lblNome.Location = new System.Drawing.Point(7, 11);
+            this.lblNome.Location = new System.Drawing.Point(3, 11);
             this.lblNome.Name = "lblNome";
             this.lblNome.Size = new System.Drawing.Size(43, 15);
             this.lblNome.TabIndex = 0;
@@ -208,10 +207,9 @@
             this.colPreco,
             this.colQuantidade,
             this.colRemover});
-            this.dgvProdutos.Location = new System.Drawing.Point(11, 237);
+            this.dgvProdutos.Location = new System.Drawing.Point(12, 237);
             this.dgvProdutos.Name = "dgvProdutos";
-            this.dgvProdutos.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this.dgvProdutos.Size = new System.Drawing.Size(860, 340);
+            this.dgvProdutos.Size = new System.Drawing.Size(859, 340);
             this.dgvProdutos.TabIndex = 2;
             this.dgvProdutos.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgvProdutos_CellContentClick);
             // 
@@ -223,36 +221,32 @@
             // 
             // colNome
             // 
-            this.colNome.HeaderText = "Nome do Produto";
+            this.colNome.HeaderText = "Nome";
             this.colNome.Name = "colNome";
-            this.colNome.ReadOnly = true;
             this.colNome.Width = 300;
             // 
             // colCodigo
             // 
             this.colCodigo.HeaderText = "Código";
             this.colCodigo.Name = "colCodigo";
-            this.colCodigo.ReadOnly = true;
             this.colCodigo.Width = 120;
             // 
             // colPreco
             // 
             this.colPreco.HeaderText = "Preço";
             this.colPreco.Name = "colPreco";
-            this.colPreco.ReadOnly = true;
             // 
             // colQuantidade
             // 
             this.colQuantidade.HeaderText = "Qtd";
             this.colQuantidade.Name = "colQuantidade";
-            this.colQuantidade.ReadOnly = true;
-            this.colQuantidade.Width = 60;
+            this.colQuantidade.Width = 50;
             // 
             // colRemover
             // 
-            this.colRemover.HeaderText = "Ação";
+            this.colRemover.HeaderText = "Remover";
             this.colRemover.Name = "colRemover";
-            this.colRemover.Text = "Remover";
+            this.colRemover.Text = "X";
             this.colRemover.UseColumnTextForButtonValue = true;
             this.colRemover.Width = 80;
             // 
@@ -298,12 +292,29 @@
             this.btnImprimir.UseVisualStyleBackColor = false;
             this.btnImprimir.Click += new System.EventHandler(this.btnImprimir_Click);
             // 
+            // btnBuscarMercadoria
+            // ⭐⭐⭐ NOVO BOTÃO ADICIONADO AQUI ⭐⭐⭐
+            // 
+            this.btnBuscarMercadoria.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(52)))), ((int)(((byte)(152)))), ((int)(((byte)(219)))));
+            this.btnBuscarMercadoria.FlatAppearance.BorderSize = 0;
+            this.btnBuscarMercadoria.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnBuscarMercadoria.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
+            this.btnBuscarMercadoria.ForeColor = System.Drawing.Color.Black;
+            this.btnBuscarMercadoria.Location = new System.Drawing.Point(370, 45);
+            this.btnBuscarMercadoria.Name = "btnBuscarMercadoria";
+            this.btnBuscarMercadoria.Size = new System.Drawing.Size(180, 30);
+            this.btnBuscarMercadoria.TabIndex = 3;
+            this.btnBuscarMercadoria.Text = "🔍 Buscar Mercadoria";
+            this.btnBuscarMercadoria.UseVisualStyleBackColor = false;
+            this.btnBuscarMercadoria.Click += new System.EventHandler(this.btnBuscarMercadoria_Click);
+            // 
             // panelTop
             // 
             this.panelTop.BackColor = System.Drawing.Color.White;
             this.panelTop.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.panelTop.Controls.Add(this.btnConfigPapel);
             this.panelTop.Controls.Add(this.btnCarregarTemplate);
+            this.panelTop.Controls.Add(this.btnBuscarMercadoria);  // ⭐ ADICIONADO
             this.panelTop.Controls.Add(this.btnImprimir);
             this.panelTop.Controls.Add(this.btnDesigner);
             this.panelTop.Controls.Add(this.lblTitulo);
@@ -400,5 +411,6 @@
         private System.Windows.Forms.Panel panel2;
         private System.Windows.Forms.Button btnCarregarTemplate;
         private System.Windows.Forms.Button btnConfigPapel;
+        //private System.Windows.Forms.Button btnBuscarMercadoria;  // ⭐ ADICIONADO
     }
 }
