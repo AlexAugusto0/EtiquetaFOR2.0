@@ -278,6 +278,7 @@
     <Compile Include="Forms\Main.Designer.cs">
       <DependentUpon>Main.cs</DependentUpon>
     </Compile>
+    <Compile Include="GerenciadorConfiguracoesEtiqueta.cs" />
     <Compile Include="Impressoramanager.cs" />
     <Compile Include="Localdatabasemanager .cs" />
     <Compile Include="Program.cs" />

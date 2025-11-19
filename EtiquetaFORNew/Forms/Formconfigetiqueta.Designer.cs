@@ -1,4 +1,4 @@
-﻿namespace SistemaEtiquetas
+﻿namespace EtiquetaFORNew
 {
     partial class FormConfigEtiqueta
     {

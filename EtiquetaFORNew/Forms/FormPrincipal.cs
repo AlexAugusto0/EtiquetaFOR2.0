@@ -1,4 +1,4 @@
-﻿using SistemaEtiquetas;
+﻿using EtiquetaFORNew;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -12,6 +12,9 @@ namespace EtiquetaFORNew
     {
         private List<Produto> produtos = new List<Produto>();
         private TemplateEtiqueta template;
+
+        // ⭐ NOVO: Configuração de etiqueta atual
+        private ConfiguracaoEtiqueta configuracaoAtual;
 
         public FormPrincipal()
         {
@@ -58,14 +61,132 @@ namespace EtiquetaFORNew
             }
 
             // ========================================
+            // 🔹 CARREGAR CONFIGURAÇÃO DE IMPRESSÃO
+            // ========================================
+            CarregarConfiguracaoImpressao();
+            AtualizarListaConfiguracoes();
+
+            // ========================================
             // 🔹 ARREDONDAR BOTÕES
             // ========================================
             ArredondarBotao(btnDesigner, 12);
             ArredondarBotao(btnImprimir, 12);
-            ArredondarBotao(btnBuscarMercadoria, 12);  // ⭐ NOVO
+            ArredondarBotao(btnBuscarMercadoria, 12);
             ArredondarBotao(btnAdicionar, 12);
             ArredondarBotao(btnCarregarTemplate, 12);
             ArredondarBotao(btnConfigPapel, 12);
+        }
+
+        // ========================================
+        // ⭐ NOVO: GERENCIAMENTO DE CONFIGURAÇÕES
+        // ========================================
+
+        /// <summary>
+        /// Carrega a configuração de impressão ao iniciar
+        /// </summary>
+        private void CarregarConfiguracaoImpressao()
+        {
+            configuracaoAtual = GerenciadorConfiguracoesEtiqueta.CarregarConfiguracaoPadrao();
+
+            if (configuracaoAtual == null)
+            {
+                // Se não houver configuração, cria uma padrão baseada no template
+                configuracaoAtual = new ConfiguracaoEtiqueta
+                {
+                    NomeEtiqueta = "Etiqueta Padrão",
+                    ImpressoraPadrao = "BTP-L42(D)",
+                    PapelPadrao = "Tamanho do papel-SoftcomGondBar",
+                    LarguraEtiqueta = template.Largura,
+                    AlturaEtiqueta = template.Altura,
+                    NumColunas = 1,
+                    NumLinhas = 1,
+                    EspacamentoColunas = 0,
+                    EspacamentoLinhas = 0,
+                    MargemSuperior = 0,
+                    MargemInferior = 0,
+                    MargemEsquerda = 0,
+                    MargemDireita = 0
+                };
+            }
+
+            AtualizarStatusConfiguracao();
+        }
+
+        /// <summary>
+        /// Atualiza a lista de configurações no ComboBox
+        /// </summary>
+        private void AtualizarListaConfiguracoes()
+        {
+            cmbConfiguracao.Items.Clear();
+
+            // Adiciona configuração atual
+            cmbConfiguracao.Items.Add(new ConfiguracaoItem
+            {
+                Nome = "⭐ Configuração Atual",
+                Configuracao = configuracaoAtual,
+                IsPadrao = true
+            });
+
+            // Adiciona configurações salvas
+            List<ConfiguracaoPapel> papeisSalvos = GerenciadorConfiguracoesEtiqueta.CarregarTodasConfiguracoes();
+
+            foreach (var papel in papeisSalvos)
+            {
+                var config = GerenciadorConfiguracoesEtiqueta.ConverterPapelParaConfig(
+                    papel,
+                    configuracaoAtual.ImpressoraPadrao
+                );
+
+                cmbConfiguracao.Items.Add(new ConfiguracaoItem
+                {
+                    Nome = $"📄 {papel.NomePapel}",
+                    Configuracao = config,
+                    IsPadrao = false
+                });
+            }
+
+            // Seleciona a configuração atual
+            if (cmbConfiguracao.Items.Count > 0)
+            {
+                cmbConfiguracao.SelectedIndex = 0;
+            }
+
+            // Atualiza o status
+            AtualizarStatusConfiguracao();
+        }
+
+        /// <summary>
+        /// Atualiza o label de status da configuração
+        /// </summary>
+        private void AtualizarStatusConfiguracao()
+        {
+            if (configuracaoAtual != null)
+            {
+                lblStatusConfig.Text = $"📋 {configuracaoAtual.NomeEtiqueta} | " +
+                                      $"📏 {configuracaoAtual.LarguraEtiqueta}x{configuracaoAtual.AlturaEtiqueta}mm | " +
+                                      $"🖨️ {configuracaoAtual.ImpressoraPadrao}";
+            }
+            else
+            {
+                lblStatusConfig.Text = "⚠️ Nenhuma configuração carregada";
+            }
+        }
+
+        /// <summary>
+        /// Evento ao mudar a seleção do ComboBox
+        /// </summary>
+        private void cmbConfiguracao_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (cmbConfiguracao.SelectedItem is ConfiguracaoItem item)
+            {
+                configuracaoAtual = item.Configuracao;
+
+                // Atualiza o template com as dimensões da configuração
+                template.Largura = item.Configuracao.LarguraEtiqueta;
+                template.Altura = item.Configuracao.AlturaEtiqueta;
+
+                AtualizarStatusConfiguracao();
+            }
         }
 
         // ========================================
@@ -110,7 +231,7 @@ namespace EtiquetaFORNew
         }
 
         // ========================================
-        // ⭐ NOVO MÉTODO: BUSCAR MERCADORIA
+        // ⭐ BUSCAR MERCADORIA
         // ========================================
         private void btnBuscarMercadoria_Click(object sender, EventArgs e)
         {
@@ -150,6 +271,9 @@ namespace EtiquetaFORNew
             }
         }
 
+        // ========================================
+        // ⭐ MODIFICADO: IMPRIMIR COM CONFIGURAÇÃO
+        // ========================================
         private void btnImprimir_Click(object sender, EventArgs e)
         {
             var produtosSelecionados = ObterProdutosSelecionados();
@@ -165,7 +289,30 @@ namespace EtiquetaFORNew
                 return;
             }
 
-            var formImpressao = new FormImpressao(produtosSelecionados, template);
+            // ⭐ VERIFICA SE HÁ CONFIGURAÇÃO
+            if (configuracaoAtual == null)
+            {
+                var resultado = MessageBox.Show(
+                    "Nenhuma configuração de impressão foi definida.\n\n" +
+                    "Deseja configurar agora?",
+                    "Configuração Necessária",
+                    MessageBoxButtons.YesNo,
+                    MessageBoxIcon.Question);
+
+                if (resultado == DialogResult.Yes)
+                {
+                    btnConfigPapel_Click(sender, e);
+                    return;
+                }
+                else
+                {
+                    return;
+                }
+                
+            }
+
+            //// ⭐ PASSA A CONFIGURAÇÃO PARA O FORM DE IMPRESSÃO
+            var formImpressao = new FormImpressao(produtosSelecionados, template, configuracaoAtual);
             formImpressao.ShowDialog();
         }
 
@@ -288,9 +435,13 @@ namespace EtiquetaFORNew
             }
         }
 
+        // ========================================
+        // ⭐ MODIFICADO: CONFIGURAR PAPEL
+        // ========================================
         private void btnConfigPapel_Click(object sender, EventArgs e)
         {
-            var configAtual = new ConfiguracaoEtiqueta
+            // Usa a configuração atual ou cria uma nova baseada no template
+            var configParaEditar = configuracaoAtual ?? new ConfiguracaoEtiqueta
             {
                 NomeEtiqueta = "Etiqueta Atual",
                 ImpressoraPadrao = "BTP-L42(D)",
@@ -307,19 +458,41 @@ namespace EtiquetaFORNew
                 MargemDireita = 0
             };
 
-            var formConfig = new FormConfigEtiqueta(configAtual);
+            var formConfig = new FormConfigEtiqueta(configParaEditar);
             if (formConfig.ShowDialog() == DialogResult.OK)
             {
-                var config = formConfig.Configuracao;
+                configuracaoAtual = formConfig.Configuracao;
 
-                template.Largura = config.LarguraEtiqueta;
-                template.Altura = config.AlturaEtiqueta;
+                // Atualiza o template com as novas dimensões
+                template.Largura = configuracaoAtual.LarguraEtiqueta;
+                template.Altura = configuracaoAtual.AlturaEtiqueta;
+
+                // Salva como configuração padrão
+                GerenciadorConfiguracoesEtiqueta.SalvarConfiguracaoPadrao(configuracaoAtual);
+
+                // Atualiza a lista de configurações
+                AtualizarListaConfiguracoes();
 
                 MessageBox.Show($"✅ Configuração de etiqueta aplicada com sucesso!\n\n" +
-                    $"📏 Dimensões: {config.LarguraEtiqueta} x {config.AlturaEtiqueta} mm\n" +
-                    $"📐 Layout: {config.NumColunas} coluna(s) x {config.NumLinhas} linha(s)\n" +
-                    $"🖨️ Impressora: {config.ImpressoraPadrao}",
+                    $"📏 Dimensões: {configuracaoAtual.LarguraEtiqueta} x {configuracaoAtual.AlturaEtiqueta} mm\n" +
+                    $"📐 Layout: {configuracaoAtual.NumColunas} coluna(s) x {configuracaoAtual.NumLinhas} linha(s)\n" +
+                    $"🖨️ Impressora: {configuracaoAtual.ImpressoraPadrao}",
                     "Configuração Aplicada", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+        }
+
+        // ========================================
+        // ⭐ CLASSE AUXILIAR PARA ITENS DO COMBOBOX
+        // ========================================
+        private class ConfiguracaoItem
+        {
+            public string Nome { get; set; }
+            public ConfiguracaoEtiqueta Configuracao { get; set; }
+            public bool IsPadrao { get; set; }
+
+            public override string ToString()
+            {
+                return Nome;
             }
         }
     }

@@ -20,7 +20,12 @@
         private System.Windows.Forms.DataGridViewTextBoxColumn colPreco;
         private System.Windows.Forms.DataGridViewTextBoxColumn colQuantidade;
         private System.Windows.Forms.DataGridViewButtonColumn colRemover;
-        private System.Windows.Forms.Button btnBuscarMercadoria;  // ⭐ ADICIONADO
+        private System.Windows.Forms.Button btnBuscarMercadoria;
+
+        // ⭐ NOVOS CONTROLES PARA CONFIGURAÇÃO
+        private System.Windows.Forms.ComboBox cmbConfiguracao;
+        private System.Windows.Forms.Label lblConfiguracao;
+        private System.Windows.Forms.Label lblStatusConfig;
 
         protected override void Dispose(bool disposing)
         {
@@ -61,6 +66,13 @@
             this.btnBuscarMercadoria = new System.Windows.Forms.Button();
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.panel2 = new System.Windows.Forms.Panel();
+
+            // ⭐ NOVO: Painel de configuração
+            this.panelConfiguracao = new System.Windows.Forms.Panel();
+            this.lblConfiguracao = new System.Windows.Forms.Label();
+            this.cmbConfiguracao = new System.Windows.Forms.ComboBox();
+            this.lblStatusConfig = new System.Windows.Forms.Label();
+
             this.groupProduto.SuspendLayout();
             this.panel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numQtd)).BeginInit();
@@ -68,7 +80,9 @@
             this.panelTop.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.panel2.SuspendLayout();
+            this.panelConfiguracao.SuspendLayout();
             this.SuspendLayout();
+
             // 
             // groupProduto
             // 
@@ -81,6 +95,7 @@
             this.groupProduto.TabIndex = 1;
             this.groupProduto.TabStop = false;
             this.groupProduto.Text = "Adicionar Produto";
+
             // 
             // panel1
             // 
@@ -97,6 +112,7 @@
             this.panel1.Name = "panel1";
             this.panel1.Size = new System.Drawing.Size(838, 74);
             this.panel1.TabIndex = 0;
+
             // 
             // btnAdicionar
             // 
@@ -111,6 +127,7 @@
             this.btnAdicionar.Text = "Adicionar";
             this.btnAdicionar.UseVisualStyleBackColor = false;
             this.btnAdicionar.Click += new System.EventHandler(this.btnAdicionar_Click);
+
             // 
             // numQtd
             // 
@@ -133,6 +150,7 @@
             0,
             0,
             0});
+
             // 
             // lblQtd
             // 
@@ -143,6 +161,7 @@
             this.lblQtd.Size = new System.Drawing.Size(30, 15);
             this.lblQtd.TabIndex = 6;
             this.lblQtd.Text = "Qtd:";
+
             // 
             // txtPreco
             // 
@@ -150,6 +169,7 @@
             this.txtPreco.Name = "txtPreco";
             this.txtPreco.Size = new System.Drawing.Size(80, 23);
             this.txtPreco.TabIndex = 5;
+
             // 
             // lblPreco
             // 
@@ -160,6 +180,7 @@
             this.lblPreco.Size = new System.Drawing.Size(40, 15);
             this.lblPreco.TabIndex = 4;
             this.lblPreco.Text = "Preço:";
+
             // 
             // txtCodigo
             // 
@@ -167,6 +188,7 @@
             this.txtCodigo.Name = "txtCodigo";
             this.txtCodigo.Size = new System.Drawing.Size(100, 23);
             this.txtCodigo.TabIndex = 3;
+
             // 
             // lblCodigo
             // 
@@ -177,6 +199,7 @@
             this.lblCodigo.Size = new System.Drawing.Size(49, 15);
             this.lblCodigo.TabIndex = 2;
             this.lblCodigo.Text = "Código:";
+
             // 
             // txtNome
             // 
@@ -184,6 +207,7 @@
             this.txtNome.Name = "txtNome";
             this.txtNome.Size = new System.Drawing.Size(220, 23);
             this.txtNome.TabIndex = 1;
+
             // 
             // lblNome
             // 
@@ -194,6 +218,7 @@
             this.lblNome.Size = new System.Drawing.Size(43, 15);
             this.lblNome.TabIndex = 0;
             this.lblNome.Text = "Nome:";
+
             // 
             // dgvProdutos
             // 
@@ -207,40 +232,46 @@
             this.colPreco,
             this.colQuantidade,
             this.colRemover});
-            this.dgvProdutos.Location = new System.Drawing.Point(12, 237);
+            this.dgvProdutos.Location = new System.Drawing.Point(12, 277);
             this.dgvProdutos.Name = "dgvProdutos";
-            this.dgvProdutos.Size = new System.Drawing.Size(859, 340);
+            this.dgvProdutos.Size = new System.Drawing.Size(859, 300);
             this.dgvProdutos.TabIndex = 2;
             this.dgvProdutos.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgvProdutos_CellContentClick);
+
             // 
             // colSelecionar
             // 
             this.colSelecionar.HeaderText = "Sel.";
             this.colSelecionar.Name = "colSelecionar";
             this.colSelecionar.Width = 40;
+
             // 
             // colNome
             // 
             this.colNome.HeaderText = "Nome";
             this.colNome.Name = "colNome";
             this.colNome.Width = 300;
+
             // 
             // colCodigo
             // 
             this.colCodigo.HeaderText = "Código";
             this.colCodigo.Name = "colCodigo";
             this.colCodigo.Width = 120;
+
             // 
             // colPreco
             // 
             this.colPreco.HeaderText = "Preço";
             this.colPreco.Name = "colPreco";
+
             // 
             // colQuantidade
             // 
             this.colQuantidade.HeaderText = "Qtd";
             this.colQuantidade.Name = "colQuantidade";
             this.colQuantidade.Width = 50;
+
             // 
             // colRemover
             // 
@@ -249,6 +280,7 @@
             this.colRemover.Text = "X";
             this.colRemover.UseColumnTextForButtonValue = true;
             this.colRemover.Width = 80;
+
             // 
             // lblTitulo
             // 
@@ -261,6 +293,7 @@
             this.lblTitulo.Size = new System.Drawing.Size(260, 30);
             this.lblTitulo.TabIndex = 0;
             this.lblTitulo.Text = "SISTEMA DE ETIQUETAS";
+
             // 
             // btnDesigner
             // 
@@ -276,6 +309,7 @@
             this.btnDesigner.Text = "Designer de Etiqueta";
             this.btnDesigner.UseVisualStyleBackColor = false;
             this.btnDesigner.Click += new System.EventHandler(this.btnDesigner_Click);
+
             // 
             // btnImprimir
             // 
@@ -291,6 +325,7 @@
             this.btnImprimir.Text = "Imprimir Etiquetas";
             this.btnImprimir.UseVisualStyleBackColor = false;
             this.btnImprimir.Click += new System.EventHandler(this.btnImprimir_Click);
+
             // 
             // panelTop
             // 
@@ -307,6 +342,7 @@
             this.panelTop.Name = "panelTop";
             this.panelTop.Size = new System.Drawing.Size(860, 85);
             this.panelTop.TabIndex = 0;
+
             // 
             // btnConfigPapel
             // 
@@ -322,6 +358,7 @@
             this.btnConfigPapel.Text = "Configurar Papel";
             this.btnConfigPapel.UseVisualStyleBackColor = false;
             this.btnConfigPapel.Click += new System.EventHandler(this.btnConfigPapel_Click);
+
             // 
             // btnCarregarTemplate
             // 
@@ -337,6 +374,7 @@
             this.btnCarregarTemplate.Text = "📂 Carregar Template";
             this.btnCarregarTemplate.UseVisualStyleBackColor = false;
             this.btnCarregarTemplate.Click += new System.EventHandler(this.btnCarregarTemplate_Click);
+
             // 
             // btnBuscarMercadoria
             // 
@@ -352,6 +390,7 @@
             this.btnBuscarMercadoria.Text = "🔍 Buscar Mercadoria";
             this.btnBuscarMercadoria.UseVisualStyleBackColor = false;
             this.btnBuscarMercadoria.Click += new System.EventHandler(this.btnBuscarMercadoria_Click);
+
             // 
             // pictureBox1
             // 
@@ -362,16 +401,70 @@
             this.pictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
             this.pictureBox1.TabIndex = 5;
             this.pictureBox1.TabStop = false;
+
             // 
             // panel2
             // 
             this.panel2.BackColor = System.Drawing.Color.Transparent;
             this.panel2.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.panel2.Controls.Add(this.groupProduto);
-            this.panel2.Location = new System.Drawing.Point(12, 103);
+            this.panel2.Location = new System.Drawing.Point(12, 143);
             this.panel2.Name = "panel2";
             this.panel2.Size = new System.Drawing.Size(859, 128);
             this.panel2.TabIndex = 3;
+
+            // ========================================
+            // ⭐ NOVO: PAINEL DE CONFIGURAÇÃO
+            // ========================================
+
+            // 
+            // panelConfiguracao
+            // 
+            this.panelConfiguracao.BackColor = System.Drawing.Color.White;
+            this.panelConfiguracao.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.panelConfiguracao.Controls.Add(this.lblConfiguracao);
+            this.panelConfiguracao.Controls.Add(this.cmbConfiguracao);
+            this.panelConfiguracao.Controls.Add(this.lblStatusConfig);
+            this.panelConfiguracao.Location = new System.Drawing.Point(12, 103);
+            this.panelConfiguracao.Name = "panelConfiguracao";
+            this.panelConfiguracao.Size = new System.Drawing.Size(860, 34);
+            this.panelConfiguracao.TabIndex = 4;
+
+            // 
+            // lblConfiguracao
+            // 
+            this.lblConfiguracao.AutoSize = true;
+            this.lblConfiguracao.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
+            this.lblConfiguracao.Location = new System.Drawing.Point(8, 8);
+            this.lblConfiguracao.Name = "lblConfiguracao";
+            this.lblConfiguracao.Size = new System.Drawing.Size(87, 15);
+            this.lblConfiguracao.TabIndex = 0;
+            this.lblConfiguracao.Text = "⚙️ Configuração:";
+
+            // 
+            // cmbConfiguracao
+            // 
+            this.cmbConfiguracao.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cmbConfiguracao.Font = new System.Drawing.Font("Segoe UI", 9F);
+            this.cmbConfiguracao.FormattingEnabled = true;
+            this.cmbConfiguracao.Location = new System.Drawing.Point(100, 5);
+            this.cmbConfiguracao.Name = "cmbConfiguracao";
+            this.cmbConfiguracao.Size = new System.Drawing.Size(280, 23);
+            this.cmbConfiguracao.TabIndex = 1;
+            this.cmbConfiguracao.SelectedIndexChanged += new System.EventHandler(this.cmbConfiguracao_SelectedIndexChanged);
+
+            // 
+            // lblStatusConfig
+            // 
+            this.lblStatusConfig.AutoSize = true;
+            this.lblStatusConfig.Font = new System.Drawing.Font("Segoe UI", 8F);
+            this.lblStatusConfig.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(52)))), ((int)(((byte)(73)))), ((int)(((byte)(94)))));
+            this.lblStatusConfig.Location = new System.Drawing.Point(390, 8);
+            this.lblStatusConfig.Name = "lblStatusConfig";
+            this.lblStatusConfig.Size = new System.Drawing.Size(200, 13);
+            this.lblStatusConfig.TabIndex = 2;
+            this.lblStatusConfig.Text = "⚠️ Nenhuma configuração carregada";
+
             // 
             // FormPrincipal
             // 
@@ -381,6 +474,7 @@
             this.ClientSize = new System.Drawing.Size(887, 589);
             this.Controls.Add(this.dgvProdutos);
             this.Controls.Add(this.panelTop);
+            this.Controls.Add(this.panelConfiguracao);  // ⭐ NOVO
             this.Controls.Add(this.panel2);
             this.Font = new System.Drawing.Font("Segoe UI", 9F);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
@@ -397,8 +491,9 @@
             this.panelTop.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
             this.panel2.ResumeLayout(false);
+            this.panelConfiguracao.ResumeLayout(false);
+            this.panelConfiguracao.PerformLayout();
             this.ResumeLayout(false);
-
         }
 
         private System.Windows.Forms.Label lblTitulo;
@@ -410,6 +505,8 @@
         private System.Windows.Forms.Panel panel2;
         private System.Windows.Forms.Button btnCarregarTemplate;
         private System.Windows.Forms.Button btnConfigPapel;
-        //private System.Windows.Forms.Button btnBuscarMercadoria;  // ⭐ ADICIONADO
+
+        // ⭐ NOVO: Painel de configuração
+        private System.Windows.Forms.Panel panelConfiguracao;
     }
 }
