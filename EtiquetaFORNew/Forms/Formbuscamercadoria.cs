@@ -34,7 +34,7 @@ namespace EtiquetaFORNew
             timerBusca.Tick += TimerBusca_Tick;
         }
 
-        private void CarregarEstatisticas()
+        public void CarregarEstatisticas()
         {
             var (ultimaSync, total) = LocalDatabaseManager.ObterInfoSincronizacao();
 

@@ -8,6 +8,7 @@ using System.Drawing.Drawing2D;
 using System.Linq;
 using System.Windows.Forms;
 
+
 namespace EtiquetaFORNew
 {
     public partial class FormPrincipal : Form
@@ -204,14 +205,17 @@ namespace EtiquetaFORNew
         // ========================================
         // 🔹 SINCRONIZAR MERCADORIAS DO SQL SERVER
         // ========================================
-        private void SincronizarMercadorias()
+        public void SincronizarMercadorias() // MUDADO PARA PUBLIC
         {
             try
             {
                 Cursor = Cursors.WaitCursor;
 
                 // Sincronizar todas as mercadorias (pode adicionar filtro se necessário)
-                int total = LocalDatabaseManager.SincronizarMercadorias();
+                int total = LocalDatabaseManager.SincronizarMercadorias(); // Atualiza o banco local
+
+                // ⭐ CHAVE DA SOLUÇÃO: RECARREGA O DATATABLE 'mercadorias' E ATUALIZA OS COMBOBOXES
+                CarregarTodasMercadorias();
 
                 Cursor = Cursors.Default;
 
@@ -831,5 +835,60 @@ namespace EtiquetaFORNew
             if (cmb == cmbBuscaCodigo) return "CodigoMercadoria";
             return null;
         }
+
+        private void pictureBox2_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                if (MessageBox.Show(
+                    "Deseja sincronizar as mercadorias do SQL Server?\n\n" +
+                    "Isso pode levar alguns minutos dependendo da quantidade de registros.",
+                    "Confirmar Sincronização",
+                    MessageBoxButtons.YesNo,
+                    MessageBoxIcon.Question) != DialogResult.Yes)
+                {
+                    return;
+                }
+
+                Cursor = Cursors.WaitCursor;
+                pictureBox2.Enabled = false;
+                //pictureBox2.Text = "Sincronizando...";
+
+                // 1. SINCRONIZAR O BANCO DE DADOS LOCAL
+                int total = LocalDatabaseManager.SincronizarMercadorias();
+
+                // ⭐ 2. RECARREGAR AS MERCADORIAS NA MEMÓRIA E ATUALIZAR OS COMBOBOXES
+                CarregarTodasMercadorias();
+
+                // Se a linha a seguir for para atualizar status no rodapé, mantenha-a.
+                //CarregarEstatisticas();
+
+                Cursor = Cursors.Default;
+                pictureBox2.Enabled = true;
+                //pictureBox2.Text = "🔄 Sincronizar";
+
+                MessageBox.Show(
+                    $"Sincronização concluída com sucesso!\n\n" +
+                    $"Total de mercadorias importadas: {total:N0}",
+                    "Sucesso",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Information);
+
+
+            }
+            catch (Exception ex)
+            {
+                Cursor = Cursors.Default;
+                pictureBox2.Enabled = true;
+                //btnSincronizar.Text = "🔄 Sincronizar";
+
+                MessageBox.Show(
+                    $"Erro ao sincronizar:\n\n{ex.Message}",
+                    "Erro",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Error);
+            }
+        }
+
     }
 }

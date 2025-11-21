@@ -210,7 +210,7 @@ namespace EtiquetaFORNew
             // 
             // btnTestar
             // 
-            this.btnTestar.Location = new System.Drawing.Point(392, 210);
+            this.btnTestar.Location = new System.Drawing.Point(404, 210);
             this.btnTestar.Name = "btnTestar";
             this.btnTestar.Size = new System.Drawing.Size(150, 30);
             this.btnTestar.TabIndex = 3;

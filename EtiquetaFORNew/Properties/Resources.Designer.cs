@@ -183,6 +183,16 @@ namespace EtiquetaFORNew.Properties {
         /// <summary>
         ///   Consulta um recurso localizado do tipo System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap Sincronizando {
+            get {
+                object obj = ResourceManager.GetObject("Sincronizando", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Consulta um recurso localizado do tipo System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap SoftcomTecnologia {
             get {
                 object obj = ResourceManager.GetObject("SoftcomTecnologia", resourceCulture);

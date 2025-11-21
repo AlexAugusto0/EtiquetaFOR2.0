@@ -282,6 +282,7 @@ namespace EtiquetaFORNew
             {
                 Cursor = Cursors.Default;
             }
+
         }
 
         private bool ValidarCampos()
@@ -351,6 +352,11 @@ namespace EtiquetaFORNew
         private void chkMostrarSenha_CheckedChanged(object sender, EventArgs e)
         {
             txtSenha.UseSystemPasswordChar = !chkMostrarSenha.Checked;
+        }
+
+        private void btnSincronizar_Click(object sender, EventArgs e)
+        {
+
         }
     }
 }

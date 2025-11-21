@@ -71,20 +71,22 @@
             this.btnConfigPapel = new System.Windows.Forms.Button();
             this.btnCarregarTemplate = new System.Windows.Forms.Button();
             this.btnBuscarMercadoria = new System.Windows.Forms.Button();
-            this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.panel2 = new System.Windows.Forms.Panel();
             this.panelConfiguracao = new System.Windows.Forms.Panel();
             this.lblConfiguracao = new System.Windows.Forms.Label();
             this.cmbConfiguracao = new System.Windows.Forms.ComboBox();
             this.lblStatusConfig = new System.Windows.Forms.Label();
+            this.pictureBox1 = new System.Windows.Forms.PictureBox();
+            this.pictureBox2 = new System.Windows.Forms.PictureBox();
             this.groupProduto.SuspendLayout();
             this.panel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numQtd)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.dgvProdutos)).BeginInit();
             this.panelTop.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.panel2.SuspendLayout();
             this.panelConfiguracao.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).BeginInit();
             this.SuspendLayout();
             // 
             // groupProduto
@@ -177,7 +179,7 @@
             // cmbBuscaCodigo
             // 
             this.cmbBuscaCodigo.FormattingEnabled = true;
-            this.cmbBuscaCodigo.Location = new System.Drawing.Point(63, 2);
+            this.cmbBuscaCodigo.Location = new System.Drawing.Point(60, 2);
             this.cmbBuscaCodigo.Name = "cmbBuscaCodigo";
             this.cmbBuscaCodigo.Size = new System.Drawing.Size(99, 23);
             this.cmbBuscaCodigo.TabIndex = 10;
@@ -187,7 +189,7 @@
             // 
             this.label1.AutoSize = true;
             this.label1.Font = new System.Drawing.Font("Segoe UI", 9F);
-            this.label1.Location = new System.Drawing.Point(2, 4);
+            this.label1.Location = new System.Drawing.Point(5, 4);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(49, 15);
             this.label1.TabIndex = 9;
@@ -456,16 +458,6 @@
             this.btnBuscarMercadoria.Visible = false;
             this.btnBuscarMercadoria.Click += new System.EventHandler(this.btnBuscarMercadoria_Click);
             // 
-            // pictureBox1
-            // 
-            this.pictureBox1.Image = global::EtiquetaFORNew.Properties.Resources.icone_novo_2025_PNG1;
-            this.pictureBox1.Location = new System.Drawing.Point(18, 3);
-            this.pictureBox1.Name = "pictureBox1";
-            this.pictureBox1.Size = new System.Drawing.Size(63, 35);
-            this.pictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
-            this.pictureBox1.TabIndex = 5;
-            this.pictureBox1.TabStop = false;
-            // 
             // panel2
             // 
             this.panel2.BackColor = System.Drawing.Color.Transparent;
@@ -480,6 +472,7 @@
             // 
             this.panelConfiguracao.BackColor = System.Drawing.Color.White;
             this.panelConfiguracao.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.panelConfiguracao.Controls.Add(this.pictureBox2);
             this.panelConfiguracao.Controls.Add(this.lblConfiguracao);
             this.panelConfiguracao.Controls.Add(this.cmbConfiguracao);
             this.panelConfiguracao.Controls.Add(this.lblStatusConfig);
@@ -520,6 +513,28 @@
             this.lblStatusConfig.TabIndex = 2;
             this.lblStatusConfig.Text = "⚠️ Nenhuma configuração carregada";
             // 
+            // pictureBox1
+            // 
+            this.pictureBox1.Image = global::EtiquetaFORNew.Properties.Resources.icone_novo_2025_PNG1;
+            this.pictureBox1.Location = new System.Drawing.Point(18, 3);
+            this.pictureBox1.Name = "pictureBox1";
+            this.pictureBox1.Size = new System.Drawing.Size(63, 35);
+            this.pictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
+            this.pictureBox1.TabIndex = 5;
+            this.pictureBox1.TabStop = false;
+            // 
+            // pictureBox2
+            // 
+            this.pictureBox2.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.pictureBox2.Image = global::EtiquetaFORNew.Properties.Resources.Sincronizando;
+            this.pictureBox2.Location = new System.Drawing.Point(823, 3);
+            this.pictureBox2.Name = "pictureBox2";
+            this.pictureBox2.Size = new System.Drawing.Size(31, 24);
+            this.pictureBox2.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
+            this.pictureBox2.TabIndex = 3;
+            this.pictureBox2.TabStop = false;
+            this.pictureBox2.Click += new System.EventHandler(this.pictureBox2_Click);
+            // 
             // FormPrincipal
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
@@ -543,10 +558,11 @@
             ((System.ComponentModel.ISupportInitialize)(this.dgvProdutos)).EndInit();
             this.panelTop.ResumeLayout(false);
             this.panelTop.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
             this.panel2.ResumeLayout(false);
             this.panelConfiguracao.ResumeLayout(false);
             this.panelConfiguracao.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -570,5 +586,6 @@
         private System.Windows.Forms.ComboBox cmbBuscaCodigo;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Button BtnAdicionar2;
+        private System.Windows.Forms.PictureBox pictureBox2;
     }
 }
