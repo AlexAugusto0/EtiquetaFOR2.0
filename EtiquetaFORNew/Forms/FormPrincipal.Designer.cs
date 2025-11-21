@@ -41,6 +41,13 @@
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FormPrincipal));
             this.groupProduto = new System.Windows.Forms.GroupBox();
             this.panel1 = new System.Windows.Forms.Panel();
+            this.BtnAdicionar2 = new System.Windows.Forms.Button();
+            this.cmbBuscaReferencia = new System.Windows.Forms.ComboBox();
+            this.label3 = new System.Windows.Forms.Label();
+            this.cmbBuscaNome = new System.Windows.Forms.ComboBox();
+            this.label2 = new System.Windows.Forms.Label();
+            this.cmbBuscaCodigo = new System.Windows.Forms.ComboBox();
+            this.label1 = new System.Windows.Forms.Label();
             this.btnAdicionar = new System.Windows.Forms.Button();
             this.numQtd = new System.Windows.Forms.NumericUpDown();
             this.lblQtd = new System.Windows.Forms.Label();
@@ -66,13 +73,10 @@
             this.btnBuscarMercadoria = new System.Windows.Forms.Button();
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.panel2 = new System.Windows.Forms.Panel();
-
-            // ⭐ NOVO: Painel de configuração
             this.panelConfiguracao = new System.Windows.Forms.Panel();
             this.lblConfiguracao = new System.Windows.Forms.Label();
             this.cmbConfiguracao = new System.Windows.Forms.ComboBox();
             this.lblStatusConfig = new System.Windows.Forms.Label();
-
             this.groupProduto.SuspendLayout();
             this.panel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numQtd)).BeginInit();
@@ -82,7 +86,6 @@
             this.panel2.SuspendLayout();
             this.panelConfiguracao.SuspendLayout();
             this.SuspendLayout();
-
             // 
             // groupProduto
             // 
@@ -95,10 +98,16 @@
             this.groupProduto.TabIndex = 1;
             this.groupProduto.TabStop = false;
             this.groupProduto.Text = "Adicionar Produto";
-
             // 
             // panel1
             // 
+            this.panel1.Controls.Add(this.BtnAdicionar2);
+            this.panel1.Controls.Add(this.cmbBuscaReferencia);
+            this.panel1.Controls.Add(this.label3);
+            this.panel1.Controls.Add(this.cmbBuscaNome);
+            this.panel1.Controls.Add(this.label2);
+            this.panel1.Controls.Add(this.cmbBuscaCodigo);
+            this.panel1.Controls.Add(this.label1);
             this.panel1.Controls.Add(this.btnAdicionar);
             this.panel1.Controls.Add(this.numQtd);
             this.panel1.Controls.Add(this.lblQtd);
@@ -112,7 +121,77 @@
             this.panel1.Name = "panel1";
             this.panel1.Size = new System.Drawing.Size(838, 74);
             this.panel1.TabIndex = 0;
-
+            // 
+            // BtnAdicionar2
+            // 
+            this.BtnAdicionar2.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(143)))), ((int)(((byte)(0)))));
+            this.BtnAdicionar2.FlatAppearance.BorderSize = 0;
+            this.BtnAdicionar2.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.BtnAdicionar2.ForeColor = System.Drawing.Color.Black;
+            this.BtnAdicionar2.Location = new System.Drawing.Point(744, 5);
+            this.BtnAdicionar2.Name = "BtnAdicionar2";
+            this.BtnAdicionar2.Size = new System.Drawing.Size(90, 25);
+            this.BtnAdicionar2.TabIndex = 14;
+            this.BtnAdicionar2.Text = "Adicionar";
+            this.BtnAdicionar2.UseVisualStyleBackColor = false;
+            this.BtnAdicionar2.Click += new System.EventHandler(this.BtnAdicionar2_Click);
+            // 
+            // cmbBuscaReferencia
+            // 
+            this.cmbBuscaReferencia.FormattingEnabled = true;
+            this.cmbBuscaReferencia.Location = new System.Drawing.Point(237, 2);
+            this.cmbBuscaReferencia.Name = "cmbBuscaReferencia";
+            this.cmbBuscaReferencia.Size = new System.Drawing.Size(99, 23);
+            this.cmbBuscaReferencia.TabIndex = 11;
+            this.cmbBuscaReferencia.SelectedIndexChanged += new System.EventHandler(this.cmbBuscaReferencia_SelectedIndexChanged);
+            // 
+            // label3
+            // 
+            this.label3.AutoSize = true;
+            this.label3.Font = new System.Drawing.Font("Segoe UI", 9F);
+            this.label3.Location = new System.Drawing.Point(166, 6);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(65, 15);
+            this.label3.TabIndex = 13;
+            this.label3.Text = "Referência:";
+            // 
+            // cmbBuscaNome
+            // 
+            this.cmbBuscaNome.FormattingEnabled = true;
+            this.cmbBuscaNome.Location = new System.Drawing.Point(394, 3);
+            this.cmbBuscaNome.Name = "cmbBuscaNome";
+            this.cmbBuscaNome.Size = new System.Drawing.Size(258, 23);
+            this.cmbBuscaNome.TabIndex = 12;
+            this.cmbBuscaNome.SelectedIndexChanged += new System.EventHandler(this.cmbBuscaNome_SelectedIndexChanged);
+            // 
+            // label2
+            // 
+            this.label2.AutoSize = true;
+            this.label2.Font = new System.Drawing.Font("Segoe UI", 9F);
+            this.label2.Location = new System.Drawing.Point(343, 6);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(43, 15);
+            this.label2.TabIndex = 11;
+            this.label2.Text = "Nome:";
+            // 
+            // cmbBuscaCodigo
+            // 
+            this.cmbBuscaCodigo.FormattingEnabled = true;
+            this.cmbBuscaCodigo.Location = new System.Drawing.Point(63, 2);
+            this.cmbBuscaCodigo.Name = "cmbBuscaCodigo";
+            this.cmbBuscaCodigo.Size = new System.Drawing.Size(99, 23);
+            this.cmbBuscaCodigo.TabIndex = 10;
+            this.cmbBuscaCodigo.SelectedIndexChanged += new System.EventHandler(this.cmbBuscaCodigo_SelectedIndexChanged);
+            // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.Font = new System.Drawing.Font("Segoe UI", 9F);
+            this.label1.Location = new System.Drawing.Point(2, 4);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(49, 15);
+            this.label1.TabIndex = 9;
+            this.label1.Text = "Código:";
             // 
             // btnAdicionar
             // 
@@ -120,18 +199,18 @@
             this.btnAdicionar.FlatAppearance.BorderSize = 0;
             this.btnAdicionar.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnAdicionar.ForeColor = System.Drawing.Color.Black;
-            this.btnAdicionar.Location = new System.Drawing.Point(747, 6);
+            this.btnAdicionar.Location = new System.Drawing.Point(745, 46);
             this.btnAdicionar.Name = "btnAdicionar";
             this.btnAdicionar.Size = new System.Drawing.Size(90, 25);
             this.btnAdicionar.TabIndex = 8;
             this.btnAdicionar.Text = "Adicionar";
             this.btnAdicionar.UseVisualStyleBackColor = false;
+            this.btnAdicionar.Visible = false;
             this.btnAdicionar.Click += new System.EventHandler(this.btnAdicionar_Click);
-
             // 
             // numQtd
             // 
-            this.numQtd.Location = new System.Drawing.Point(667, 8);
+            this.numQtd.Location = new System.Drawing.Point(698, 4);
             this.numQtd.Maximum = new decimal(new int[] {
             1000,
             0,
@@ -143,82 +222,80 @@
             0,
             0});
             this.numQtd.Name = "numQtd";
-            this.numQtd.Size = new System.Drawing.Size(60, 23);
-            this.numQtd.TabIndex = 7;
+            this.numQtd.Size = new System.Drawing.Size(40, 23);
+            this.numQtd.TabIndex = 13;
             this.numQtd.Value = new decimal(new int[] {
             1,
             0,
             0,
             0});
-
             // 
             // lblQtd
             // 
             this.lblQtd.AutoSize = true;
             this.lblQtd.Font = new System.Drawing.Font("Segoe UI", 9F);
-            this.lblQtd.Location = new System.Drawing.Point(627, 11);
+            this.lblQtd.Location = new System.Drawing.Point(658, 7);
             this.lblQtd.Name = "lblQtd";
             this.lblQtd.Size = new System.Drawing.Size(30, 15);
             this.lblQtd.TabIndex = 6;
             this.lblQtd.Text = "Qtd:";
-
             // 
             // txtPreco
             // 
-            this.txtPreco.Location = new System.Drawing.Point(532, 8);
+            this.txtPreco.Location = new System.Drawing.Point(530, 48);
             this.txtPreco.Name = "txtPreco";
             this.txtPreco.Size = new System.Drawing.Size(80, 23);
             this.txtPreco.TabIndex = 5;
-
+            this.txtPreco.Visible = false;
             // 
             // lblPreco
             // 
             this.lblPreco.AutoSize = true;
             this.lblPreco.Font = new System.Drawing.Font("Segoe UI", 9F);
-            this.lblPreco.Location = new System.Drawing.Point(481, 11);
+            this.lblPreco.Location = new System.Drawing.Point(479, 51);
             this.lblPreco.Name = "lblPreco";
             this.lblPreco.Size = new System.Drawing.Size(40, 15);
             this.lblPreco.TabIndex = 4;
             this.lblPreco.Text = "Preço:";
-
+            this.lblPreco.Visible = false;
             // 
             // txtCodigo
             // 
-            this.txtCodigo.Location = new System.Drawing.Point(64, 7);
+            this.txtCodigo.Location = new System.Drawing.Point(62, 47);
             this.txtCodigo.Name = "txtCodigo";
             this.txtCodigo.Size = new System.Drawing.Size(100, 23);
             this.txtCodigo.TabIndex = 3;
-
+            this.txtCodigo.Visible = false;
             // 
             // lblCodigo
             // 
             this.lblCodigo.AutoSize = true;
             this.lblCodigo.Font = new System.Drawing.Font("Segoe UI", 9F);
-            this.lblCodigo.Location = new System.Drawing.Point(2, 10);
+            this.lblCodigo.Location = new System.Drawing.Point(0, 50);
             this.lblCodigo.Name = "lblCodigo";
             this.lblCodigo.Size = new System.Drawing.Size(49, 15);
             this.lblCodigo.TabIndex = 2;
             this.lblCodigo.Text = "Código:";
-
+            this.lblCodigo.Visible = false;
             // 
             // txtNome
             // 
-            this.txtNome.Location = new System.Drawing.Point(227, 7);
+            this.txtNome.Location = new System.Drawing.Point(225, 47);
             this.txtNome.Name = "txtNome";
             this.txtNome.Size = new System.Drawing.Size(220, 23);
             this.txtNome.TabIndex = 1;
-
+            this.txtNome.Visible = false;
             // 
             // lblNome
             // 
             this.lblNome.AutoSize = true;
             this.lblNome.Font = new System.Drawing.Font("Segoe UI", 9F);
-            this.lblNome.Location = new System.Drawing.Point(176, 10);
+            this.lblNome.Location = new System.Drawing.Point(174, 50);
             this.lblNome.Name = "lblNome";
             this.lblNome.Size = new System.Drawing.Size(43, 15);
             this.lblNome.TabIndex = 0;
             this.lblNome.Text = "Nome:";
-
+            this.lblNome.Visible = false;
             // 
             // dgvProdutos
             // 
@@ -237,41 +314,35 @@
             this.dgvProdutos.Size = new System.Drawing.Size(859, 300);
             this.dgvProdutos.TabIndex = 2;
             this.dgvProdutos.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgvProdutos_CellContentClick);
-
             // 
             // colSelecionar
             // 
             this.colSelecionar.HeaderText = "Sel.";
             this.colSelecionar.Name = "colSelecionar";
             this.colSelecionar.Width = 40;
-
             // 
             // colNome
             // 
             this.colNome.HeaderText = "Nome";
             this.colNome.Name = "colNome";
             this.colNome.Width = 300;
-
             // 
             // colCodigo
             // 
             this.colCodigo.HeaderText = "Código";
             this.colCodigo.Name = "colCodigo";
             this.colCodigo.Width = 120;
-
             // 
             // colPreco
             // 
             this.colPreco.HeaderText = "Preço";
             this.colPreco.Name = "colPreco";
-
             // 
             // colQuantidade
             // 
             this.colQuantidade.HeaderText = "Qtd";
             this.colQuantidade.Name = "colQuantidade";
             this.colQuantidade.Width = 50;
-
             // 
             // colRemover
             // 
@@ -280,7 +351,6 @@
             this.colRemover.Text = "X";
             this.colRemover.UseColumnTextForButtonValue = true;
             this.colRemover.Width = 80;
-
             // 
             // lblTitulo
             // 
@@ -293,7 +363,6 @@
             this.lblTitulo.Size = new System.Drawing.Size(260, 30);
             this.lblTitulo.TabIndex = 0;
             this.lblTitulo.Text = "SISTEMA DE ETIQUETAS";
-
             // 
             // btnDesigner
             // 
@@ -309,7 +378,6 @@
             this.btnDesigner.Text = "Designer de Etiqueta";
             this.btnDesigner.UseVisualStyleBackColor = false;
             this.btnDesigner.Click += new System.EventHandler(this.btnDesigner_Click);
-
             // 
             // btnImprimir
             // 
@@ -325,7 +393,6 @@
             this.btnImprimir.Text = "Imprimir Etiquetas";
             this.btnImprimir.UseVisualStyleBackColor = false;
             this.btnImprimir.Click += new System.EventHandler(this.btnImprimir_Click);
-
             // 
             // panelTop
             // 
@@ -342,7 +409,6 @@
             this.panelTop.Name = "panelTop";
             this.panelTop.Size = new System.Drawing.Size(860, 85);
             this.panelTop.TabIndex = 0;
-
             // 
             // btnConfigPapel
             // 
@@ -358,7 +424,6 @@
             this.btnConfigPapel.Text = "Configurar Papel";
             this.btnConfigPapel.UseVisualStyleBackColor = false;
             this.btnConfigPapel.Click += new System.EventHandler(this.btnConfigPapel_Click);
-
             // 
             // btnCarregarTemplate
             // 
@@ -374,7 +439,6 @@
             this.btnCarregarTemplate.Text = "📂 Carregar Template";
             this.btnCarregarTemplate.UseVisualStyleBackColor = false;
             this.btnCarregarTemplate.Click += new System.EventHandler(this.btnCarregarTemplate_Click);
-
             // 
             // btnBuscarMercadoria
             // 
@@ -389,8 +453,8 @@
             this.btnBuscarMercadoria.TabIndex = 3;
             this.btnBuscarMercadoria.Text = "🔍 Buscar Mercadoria";
             this.btnBuscarMercadoria.UseVisualStyleBackColor = false;
+            this.btnBuscarMercadoria.Visible = false;
             this.btnBuscarMercadoria.Click += new System.EventHandler(this.btnBuscarMercadoria_Click);
-
             // 
             // pictureBox1
             // 
@@ -401,7 +465,6 @@
             this.pictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
             this.pictureBox1.TabIndex = 5;
             this.pictureBox1.TabStop = false;
-
             // 
             // panel2
             // 
@@ -412,11 +475,6 @@
             this.panel2.Name = "panel2";
             this.panel2.Size = new System.Drawing.Size(859, 128);
             this.panel2.TabIndex = 3;
-
-            // ========================================
-            // ⭐ NOVO: PAINEL DE CONFIGURAÇÃO
-            // ========================================
-
             // 
             // panelConfiguracao
             // 
@@ -429,7 +487,6 @@
             this.panelConfiguracao.Name = "panelConfiguracao";
             this.panelConfiguracao.Size = new System.Drawing.Size(860, 34);
             this.panelConfiguracao.TabIndex = 4;
-
             // 
             // lblConfiguracao
             // 
@@ -437,10 +494,9 @@
             this.lblConfiguracao.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
             this.lblConfiguracao.Location = new System.Drawing.Point(8, 8);
             this.lblConfiguracao.Name = "lblConfiguracao";
-            this.lblConfiguracao.Size = new System.Drawing.Size(87, 15);
+            this.lblConfiguracao.Size = new System.Drawing.Size(99, 15);
             this.lblConfiguracao.TabIndex = 0;
             this.lblConfiguracao.Text = "⚙️ Configuração:";
-
             // 
             // cmbConfiguracao
             // 
@@ -452,7 +508,6 @@
             this.cmbConfiguracao.Size = new System.Drawing.Size(280, 23);
             this.cmbConfiguracao.TabIndex = 1;
             this.cmbConfiguracao.SelectedIndexChanged += new System.EventHandler(this.cmbConfiguracao_SelectedIndexChanged);
-
             // 
             // lblStatusConfig
             // 
@@ -461,10 +516,9 @@
             this.lblStatusConfig.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(52)))), ((int)(((byte)(73)))), ((int)(((byte)(94)))));
             this.lblStatusConfig.Location = new System.Drawing.Point(390, 8);
             this.lblStatusConfig.Name = "lblStatusConfig";
-            this.lblStatusConfig.Size = new System.Drawing.Size(200, 13);
+            this.lblStatusConfig.Size = new System.Drawing.Size(197, 13);
             this.lblStatusConfig.TabIndex = 2;
             this.lblStatusConfig.Text = "⚠️ Nenhuma configuração carregada";
-
             // 
             // FormPrincipal
             // 
@@ -474,7 +528,7 @@
             this.ClientSize = new System.Drawing.Size(887, 589);
             this.Controls.Add(this.dgvProdutos);
             this.Controls.Add(this.panelTop);
-            this.Controls.Add(this.panelConfiguracao);  // ⭐ NOVO
+            this.Controls.Add(this.panelConfiguracao);
             this.Controls.Add(this.panel2);
             this.Font = new System.Drawing.Font("Segoe UI", 9F);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
@@ -494,6 +548,7 @@
             this.panelConfiguracao.ResumeLayout(false);
             this.panelConfiguracao.PerformLayout();
             this.ResumeLayout(false);
+
         }
 
         private System.Windows.Forms.Label lblTitulo;
@@ -508,5 +563,12 @@
 
         // ⭐ NOVO: Painel de configuração
         private System.Windows.Forms.Panel panelConfiguracao;
+        private System.Windows.Forms.ComboBox cmbBuscaReferencia;
+        private System.Windows.Forms.Label label3;
+        private System.Windows.Forms.ComboBox cmbBuscaNome;
+        private System.Windows.Forms.Label label2;
+        private System.Windows.Forms.ComboBox cmbBuscaCodigo;
+        private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.Button BtnAdicionar2;
     }
 }
