@@ -74,12 +74,12 @@
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.panel2 = new System.Windows.Forms.Panel();
             this.panelConfiguracao = new System.Windows.Forms.Panel();
+            this.label4 = new System.Windows.Forms.Label();
+            this.cmbTemplates = new System.Windows.Forms.ComboBox();
             this.pictureBox2 = new System.Windows.Forms.PictureBox();
             this.lblConfiguracao = new System.Windows.Forms.Label();
             this.cmbConfiguracao = new System.Windows.Forms.ComboBox();
             this.lblStatusConfig = new System.Windows.Forms.Label();
-            this.cmbTemplates = new System.Windows.Forms.ComboBox();
-            this.label4 = new System.Windows.Forms.Label();
             this.groupProduto.SuspendLayout();
             this.panel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numQtd)).BeginInit();
@@ -421,7 +421,7 @@
             this.btnConfigPapel.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnConfigPapel.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
             this.btnConfigPapel.ForeColor = System.Drawing.Color.Black;
-            this.btnConfigPapel.Location = new System.Drawing.Point(559, 45);
+            this.btnConfigPapel.Location = new System.Drawing.Point(366, 45);
             this.btnConfigPapel.Name = "btnConfigPapel";
             this.btnConfigPapel.Size = new System.Drawing.Size(150, 30);
             this.btnConfigPapel.TabIndex = 10;
@@ -442,6 +442,7 @@
             this.btnCarregarTemplate.TabIndex = 9;
             this.btnCarregarTemplate.Text = "📂 Carregar Template";
             this.btnCarregarTemplate.UseVisualStyleBackColor = false;
+            this.btnCarregarTemplate.Visible = false;
             this.btnCarregarTemplate.Click += new System.EventHandler(this.btnCarregarTemplate_Click);
             // 
             // btnBuscarMercadoria
@@ -451,7 +452,7 @@
             this.btnBuscarMercadoria.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnBuscarMercadoria.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
             this.btnBuscarMercadoria.ForeColor = System.Drawing.Color.Black;
-            this.btnBuscarMercadoria.Location = new System.Drawing.Point(370, 45);
+            this.btnBuscarMercadoria.Location = new System.Drawing.Point(529, 45);
             this.btnBuscarMercadoria.Name = "btnBuscarMercadoria";
             this.btnBuscarMercadoria.Size = new System.Drawing.Size(180, 30);
             this.btnBuscarMercadoria.TabIndex = 3;
@@ -494,6 +495,25 @@
             this.panelConfiguracao.Name = "panelConfiguracao";
             this.panelConfiguracao.Size = new System.Drawing.Size(860, 54);
             this.panelConfiguracao.TabIndex = 4;
+            // 
+            // label4
+            // 
+            this.label4.AutoSize = true;
+            this.label4.Location = new System.Drawing.Point(418, 8);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(59, 15);
+            this.label4.TabIndex = 5;
+            this.label4.Text = "Template:";
+            // 
+            // cmbTemplates
+            // 
+            this.cmbTemplates.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cmbTemplates.Font = new System.Drawing.Font("Segoe UI", 9F);
+            this.cmbTemplates.FormattingEnabled = true;
+            this.cmbTemplates.Location = new System.Drawing.Point(483, 5);
+            this.cmbTemplates.Name = "cmbTemplates";
+            this.cmbTemplates.Size = new System.Drawing.Size(280, 23);
+            this.cmbTemplates.TabIndex = 4;
             // 
             // pictureBox2
             // 
@@ -538,25 +558,6 @@
             this.lblStatusConfig.Size = new System.Drawing.Size(197, 13);
             this.lblStatusConfig.TabIndex = 2;
             this.lblStatusConfig.Text = "⚠️ Nenhuma configuração carregada";
-            // 
-            // cmbTemplates
-            // 
-            this.cmbTemplates.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.cmbTemplates.Font = new System.Drawing.Font("Segoe UI", 9F);
-            this.cmbTemplates.FormattingEnabled = true;
-            this.cmbTemplates.Location = new System.Drawing.Point(483, 5);
-            this.cmbTemplates.Name = "cmbTemplates";
-            this.cmbTemplates.Size = new System.Drawing.Size(280, 23);
-            this.cmbTemplates.TabIndex = 4;
-            // 
-            // label4
-            // 
-            this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(418, 8);
-            this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(59, 15);
-            this.label4.TabIndex = 5;
-            this.label4.Text = "Template:";
             // 
             // FormPrincipal
             // 

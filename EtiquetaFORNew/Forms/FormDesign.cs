@@ -32,6 +32,8 @@ namespace EtiquetaFORNew
             this.KeyPreview = true; // Permite que o Form "escute" o teclado
             this.KeyDown += FormDesigner_KeyDown; // Liga o evento de pressionar tecla
 
+            ConfigurarLimitesNumericUpDown();
+
             CarregarConfiguracoes();
             AtualizarListaElementos();
 
@@ -64,12 +66,60 @@ namespace EtiquetaFORNew
 
         private void AtualizarTamanhoCanvas()
         {
-            if (numLargura == null || numAltura == null || panelCanvas == null) return;
+            if (numLargura == null || numAltura == null || panelCanvas == null)
+                return;
+
+            // ⭐ Validação de dimensões mínimas
+            decimal larguraMinima = 5M;
+            decimal alturaMinima = 5M;
+
+            if (numLargura.Value < larguraMinima)
+            {
+                numLargura.Value = larguraMinima;
+                MessageBox.Show(
+                    $"A largura mínima permitida é {larguraMinima}mm.",
+                    "Atenção",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Warning
+                );
+                return;
+            }
+
+            if (numAltura.Value < alturaMinima)
+            {
+                numAltura.Value = alturaMinima;
+                MessageBox.Show(
+                    $"A altura mínima permitida é {alturaMinima}mm.",
+                    "Atenção",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Warning
+                );
+                return;
+            }
 
             template.Largura = (float)numLargura.Value;
             template.Altura = (float)numAltura.Value;
 
-            panelCanvas.Size = new Size((int)(template.Largura * escala), (int)(template.Altura * escala));
+            // ⭐ Ajusta a escala dinamicamente para etiquetas muito pequenas
+            // Para etiquetas menores que 30mm, aumenta a escala para visualização
+            if (template.Largura < 30 || template.Altura < 30)
+            {
+                escala = 8.0f; // Escala maior para etiquetas pequenas
+            }
+            else if (template.Largura < 60 || template.Altura < 60)
+            {
+                escala = 6.0f; // Escala média
+            }
+            else
+            {
+                escala = 4.0f; // Escala padrão
+            }
+
+            panelCanvas.Size = new Size(
+                (int)(template.Largura * escala),
+                (int)(template.Altura * escala)
+            );
+
             panelCanvas.Invalidate();
         }
 
@@ -118,17 +168,32 @@ namespace EtiquetaFORNew
                 using (Graphics g = panelCanvas.CreateGraphics())
                 {
                     SizeF tamanhoTexto = g.MeasureString(elemento.Conteudo, elemento.Fonte);
-                    int largura = Math.Min((int)(tamanhoTexto.Width / escala) + 2, (int)template.Largura - 10);
-                    int altura = Math.Min((int)(tamanhoTexto.Height / escala) + 2, (int)template.Altura - 10);
-                    elemento.Bounds = new Rectangle(5, 5, largura, altura);
+
+                    // ⭐ Ajusta o tamanho inicial baseado na etiqueta
+                    int largura = Math.Min(
+                        (int)(tamanhoTexto.Width / escala) + 2,
+                        (int)template.Largura - 2
+                    );
+                    int altura = Math.Min(
+                        (int)(tamanhoTexto.Height / escala) + 2,
+                        (int)template.Altura - 2
+                    );
+
+                    elemento.Bounds = new Rectangle(1, 1, Math.Max(3, largura), Math.Max(2, altura));
                 }
             }
             else if (tipo == TipoElemento.CodigoBarras)
             {
-                elemento.Conteudo = "Codigo";
-                int largura = Math.Min(40, (int)template.Largura - 10);
-                int altura = Math.Min(15, (int)template.Altura - 10);
-                elemento.Bounds = new Rectangle(5, 5, largura, altura);
+                elemento.Conteudo = "CodFabricante";
+
+                // ⭐ Para etiquetas pequenas, ajusta proporcionalmente
+                int largura = (int)(template.Largura * 0.8f);
+                int altura = (int)(template.Altura * 0.4f);
+
+                largura = Math.Max(10, Math.Min(largura, (int)template.Largura - 2));
+                altura = Math.Max(5, Math.Min(altura, (int)template.Altura - 2));
+
+                elemento.Bounds = new Rectangle(1, 1, largura, altura);
             }
 
             template.Elementos.Add(elemento);
@@ -142,7 +207,7 @@ namespace EtiquetaFORNew
             {
                 Tipo = TipoElemento.Campo,
                 Conteudo = campo,
-                Fonte = new Font("Arial", 10),
+                Fonte = new Font("Arial", 8), // ⭐ Fonte menor para etiquetas pequenas
                 Cor = Color.Black
             };
 
@@ -150,9 +215,17 @@ namespace EtiquetaFORNew
             using (Graphics g = panelCanvas.CreateGraphics())
             {
                 SizeF tamanhoTexto = g.MeasureString(textoExemplo, elemento.Fonte);
-                int largura = Math.Min((int)(tamanhoTexto.Width / escala) + 2, (int)template.Largura - 10);
-                int altura = Math.Min((int)(tamanhoTexto.Height / escala) + 2, (int)template.Altura - 10);
-                elemento.Bounds = new Rectangle(5, 5, largura, altura);
+
+                int largura = Math.Min(
+                    (int)(tamanhoTexto.Width / escala) + 2,
+                    (int)template.Largura - 2
+                );
+                int altura = Math.Min(
+                    (int)(tamanhoTexto.Height / escala) + 2,
+                    (int)template.Altura - 2
+                );
+
+                elemento.Bounds = new Rectangle(1, 1, Math.Max(3, largura), Math.Max(2, altura));
             }
 
             template.Elementos.Add(elemento);
@@ -196,10 +269,28 @@ namespace EtiquetaFORNew
         {
             switch (cmbPresets.SelectedIndex)
             {
-                case 1: numLargura.Value = 50; numAltura.Value = 30; break;
-                case 2: numLargura.Value = 60; numAltura.Value = 40; break;
-                case 3: numLargura.Value = 70; numAltura.Value = 30; break;
-                case 4: numLargura.Value = 100; numAltura.Value = 50; break;
+                case 0: // Personalizado
+                    break;
+                case 1: // Etiqueta Pequena (Joias)
+                    numLargura.Value = 20M;
+                    numAltura.Value = 8M;
+                    break;
+                case 2: // Etiqueta Média (Gondola)
+                    numLargura.Value = 50M;
+                    numAltura.Value = 30M;
+                    break;
+                case 3: // Etiqueta Grande
+                    numLargura.Value = 60M;
+                    numAltura.Value = 40M;
+                    break;
+                case 4: // Etiqueta Prateleira
+                    numLargura.Value = 70M;
+                    numAltura.Value = 30M;
+                    break;
+                case 5: // Etiqueta A6
+                    numLargura.Value = 100M;
+                    numAltura.Value = 50M;
+                    break;
             }
         }
 
@@ -448,7 +539,21 @@ namespace EtiquetaFORNew
                     break;
 
                 case TipoElemento.CodigoBarras:
-                    string codigoBarras = produto?.Codigo ?? "000000000";
+                    // ✅ CORREÇÃO: Usa ObterValorCampo, que retorna o placeholder "[CodFabricante]" 
+                    // no designer (onde 'produto' é null) e o valor real na impressão.
+                    string codigoBarras;
+
+                    if (produto == null)
+                    {
+                        // No designer, exibe o placeholder (Ex: [CodFabricante])
+                        codigoBarras = ObterValorCampo(elem.Conteudo, null);
+                    }
+                    else
+                    {
+                        // Na impressão, exibe o valor real
+                        codigoBarras = ObterValorCampo(elem.Conteudo, produto);
+                    }
+
                     DesenharCodigoBarras(g, codigoBarras, bounds);
                     break;
 
@@ -480,6 +585,7 @@ namespace EtiquetaFORNew
                 case "Nome": return produto.Nome;
                 case "Codigo": return produto.Codigo;
                 case "Preco": return produto.Preco.ToString("C2");
+                case "CodFabricante": return produto.CodFabricante;
                 default: return "";
             }
         }
@@ -897,6 +1003,26 @@ namespace EtiquetaFORNew
             // Re-renderiza o canvas
             panelCanvas.Invalidate();
         }
+        private void ConfigurarLimitesNumericUpDown()
+        {
+            // ⭐ LARGURA
+            numLargura.Minimum = 5M;      // Mínimo: 5mm (etiquetas muito pequenas)
+            numLargura.Maximum = 500M;    // Máximo: 500mm (folhas grandes)
+            numLargura.DecimalPlaces = 1; // Permite 0.5mm de precisão
+            numLargura.Increment = 1M;    // Incremento de 1mm
+
+            // ⭐ ALTURA - CORREÇÃO CRÍTICA PARA ETIQUETAS PEQUENAS
+            numAltura.Minimum = 5M;       // Mínimo: 5mm (etiquetas de joias podem ter 8-10mm)
+            numAltura.Maximum = 500M;     // Máximo: 500mm
+            numAltura.DecimalPlaces = 1;  // Permite 0.5mm de precisão
+            numAltura.Increment = 1M;     // Incremento de 1mm
+
+            // Se você quiser permitir etiquetas ainda menores (3mm), use:
+            // numAltura.Minimum = 3M;
+            // numLargura.Minimum = 3M;
+        }
+
+
         private void FormDesigner_KeyDown(object sender, KeyEventArgs e)
         {
             // 1. Se nada estiver selecionado, não faz nada

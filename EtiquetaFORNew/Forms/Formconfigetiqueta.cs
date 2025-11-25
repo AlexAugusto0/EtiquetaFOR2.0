@@ -106,7 +106,7 @@ namespace EtiquetaFORNew
 
         private void CarregarConfiguracoes()
         {
-            // Carrega valores na interface
+            // ⭐ Carrega valores na interface
             txtNomeEtiqueta.Text = configuracao.NomeEtiqueta;
 
             // Carrega impressoras disponíveis
@@ -119,54 +119,52 @@ namespace EtiquetaFORNew
             // Carrega tipos de papel da impressora selecionada
             CarregarTiposPapelDaImpressora();
 
-            bool papelEncontrado = false; // Flag para rastrear se um papel foi selecionado
+            // ⭐ CORREÇÃO: Busca e seleciona o papel salvo CORRETAMENTE
+            bool papelEncontrado = false;
 
             if (!string.IsNullOrEmpty(configuracao.PapelPadrao))
             {
-                // Busca o PaperSizeItem cuja DisplayText corresponda ao PapelPadrao salvo
-                var itemSelecionar = cmbPapel.Items
-                    .Cast<object>()
-                    .Where(item => item is PaperSizeItem)
-                    .Cast<PaperSizeItem>()
-                    .FirstOrDefault(psi => psi.DisplayText == configuracao.PapelPadrao);
-
-                if (itemSelecionar != null)
+                // Percorre os itens do ComboBox
+                for (int i = 0; i < cmbPapel.Items.Count; i++)
                 {
-                    cmbPapel.SelectedItem = itemSelecionar;
-                    // ❌ REMOVIDO: papelSelecionado = itemSelecionar.PaperSize; (A AtualizarConfiguracao cuidará disso)
-                    papelEncontrado = true;
+                    if (cmbPapel.Items[i] is PaperSizeItem psi)
+                    {
+                        // Compara pelo DisplayText (que contém o nome completo)
+                        if (psi.DisplayText.Equals(configuracao.PapelPadrao, StringComparison.OrdinalIgnoreCase))
+                        {
+                            cmbPapel.SelectedIndex = i;
+                            papelSelecionado = psi.PaperSize;
+                            papelEncontrado = true;
+                            break;
+                        }
+                    }
                 }
             }
 
-            // Se não encontrou o papel salvo OU não houve seleção, e a lista tem itens,
-            // selecione o primeiro. (Essa lógica substitui os dois blocos 'else if' originais)
+            // Se não encontrou, seleciona o primeiro
             if (!papelEncontrado && cmbPapel.Items.Count > 0)
             {
                 cmbPapel.SelectedIndex = 0;
             }
 
-            // ⭐ CORREÇÃO CRÍTICA: Chamada ÚNICA para garantir que a variável 'papelSelecionado'
-            // e 'configuracao.PapelPadrao' estejam sincronizadas com o item selecionado (salvo ou default).
-            if (cmbPapel.SelectedItem != null)
-            {
-                AtualizarConfiguracao();
-            }
-
-            // Dimensões da etiqueta
+            // ⭐ Dimensões da etiqueta
             numLargura.Value = (decimal)configuracao.LarguraEtiqueta;
             numAltura.Value = (decimal)configuracao.AlturaEtiqueta;
 
-            // Layout
+            // ⭐ Layout
             numColunas.Value = configuracao.NumColunas;
             numLinhas.Value = configuracao.NumLinhas;
             numEspacamentoColunas.Value = (decimal)configuracao.EspacamentoColunas;
             numEspacamentoLinhas.Value = (decimal)configuracao.EspacamentoLinhas;
 
-            // Margens
+            // ⭐ Margens
             numMargemSuperior.Value = (decimal)configuracao.MargemSuperior;
             numMargemInferior.Value = (decimal)configuracao.MargemInferior;
             numMargemEsquerda.Value = (decimal)configuracao.MargemEsquerda;
             numMargemDireita.Value = (decimal)configuracao.MargemDireita;
+
+            // ⭐ Atualiza o preview
+            AtualizarPreview();
         }
 
         private void CarregarImpressoras()
@@ -487,38 +485,48 @@ namespace EtiquetaFORNew
 
                     if (resultado == DialogResult.No)
                     {
-                        return; // Impede o salvamento e o fechamento
+                        return;
                     }
                 }
-            } // FIM DO BLOCO DE VALIDAÇÃO DE PAPEL
-
-            // ⭐ CORREÇÃO ESTRUTURAL: Esta lógica é executada APÓS a validação (se retornou, não chega aqui)
-
-            // Pergunta se deseja salvar como modelo de papel
-            if (MessageBox.Show("Deseja salvar a configuração atual como um modelo de papel?", "Salvar Modelo",
-                        MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
-            {
-                FormNomeTemplate formNome = new FormNomeTemplate();
-                if (formNome.ShowDialog() == DialogResult.OK)
-                {
-                    // ⭐ CORREÇÃO CRÍTICA AQUI:
-                    // Define o NomeEtiqueta da configuração principal com o nome do template.
-                    configuracao.NomeEtiqueta = formNome.NomeTemplate;
-
-                    // Salva o novo modelo de papel na lista (modelos_papel.xml)
-                    SalvarConfiguracaoPapelModelo(formNome.NomeTemplate);
-
-                    MessageBox.Show($"Modelo de papel '{formNome.NomeTemplate}' salvo com sucesso!", "Sucesso", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                }
-                // Se o usuário clicar em 'Não' no FormNomeTemplate, a lógica continua abaixo, 
-                // mas a configuração principal (configuracoes.xml) será salva sem um novo nome de modelo.
             }
 
-            // ⭐ Salva a configuração ATIVA (configuracoes.xml).
-            // Se um novo nome foi atribuído acima, ele será salvo aqui.
+            // ⭐ CORREÇÃO: Pergunta se deseja salvar como modelo ANTES de salvar
+            bool salvouComoModelo = false;
+
+            if (MessageBox.Show(
+                "Deseja salvar esta configuração como um modelo reutilizável?\n\n" +
+                "• SIM = Salva como modelo com nome personalizado\n" +
+                "• NÃO = Apenas aplica as configurações (não salva modelo)",
+                "Salvar Modelo",
+                MessageBoxButtons.YesNo,
+                MessageBoxIcon.Question) == DialogResult.Yes)
+            {
+                using (FormNomeTemplate formNome = new FormNomeTemplate())
+                {
+                    if (formNome.ShowDialog() == DialogResult.OK)
+                    {
+                        // ⭐ Define o nome da etiqueta
+                        configuracao.NomeEtiqueta = formNome.NomeTemplate;
+
+                        // ⭐ Salva como modelo de papel
+                        SalvarConfiguracaoPapelModelo(formNome.NomeTemplate);
+
+                        salvouComoModelo = true;
+
+                        MessageBox.Show(
+                            $"Modelo '{formNome.NomeTemplate}' salvo com sucesso!",
+                            "Sucesso",
+                            MessageBoxButtons.OK,
+                            MessageBoxIcon.Information
+                        );
+                    }
+                }
+            }
+
+            // ⭐ SEMPRE salva como configuração ativa (última usada)
             SalvarConfiguracao();
 
-            // Fecha o formulário com sucesso
+            // ⭐ Fecha o formulário com sucesso
             this.DialogResult = DialogResult.OK;
             this.Close();
         }
@@ -868,31 +876,41 @@ namespace EtiquetaFORNew
         {
             try
             {
+                // 1. Aplica os valores ao objeto de configuração (ConfiguracaoEtiqueta)
                 configuracao.NomeEtiqueta = papel.NomeEtiqueta;
                 configuracao.NumColunas = papel.NumColunas;
                 configuracao.NumLinhas = papel.NumLinhas;
+                configuracao.LarguraEtiqueta = papel.Largura;
+                configuracao.AlturaEtiqueta = papel.Altura;
                 configuracao.EspacamentoColunas = papel.EspacamentoColunas;
                 configuracao.EspacamentoLinhas = papel.EspacamentoLinhas;
                 configuracao.MargemSuperior = papel.MargemSuperior;
                 configuracao.MargemInferior = papel.MargemInferior;
                 configuracao.MargemEsquerda = papel.MargemEsquerda;
                 configuracao.MargemDireita = papel.MargemDireita;
+                configuracao.PapelPadrao = papel.NomePapel;
 
-                // Atualiza UI
-                txtNomeEtiqueta.Text = papel.NomeEtiqueta;
-                numColunas.Value = papel.NumColunas;
-                numLinhas.Value = papel.NumLinhas;
-                numEspacamentoColunas.Value = (decimal)papel.EspacamentoColunas;
-                numEspacamentoLinhas.Value = (decimal)papel.EspacamentoLinhas;
-                numMargemSuperior.Value = (decimal)papel.MargemSuperior;
-                numMargemInferior.Value = (decimal)papel.MargemInferior;
-                numMargemEsquerda.Value = (decimal)papel.MargemEsquerda;
-                numMargemDireita.Value = (decimal)papel.MargemDireita;
+                // ⭐ CORREÇÃO 4: Atualizar a UI (NumericUpDowns e TextBoxes) com os novos valores
+                txtNomeEtiqueta.Text = configuracao.NomeEtiqueta;
+                numLargura.Value = (decimal)configuracao.LarguraEtiqueta;
+                numAltura.Value = (decimal)configuracao.AlturaEtiqueta;
+                numColunas.Value = configuracao.NumColunas;
+                numLinhas.Value = configuracao.NumLinhas;
+                numEspacamentoColunas.Value = (decimal)configuracao.EspacamentoColunas;
+                numEspacamentoLinhas.Value = (decimal)configuracao.EspacamentoLinhas;
+                numMargemSuperior.Value = (decimal)configuracao.MargemSuperior;
+                numMargemInferior.Value = (decimal)configuracao.MargemInferior;
+                numMargemEsquerda.Value = (decimal)configuracao.MargemEsquerda;
+                numMargemDireita.Value = (decimal)configuracao.MargemDireita;
+
+                // AtualizarPreview é chamado e forçará o recálculo do layout visual
+                AtualizarPreview();
+
+                MessageBox.Show($"Modelo de papel '{papel.NomePapel}' carregado.", "Sucesso", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Erro ao carregar configuração:\n{ex.Message}",
-                    "Erro", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show($"Erro ao carregar modelo de papel: {ex.Message}", "Erro", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
@@ -929,22 +947,12 @@ namespace EtiquetaFORNew
         /// </summary>
         private void SalvarConfiguracao()
         {
-            //try
-            //{
-            //    XmlSerializer serializer = new XmlSerializer(typeof(ConfiguracaoEtiqueta));
-            //    using (TextWriter writer = new StreamWriter(CAMINHO_CONFIGURACOES))
-            //    {
-            //        serializer.Serialize(writer, configuracao);
-            //    }
-            //}
-            //catch (Exception ex)
-            //{
-            //    // Erro ao salvar pode ser ignorado ou logado
-            //    MessageBox.Show($"Erro ao salvar configuração: {ex.Message}", "Erro", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            //}
             try
             {
-                // Garantir que o diretório exista (se CAMINHO_CONFIGURACOES apontar para um arquivo)
+                // ⭐ Atualiza a configuração com os valores atuais dos controles
+                AtualizarConfiguracao();
+
+                // Garantir que o diretório exista
                 string diretorio = Path.GetDirectoryName(CAMINHO_CONFIGURACOES);
                 if (!string.IsNullOrEmpty(diretorio))
                 {
@@ -960,39 +968,57 @@ namespace EtiquetaFORNew
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Erro ao salvar configurações principais: {ex.Message}",
-                                "Erro de Salvamento", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show(
+                    $"Erro ao salvar configuração: {ex.Message}",
+                    "Erro de Salvamento",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Error
+                );
             }
         }
         private void SalvarConfiguracaoPapelModelo(string nomeTemplate)
         {
-            // 1. Carregar modelos existentes
-            List<ConfiguracaoPapel> modelos = CarregarModelosPapelSalvos();
-
-            // 2. Criar novo modelo com base na configuração 'configuracao' atual
-            ConfiguracaoPapel novoModelo = new ConfiguracaoPapel
+            try
             {
-                NomePapel = nomeTemplate, // Nome fornecido pelo usuário
-                NomeEtiqueta = configuracao.NomeEtiqueta,
-                Largura = configuracao.LarguraEtiqueta,
-                Altura = configuracao.AlturaEtiqueta,
-                NumColunas = configuracao.NumColunas,
-                NumLinhas = configuracao.NumLinhas,
-                EspacamentoColunas = configuracao.EspacamentoColunas,
-                EspacamentoLinhas = configuracao.EspacamentoLinhas,
-                MargemSuperior = configuracao.MargemSuperior,
-                MargemInferior = configuracao.MargemInferior,
-                MargemEsquerda = configuracao.MargemEsquerda,
-                MargemDireita = configuracao.MargemDireita,
-                DataCriacao = DateTime.Now
-            };
+                // 1. Carrega modelos existentes
+                List<ConfiguracaoPapel> modelos = CarregarModelosPapelSalvos();
 
+                // 2. ⭐ Remove modelo com mesmo nome (se existir)
+                modelos.RemoveAll(m => m.NomePapel.Equals(nomeTemplate, StringComparison.OrdinalIgnoreCase));
 
-            // 3. Adicionar o novo modelo à lista
-            modelos.Add(novoModelo);
+                // 3. Criar novo modelo com base na configuração atual
+                ConfiguracaoPapel novoModelo = new ConfiguracaoPapel
+                {
+                    NomePapel = nomeTemplate,
+                    NomeEtiqueta = configuracao.NomeEtiqueta,
+                    Largura = configuracao.LarguraEtiqueta,
+                    Altura = configuracao.AlturaEtiqueta,
+                    NumColunas = configuracao.NumColunas,
+                    NumLinhas = configuracao.NumLinhas,
+                    EspacamentoColunas = configuracao.EspacamentoColunas,
+                    EspacamentoLinhas = configuracao.EspacamentoLinhas,
+                    MargemSuperior = configuracao.MargemSuperior,
+                    MargemInferior = configuracao.MargemInferior,
+                    MargemEsquerda = configuracao.MargemEsquerda,
+                    MargemDireita = configuracao.MargemDireita,
+                    DataCriacao = DateTime.Now
+                };
 
-            // 4. Salvar a lista atualizada de volta no arquivo
-            SalvarListaModelosPapel(modelos);
+                // 4. Adiciona o novo modelo à lista
+                modelos.Add(novoModelo);
+
+                // 5. Salva a lista atualizada
+                SalvarListaModelosPapel(modelos);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(
+                    $"Erro ao salvar modelo: {ex.Message}",
+                    "Erro",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Error
+                );
+            }
         }
         private void SalvarListaModelosPapel(List<ConfiguracaoPapel> modelos)
         {
@@ -1007,17 +1033,20 @@ namespace EtiquetaFORNew
                 XmlSerializer serializer = new XmlSerializer(typeof(List<ConfiguracaoPapel>));
                 using (TextWriter writer = new StreamWriter(CAMINHO_MODELOS_PAPEL))
                 {
-                    // Serializa e salva a lista completa
                     serializer.Serialize(writer, modelos);
                 }
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Erro ao salvar modelos de papel: {ex.Message}",
-                                "Erro de Salvamento", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show(
+                    $"Erro ao salvar lista de modelos: {ex.Message}",
+                    "Erro de Salvamento",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Error
+                );
             }
         }
-        
+
 
         private List<ConfiguracaoPapel> CarregarModelosPapelSalvos()
         {

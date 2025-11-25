@@ -1,8 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Xml.Serialization;
+using System.Linq;
 using System.Windows.Forms;
+using System.Xml.Serialization;
 
 namespace EtiquetaFORNew
 {
@@ -17,7 +18,7 @@ namespace EtiquetaFORNew
 
         private static readonly string CAMINHO_LISTA_PAPEIS =
             Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
-                "EtiquetaFornew", "papeis_salvos.xml");
+                "EtiquetaFornew", "modelos_papel.xml");
 
         /// <summary>
         /// Carrega a configuração padrão (última usada)
@@ -157,5 +158,113 @@ namespace EtiquetaFORNew
                 MargemDireita = 0
             };
         }
+        private static bool SalvarTodasConfiguracoes(List<ConfiguracaoPapel> papeis)
+        {
+            try
+            {
+                string diretorio = Path.GetDirectoryName(CAMINHO_LISTA_PAPEIS);
+                if (!Directory.Exists(diretorio))
+                {
+                    Directory.CreateDirectory(diretorio);
+                }
+
+                XmlSerializer serializer = new XmlSerializer(typeof(List<ConfiguracaoPapel>));
+                using (StreamWriter writer = new StreamWriter(CAMINHO_LISTA_PAPEIS))
+                {
+                    serializer.Serialize(writer, papeis);
+                }
+                return true;
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Erro ao salvar lista de papéis: {ex.Message}");
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// Lista apenas os nomes de todas as configurações de papel salvas.
+        /// </summary>
+        public static List<string> ListarNomesConfiguracoes()
+        {
+            // Usa o CarregarTodasConfiguracoes existente para obter a lista completa
+            return CarregarTodasConfiguracoes()
+                .Select(c => c.NomePapel)
+                .ToList();
+        }
+
+        /// <summary>
+        /// Carrega uma configuração de papel específica pelo nome.
+        /// </summary>
+        public static ConfiguracaoPapel CarregarConfiguracao(string nomePapel)
+        {
+            return CarregarTodasConfiguracoes()
+                .FirstOrDefault(c => c.NomePapel.Equals(nomePapel, StringComparison.OrdinalIgnoreCase));
+        }
+
+        /// <summary>
+        /// Adiciona ou atualiza uma configuração de papel na lista salva.
+        /// </summary>
+        public static bool SalvarConfiguracao(ConfiguracaoPapel config)
+        {
+            List<ConfiguracaoPapel> papeis = CarregarTodasConfiguracoes();
+
+            int index = papeis.FindIndex(c => c.NomePapel.Equals(config.NomePapel, StringComparison.OrdinalIgnoreCase));
+
+            if (index >= 0)
+            {
+                papeis[index] = config; // Atualiza
+            }
+            else
+            {
+                config.DataCriacao = DateTime.Now; // Adiciona data de criação para novos
+                papeis.Add(config); // Adiciona
+            }
+
+            return SalvarTodasConfiguracoes(papeis);
+        }
+
+        /// <summary>
+        /// Exclui uma configuração de papel da lista salva.
+        /// </summary>
+        public static bool ExcluirConfiguracao(string nomePapel)
+        {
+            List<ConfiguracaoPapel> papeis = CarregarTodasConfiguracoes();
+            int countAntes = papeis.Count;
+
+            // Remove o item que corresponde ao nome
+            papeis.RemoveAll(c => c.NomePapel.Equals(nomePapel, StringComparison.OrdinalIgnoreCase));
+
+            if (papeis.Count < countAntes)
+            {
+                return SalvarTodasConfiguracoes(papeis);
+            }
+
+            return false;
+        }
+
+        /// <summary>
+        /// Converte ConfiguracaoEtiqueta para ConfiguracaoPapel
+        /// </summary>
+        public static ConfiguracaoPapel ConverterConfigParaPapel(ConfiguracaoEtiqueta config)
+        {
+            // A data de criação será definida no método SalvarConfiguracao se for uma nova.
+            return new ConfiguracaoPapel
+            {
+                NomeEtiqueta = config.NomeEtiqueta,
+                NomePapel = config.PapelPadrao, // Usa PapelPadrao como NomePapel na lista de configs
+                Largura = config.LarguraEtiqueta,
+                Altura = config.AlturaEtiqueta,
+                NumColunas = config.NumColunas,
+                NumLinhas = config.NumLinhas,
+                EspacamentoColunas = config.EspacamentoColunas,
+                EspacamentoLinhas = config.EspacamentoLinhas,
+                MargemSuperior = config.MargemSuperior,
+                MargemInferior = config.MargemInferior,
+                MargemEsquerda = config.MargemEsquerda,
+                MargemDireita = config.MargemDireita,
+            };
+        }
+
     }
 }

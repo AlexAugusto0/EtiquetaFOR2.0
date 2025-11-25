@@ -206,30 +206,22 @@ namespace EtiquetaFORNew
         /// </summary>
         private void cmbConfiguracao_SelectedIndexChanged(object sender, EventArgs e)
         {
-            if (cmbConfiguracao.SelectedItem == null)
-                return;
-
-            // Se o item selecionado for o Configuracao Atual, não faz nada (mantém configuracaoAtual)
-            if (cmbConfiguracao.SelectedItem.ToString() == "(Configuração Atual)")
+            if (cmbConfiguracao.SelectedItem is ConfiguracaoItem item)
             {
-                // Opcional: Recarrega a configuração ativa do disco se houver dúvida.
-                // configuracaoAtual = GerenciadorConfiguracoesEtiqueta.CarregarConfiguracaoAtiva();
-                return;
-            }
+                // Verifica se a configuração realmente mudou
+                if (configuracaoAtual != item.Configuracao)
+                {
+                    configuracaoAtual = item.Configuracao;
 
-            // Se o item selecionado for um modelo de papel
-            if (cmbConfiguracao.SelectedItem is ConfiguracaoPapel modeloSelecionado)
-            {
-                // 1. Carrega as dimensões do modelo de papel para a configuração atual
-                configuracaoAtual = GerenciadorConfiguracoesEtiqueta.ConverterPapelParaConfig(
-                    modeloSelecionado, configuracaoAtual?.ImpressoraPadrao
-                );
+                    // ATUALIZA DIMENSÕES DO TEMPLATE (CRUCIAL para refletir no designer/impressão)
+                    template.Largura = configuracaoAtual.LarguraEtiqueta;
+                    template.Altura = configuracaoAtual.AlturaEtiqueta;
 
-                // 2. Atualiza a tela principal com as novas dimensões e nome
-                //AtualizarCamposDaTelaComConfiguracaoAtual(); // (Assumindo que este método existe e atualiza os campos na tela)
+                    // Salva a nova configuração como padrão para a próxima inicialização
+                    GerenciadorConfiguracoesEtiqueta.SalvarConfiguracaoPadrao(configuracaoAtual);
 
-                // Opcional: Exibir info
-                // MessageBox.Show($"Modelo '{modeloSelecionado.NomePapel}' carregado.", "Sucesso");
+                    AtualizarStatusConfiguracao();
+                }
             }
         }
 
@@ -610,45 +602,6 @@ namespace EtiquetaFORNew
         // ========================================
         private void btnConfigPapel_Click(object sender, EventArgs e)
         {
-            //// Usa a configuração atual ou cria uma nova baseada no template
-            //var configParaEditar = configuracaoAtual ?? new ConfiguracaoEtiqueta
-            //{
-            //    NomeEtiqueta = "Etiqueta Atual",
-            //    ImpressoraPadrao = "BTP-L42(D)",
-            //    PapelPadrao = "Tamanho do papel-SoftcomGondBar",
-            //    LarguraEtiqueta = template.Largura,
-            //    AlturaEtiqueta = template.Altura,
-            //    NumColunas = 1,
-            //    NumLinhas = 1,
-            //    EspacamentoColunas = 0,
-            //    EspacamentoLinhas = 0,
-            //    MargemSuperior = 0,
-            //    MargemInferior = 0,
-            //    MargemEsquerda = 0,
-            //    MargemDireita = 0
-            //};
-
-            //var formConfig = new FormConfigEtiqueta(configParaEditar);
-            //if (formConfig.ShowDialog() == DialogResult.OK)
-            //{
-            //    configuracaoAtual = formConfig.Configuracao;
-
-            //    // Atualiza o template com as novas dimensões
-            //    template.Largura = configuracaoAtual.LarguraEtiqueta;
-            //    template.Altura = configuracaoAtual.AlturaEtiqueta;
-
-            //    // Salva como configuração padrão
-            //    GerenciadorConfiguracoesEtiqueta.SalvarConfiguracaoPadrao(configuracaoAtual);
-
-            //    // Atualiza a lista de configurações
-            //    AtualizarListaConfiguracoes();
-
-            //    MessageBox.Show($"✅ Configuração de etiqueta aplicada com sucesso!\n\n" +
-            //        $"📏 Dimensões: {configuracaoAtual.LarguraEtiqueta} x {configuracaoAtual.AlturaEtiqueta} mm\n" +
-            //        $"📐 Layout: {configuracaoAtual.NumColunas} coluna(s) x {configuracaoAtual.NumLinhas} linha(s)\n" +
-            //        $"🖨️ Impressora: {configuracaoAtual.ImpressoraPadrao}",
-            //        "Configuração Aplicada", MessageBoxButtons.OK, MessageBoxIcon.Information);
-            //}
             ConfiguracaoPapel papelParaAbrir = null;
 
             // 1. Abre o Menu de Configuração (NOVO ou CARREGAR)
@@ -661,9 +614,18 @@ namespace EtiquetaFORNew
 
                 if (escolha == DialogResult.Yes) // NOVO
                 {
-                    papelParaAbrir = GerenciadorConfiguracoesEtiqueta.ConverterConfigParaPapel(
-                        GerenciadorConfiguracoesEtiqueta.CarregarConfiguracaoPadrao()
-                    );
+                    // Cria nova configuração baseada na atual ou padrão
+                    var configBase = configuracaoAtual ?? new ConfiguracaoEtiqueta
+                    {
+                        NomeEtiqueta = "Nova Configuração",
+                        ImpressoraPadrao = "BTP-L42(D)",
+                        LarguraEtiqueta = 100,
+                        AlturaEtiqueta = 30,
+                        NumColunas = 1,
+                        NumLinhas = 1
+                    };
+
+                    papelParaAbrir = GerenciadorConfiguracoesEtiqueta.ConverterConfigParaPapel(configBase);
                     papelParaAbrir.NomePapel = "Nova Configuração";
                 }
                 else if (escolha == DialogResult.No) // CARREGAR
@@ -673,6 +635,7 @@ namespace EtiquetaFORNew
                         if (formListaConfig.ShowDialog(this) == DialogResult.OK)
                         {
                             string nomeConfig = formListaConfig.ConfiguracaoSelecionada;
+                            // Certifique-se de que CarregarConfiguracao retorna ConfiguracaoPapel ou trate o retorno.
                             papelParaAbrir = GerenciadorConfiguracoesEtiqueta.CarregarConfiguracao(nomeConfig);
                         }
                         else
@@ -681,32 +644,55 @@ namespace EtiquetaFORNew
                         }
                     }
                 }
-
             }
 
-            // 2. Abre o FormConfigEtiqueta (o editor)
+            // ⭐ PASSO 2 (CORREÇÃO): ABRIR FormConfigEtiqueta SE UMA CONFIGURAÇÃO FOI SELECIONADA/CRIADA
             if (papelParaAbrir != null)
             {
+                // Cria a Configuração Etiqueta para edição (FormConfigEtiqueta trabalha com ConfiguracaoEtiqueta)
+                // OBS: Você pode precisar de uma função para converter ConfiguracaoPapel de volta para ConfiguracaoEtiqueta
+                // ou adaptar FormConfigEtiqueta para receber ConfiguracaoPapel e carregar seus campos.
+
+                // Assumindo que você tem uma função para carregar ConfigEtiqueta baseada em ConfigPapel
+                // Usarei a configuração atual como base para a impressora.
                 ConfiguracaoEtiqueta configParaEditar = GerenciadorConfiguracoesEtiqueta.ConverterPapelParaConfig(
-                    papelParaAbrir, configuracaoAtual?.ImpressoraPadrao
-                );
+                    papelParaAbrir, configuracaoAtual?.ImpressoraPadrao ?? "BTP-L42(D)");
 
-                ConfiguracaoEtiqueta novaConfig = GerenciadorConfiguracoesEtiqueta.AbrirDialogoConfiguracao(this, configParaEditar);
-
-                if (novaConfig != null && novaConfig != configParaEditar)
+                using (var formConfig = new FormConfigEtiqueta(configParaEditar))
                 {
-                    // O FormConfigEtiqueta já salvou a nova configuração no XML e como padrão.
-                    configuracaoAtual = novaConfig;
+                    if (formConfig.ShowDialog() == DialogResult.OK)
+                    {
+                        // Configuração foi salva (verifiquei que formConfig.ShowDialog() == DialogResult.OK 
+                        // após o salvamento em FormConfigEtiqueta)
 
-                    // 3. ⭐ CORREÇÃO AQUI: Recarrega a lista do ComboBox chamando o método correto.
-                    CarregarComboboxModelos();
+                        configuracaoAtual = formConfig.Configuracao;
 
-                    // 4. Seleciona o item recém-salvo no ComboBox
-                    // Passamos o nome da etiqueta/modelo que acabamos de salvar
-                    SelecionarConfiguracaoNaLista(configuracaoAtual.NomeEtiqueta);
+                        // Atualiza o template com as novas dimensões
+                        template.Largura = configuracaoAtual.LarguraEtiqueta;
+                        template.Altura = configuracaoAtual.AlturaEtiqueta;
 
-                    MessageBox.Show("Configuração de papel salva e atualizada com sucesso!", "Sucesso",
-                                    MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        // Salva como configuração padrão (última usada)
+                        GerenciadorConfiguracoesEtiqueta.SalvarConfiguracaoPadrao(configuracaoAtual);
+
+                        // ⭐ CORREÇÃO 1: Atualiza a lista de configurações (Recarrega o cmbConfiguracao)
+                        AtualizarListaConfiguracoesAposSalvar();
+
+                        // Tenta selecionar a configuração que acabou de ser salva/aplicada no ComboBox
+                        if (!string.IsNullOrEmpty(configuracaoAtual.PapelPadrao))
+                        {
+                            // Se o seu método SelecionarConfiguracaoNaLista existir, use-o
+                            // Exemplo: SelecionarConfiguracaoNaLista(configuracaoAtual.PapelPadrao); 
+                            // Se não, AtualizarListaConfiguracoesAposSalvar já deve ter selecionado a padrão.
+                        }
+
+                        AtualizarStatusConfiguracao();
+
+                        MessageBox.Show($"✅ Configuração de etiqueta aplicada com sucesso!\n\n" +
+                            $"📏 Dimensões: {configuracaoAtual.LarguraEtiqueta} x {configuracaoAtual.AlturaEtiqueta} mm\n" +
+                            $"📐 Layout: {configuracaoAtual.NumColunas} coluna(s) x {configuracaoAtual.NumLinhas} linha(s)\n" +
+                            $"🖨️ Impressora: {configuracaoAtual.ImpressoraPadrao}",
+                            "Configuração Aplicada", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    }
                 }
             }
         }
@@ -1172,28 +1158,37 @@ namespace EtiquetaFORNew
         {
             if (string.IsNullOrEmpty(nomeConfiguracao))
             {
-                nomeConfiguracao = "(Configuração Atual)";
+                if (cmbConfiguracao.Items.Count > 0)
+                {
+                    cmbConfiguracao.SelectedIndex = 0;
+                }
+                return;
             }
 
+            // Percorre os itens do ComboBox
             for (int i = 0; i < cmbConfiguracao.Items.Count; i++)
             {
-                if (cmbConfiguracao.Items[i] is ConfiguracaoPapel papel)
+                var item = cmbConfiguracao.Items[i];
+
+                // Se for ConfiguracaoPapel, compara com NomePapel
+                if (item is ConfiguracaoPapel papel)
                 {
-                    if (papel.NomePapel.Equals(nomeConfiguracao, StringComparison.OrdinalIgnoreCase)) // Compara com NomePapel
+                    if (papel.NomePapel.Equals(nomeConfiguracao, StringComparison.OrdinalIgnoreCase))
                     {
                         cmbConfiguracao.SelectedIndex = i;
                         return;
                     }
                 }
-                else if (cmbConfiguracao.Items[i].ToString().Equals(nomeConfiguracao, StringComparison.OrdinalIgnoreCase))
+                // Se for string, compara diretamente
+                else if (item.ToString().Equals(nomeConfiguracao, StringComparison.OrdinalIgnoreCase))
                 {
                     cmbConfiguracao.SelectedIndex = i;
                     return;
                 }
             }
 
-            // Fallback
-            if (cmbConfiguracao.Items.Count > 0 && cmbConfiguracao.Items[0].ToString() == "(Configuração Atual)")
+            // Se não encontrou, seleciona "(Configuração Atual)"
+            if (cmbConfiguracao.Items.Count > 0)
             {
                 cmbConfiguracao.SelectedIndex = 0;
             }
@@ -1287,23 +1282,49 @@ namespace EtiquetaFORNew
 
         private void CarregarComboboxModelos()
         {
-            // 1. Carrega os modelos salvos
-            var modelos = CarregarModelosPapel();
+            // Bloqueia eventos temporariamente
+            cmbConfiguracao.SelectedIndexChanged -= cmbConfiguracao_SelectedIndexChanged;
 
-            // 2. Limpa e popula o ComboBox
-            cmbConfiguracao.Items.Clear();
-
-            // Adiciona a opção de CONFIGURAÇÃO ATUAL
-            cmbConfiguracao.Items.Add("(Configuração Atual)");
-
-            // Adiciona TODAS as configurações salvas do arquivo
-            foreach (var modelo in modelos)
+            try
             {
-                cmbConfiguracao.Items.Add(modelo);
-            }
+                // 1. Carrega os modelos salvos
+                var modelos = CarregarModelosPapel();
 
-            // 3. Chama a seleção
-            //SelecionarConfiguracaoNaLista(nomeParaSelecionar);
+                // 2. Limpa e popula o ComboBox
+                cmbConfiguracao.Items.Clear();
+
+                // 3. Adiciona a opção de CONFIGURAÇÃO ATUAL
+                cmbConfiguracao.Items.Add("(Configuração Atual)");
+
+                // 4. Adiciona TODAS as configurações salvas do arquivo
+                foreach (var modelo in modelos)
+                {
+                    cmbConfiguracao.Items.Add(modelo);
+                }
+
+                // 5. ⭐ Seleciona o item correspondente à configuração atual
+                if (configuracaoAtual != null && !string.IsNullOrEmpty(configuracaoAtual.NomeEtiqueta))
+                {
+                    SelecionarConfiguracaoNaLista(configuracaoAtual.NomeEtiqueta);
+                }
+                else
+                {
+                    // Se não houver configuração atual, seleciona o primeiro item
+                    if (cmbConfiguracao.Items.Count > 0)
+                    {
+                        cmbConfiguracao.SelectedIndex = 0;
+                    }
+                }
+            }
+            finally
+            {
+                // Reativa o evento
+                cmbConfiguracao.SelectedIndexChanged += cmbConfiguracao_SelectedIndexChanged;
+            }
+        }
+        public void AtualizarListaConfiguracoesAposSalvar()
+        {
+            CarregarComboboxModelos();
         }
 
 

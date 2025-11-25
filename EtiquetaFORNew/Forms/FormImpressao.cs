@@ -4,6 +4,9 @@ using System.Drawing;
 using System.Drawing.Printing;
 using System.Windows.Forms;
 using System.Linq; // Adicionado para uso potencial de LINQ
+using BarcodeStandard;
+using SkiaSharp;
+using System.IO;
 
 namespace EtiquetaFORNew
 {
@@ -413,6 +416,7 @@ namespace EtiquetaFORNew
                 case "Codigo": return produto.Codigo ?? "";
                 case "Preco": return produto.Preco.ToString("C2");
                 case "Quantidade": return produto.Quantidade.ToString();
+                case "CodFabricante": return produto.CodFabricante ?? "";
                 default: return "";
             }
         }
@@ -420,43 +424,82 @@ namespace EtiquetaFORNew
         // ... (Seu código original DesenharCodigoBarras)
         private void DesenharCodigoBarras(Graphics g, string codigo, RectangleF bounds)
         {
-            if (string.IsNullOrEmpty(codigo)) codigo = "0000000000";
+            string codigoLimpo = codigo.ToUpper().Trim();
 
-            string codigoLimpo = new string(Array.FindAll(codigo.ToCharArray(), char.IsDigit));
-            if (string.IsNullOrEmpty(codigoLimpo)) codigoLimpo = "0000000000";
-            if (codigoLimpo.Length < 8) codigoLimpo = codigoLimpo.PadLeft(8, '0');
-
-            // Estes cálculos usam a largura e altura de 'bounds', que estarão em MM na impressão.
-            float alturaBarras = bounds.Height * 0.70f;
-            float larguraBarra = bounds.Width / (codigoLimpo.Length * 2.2f);
-
-            float xPos = bounds.X;
-            for (int i = 0; i < codigoLimpo.Length; i++)
+            if (string.IsNullOrEmpty(codigoLimpo))
             {
-                int digito = int.Parse(codigoLimpo[i].ToString());
-                float larguraAtual = (digito % 2 == 0) ? larguraBarra * 1.6f : larguraBarra * 0.8f;
-
-                g.FillRectangle(Brushes.Black, xPos, bounds.Y, larguraAtual, alturaBarras);
-                xPos += larguraBarra * 2;
+                g.DrawString("[SEM CÓDIGO]", new Font("Arial", bounds.Height * 0.15f), Brushes.Gray, bounds);
+                return;
             }
 
-            // O tamanho da fonte aqui também é relativo ao bounds
-            using (Font fontBarcode = new Font("Consolas", bounds.Height * 0.12f, FontStyle.Regular))
+            try
             {
-                StringFormat sf = new StringFormat
+                Barcode b = new Barcode();
+
+                int largura = (int)Math.Round(bounds.Width);
+                int altura = (int)Math.Round(bounds.Height);
+
+                if (largura <= 1) largura = 10;
+                if (altura <= 1) altura = 10;
+
+                // 1. Configurações de Dimensão (DEFINIDAS COMO PROPRIEDADES)
+                b.Width = largura;
+                b.Height = altura;
+
+                // 2. Outras Configurações
+                b.IncludeLabel = true;
+                b.Alignment = AlignmentPositions.Center;
+
+                // 3. Configurações de Cor (CORRIGIDO PARA SKColors)
+                b.ForeColor = SKColors.Black;
+                b.BackColor = SKColors.White;
+
+                // 4. Gera o código de barras (USANDO O ENCODE DE 2 ARGUMENTOS)
+                using (SKImage skImage = b.Encode( // Retorna SKImage (Corrigido)
+                    BarcodeStandard.Type.Code128,
+                    codigoLimpo
+                ))
                 {
-                    Alignment = StringAlignment.Center,
-                    LineAlignment = StringAlignment.Near
-                };
+                    if (skImage == null)
+                    {
+                        throw new Exception("Falha ao gerar o SKImage do código de barras.");
+                    }
 
-                RectangleF areaTexto = new RectangleF(
-                    bounds.X,
-                    bounds.Y + alturaBarras,
-                    bounds.Width,
-                    bounds.Height - alturaBarras
-                );
+                    // 5. CONVERSÃO: SKImage -> SKData -> MemoryStream -> System.Drawing.Image (Corrigido)
+                    using (SKData skData = skImage.Encode(SKEncodedImageFormat.Png, 100))
+                    {
+                        if (skData == null)
+                        {
+                            throw new Exception("Falha ao codificar SKImage para SKData.");
+                        }
 
-                g.DrawString(codigo, fontBarcode, Brushes.Black, areaTexto, sf);
+                        using (System.IO.MemoryStream ms = new System.IO.MemoryStream())
+                        {
+                            skData.SaveTo(ms);
+                            ms.Seek(0, System.IO.SeekOrigin.Begin);
+
+                            using (System.Drawing.Image barcodeImage = System.Drawing.Image.FromStream(ms))
+                            {
+                                // 6. Desenha a imagem gerada
+                                g.DrawImage(barcodeImage, bounds);
+                            }
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                // Tratamento de erro robusto
+                using (Font fontErro = new Font("Arial", bounds.Height * 0.10f))
+                {
+                    StringFormat sf = new StringFormat
+                    {
+                        Alignment = StringAlignment.Center,
+                        LineAlignment = StringAlignment.Center
+                    };
+                    g.DrawString($"ERRO BARCODE: {codigoLimpo} - {ex.Message}",
+                                 fontErro, Brushes.Red, bounds, sf);
+                }
             }
         }
     }
