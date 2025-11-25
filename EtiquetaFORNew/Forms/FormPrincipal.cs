@@ -1,12 +1,15 @@
 ﻿using EtiquetaFORNew;
 using EtiquetaFORNew.Data;
+using EtiquetaFORNew.Forms;
 using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Drawing;
 using System.Drawing.Drawing2D;
+using System.IO;
 using System.Linq;
 using System.Windows.Forms;
+using System.Xml.Serialization;
 
 
 namespace EtiquetaFORNew
@@ -23,6 +26,14 @@ namespace EtiquetaFORNew
         private Timer timerBusca;
         private DataTable mercadorias;
 
+        private static readonly string CAMINHO_CONFIGURACOES =
+    Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
+        "EtiquetaFornew", "configuracoes.xml");
+
+        private static readonly string CAMINHO_MODELOS_PAPEL =
+    Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
+        "EtiquetaFornew", "modelos_papel.xml");
+
         public FormPrincipal()
         {
             InitializeComponent();
@@ -34,6 +45,11 @@ namespace EtiquetaFORNew
             cmbBuscaNome.KeyDown += ComboBoxBusca_KeyDown;
             cmbBuscaReferencia.KeyDown += ComboBoxBusca_KeyDown;
             cmbBuscaCodigo.KeyDown += ComboBoxBusca_KeyDown;
+            CarregarTemplatesDisponiveis();
+            CarregarConfiguracoesPapel();
+            configuracaoAtual = CarregarConfiguracaoAtual();
+            CarregarComboboxModelos();
+            CarregarModelosPapel();
         }
 
         private void FormPrincipal_Load(object sender, EventArgs e)
@@ -190,15 +206,30 @@ namespace EtiquetaFORNew
         /// </summary>
         private void cmbConfiguracao_SelectedIndexChanged(object sender, EventArgs e)
         {
-            if (cmbConfiguracao.SelectedItem is ConfiguracaoItem item)
+            if (cmbConfiguracao.SelectedItem == null)
+                return;
+
+            // Se o item selecionado for o Configuracao Atual, não faz nada (mantém configuracaoAtual)
+            if (cmbConfiguracao.SelectedItem.ToString() == "(Configuração Atual)")
             {
-                configuracaoAtual = item.Configuracao;
+                // Opcional: Recarrega a configuração ativa do disco se houver dúvida.
+                // configuracaoAtual = GerenciadorConfiguracoesEtiqueta.CarregarConfiguracaoAtiva();
+                return;
+            }
 
-                // Atualiza o template com as dimensões da configuração
-                template.Largura = item.Configuracao.LarguraEtiqueta;
-                template.Altura = item.Configuracao.AlturaEtiqueta;
+            // Se o item selecionado for um modelo de papel
+            if (cmbConfiguracao.SelectedItem is ConfiguracaoPapel modeloSelecionado)
+            {
+                // 1. Carrega as dimensões do modelo de papel para a configuração atual
+                configuracaoAtual = GerenciadorConfiguracoesEtiqueta.ConverterPapelParaConfig(
+                    modeloSelecionado, configuracaoAtual?.ImpressoraPadrao
+                );
 
-                AtualizarStatusConfiguracao();
+                // 2. Atualiza a tela principal com as novas dimensões e nome
+                //AtualizarCamposDaTelaComConfiguracaoAtual(); // (Assumindo que este método existe e atualiza os campos na tela)
+
+                // Opcional: Exibir info
+                // MessageBox.Show($"Modelo '{modeloSelecionado.NomePapel}' carregado.", "Sucesso");
             }
         }
 
@@ -279,19 +310,135 @@ namespace EtiquetaFORNew
 
         private void btnDesigner_Click(object sender, EventArgs e)
         {
-            var formDesigner = new FormDesigner(template);
-            if (formDesigner.ShowDialog() == DialogResult.OK)
+            //var formDesigner = new FormDesigner(template);
+            //if (formDesigner.ShowDialog() == DialogResult.OK)
+            //{
+            //    template = formDesigner.ObterTemplate();
+            //    MessageBox.Show("Template salvo com sucesso!", "Sucesso", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            //}
+            //1.Pergunta ao usuário a intenção
+            // Sim = Novo, Não = Carregar, Cancelar = Sair
+            // Pergunta ao usuário a intenção
+            // SIM = NOVO Template / NÃO = CARREGAR Existente / CANCEL = Sair
+
+            TemplateEtiqueta templateParaAbrir = null;
+            using (var formMenu = new EtiquetaFORNew.Forms.FormMenuDesigner())
             {
-                template = formDesigner.ObterTemplate();
-                MessageBox.Show("Template salvo com sucesso!", "Sucesso", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                // Abre o formulário e verifica o resultado (Yes, No, ou Cancel)
+                var escolha = formMenu.ShowDialog();
+
+                if (escolha == DialogResult.Cancel)
+                    return; // Usuário cancelou ou fechou a janela.
+
+                if (escolha == DialogResult.Yes) // Escolheu NOVO (BtnNovo_Click)
+                {
+                    // Cria um template padrão inicial (ajuste as dimensões)
+                    templateParaAbrir = new TemplateEtiqueta
+                    {
+                        Largura = 50,
+                        Altura = 30,
+                        Elementos = new List<ElementoEtiqueta>()
+                    };
+                }
+                else if (escolha == DialogResult.No) // Escolheu CARREGAR (btnCarregar_Click)
+                {
+                    // 1. Abre a tela de lista de templates
+                    using (var formLista = new FormListaTemplates())
+                    {
+                        if (formLista.ShowDialog() == DialogResult.OK)
+                        {
+                            string nomeTemplate = formLista.TemplateSelecionado;
+                            // Assumindo que TemplateManager.CarregarTemplate existe
+                            templateParaAbrir = TemplateManager.CarregarTemplate(nomeTemplate);
+                        }
+                        else
+                        {
+                            return; // Cancelou na lista de templates
+                        }
+                    }
+                }
             }
+
+            // Abre o Designer se um template foi preparado
+            if (templateParaAbrir != null)
+            {
+                var formDesigner = new FormDesigner(templateParaAbrir);
+
+                if (formDesigner.ShowDialog() == DialogResult.OK)
+                {
+                    // O FormDesigner salvou o template
+                    MessageBox.Show("Template salvo com sucesso!", "Sucesso", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                }
+            }
+
+
         }
 
         // ========================================
         // ⭐ MODIFICADO: IMPRIMIR COM CONFIGURAÇÃO
         // ========================================
+        //private void btnImprimir_Click(object sender, EventArgs e)
+        //{
+        //    var produtosSelecionados = ObterProdutosSelecionados();
+        //    if (produtosSelecionados.Count == 0)
+        //    {
+        //        MessageBox.Show("Selecione pelo menos um produto!", "Atenção", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+        //        return;
+        //    }
+
+        //    if (template.Elementos.Count == 0)
+        //    {
+        //        MessageBox.Show("Configure o template primeiro usando o Designer!", "Atenção", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+        //        return;
+        //    }
+
+        //    // ⭐ VERIFICA SE HÁ CONFIGURAÇÃO
+        //    if (configuracaoAtual == null)
+        //    {
+        //        var resultado = MessageBox.Show(
+        //            "Nenhuma configuração de impressão foi definida.\n\n" +
+        //            "Deseja configurar agora?",
+        //            "Configuração Necessária",
+        //            MessageBoxButtons.YesNo,
+        //            MessageBoxIcon.Question);
+
+        //        if (resultado == DialogResult.Yes)
+        //        {
+        //            btnConfigPapel_Click(sender, e);
+        //            return;
+        //        }
+        //        else
+        //        {
+        //            return;
+        //        }
+
+        //    }
+
+        //    //// ⭐ PASSA A CONFIGURAÇÃO PARA O FORM DE IMPRESSÃO
+        //    var formImpressao = new FormImpressao(produtosSelecionados, template, configuracaoAtual);
+        //    formImpressao.ShowDialog();
+        //}
+
         private void btnImprimir_Click(object sender, EventArgs e)
         {
+            // 1. OBTÉM O TEMPLATE SELECIONADO NA COMBOBOX (NOVA LÓGICA)
+            if (cmbTemplates.SelectedItem == null || cmbTemplates.SelectedItem.ToString().Contains("Nenhum Template"))
+            {
+                MessageBox.Show("Por favor, selecione um template de etiqueta para impressão.", "Atenção", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            // Carrega o template selecionado dinamicamente
+            string nomeTemplateSelecionado = cmbTemplates.SelectedItem.ToString();
+            TemplateEtiqueta templateAtual = TemplateManager.CarregarTemplate(nomeTemplateSelecionado);
+
+            if (templateAtual == null)
+            {
+                MessageBox.Show($"Falha ao carregar o template: {nomeTemplateSelecionado}", "Erro", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
+            // 2. OBTÉM OS PRODUTOS SELECIONADOS
             var produtosSelecionados = ObterProdutosSelecionados();
             if (produtosSelecionados.Count == 0)
             {
@@ -299,17 +446,19 @@ namespace EtiquetaFORNew
                 return;
             }
 
-            if (template.Elementos.Count == 0)
+            // 3. VALIDA TEMPLATE (AGORA USANDO templateAtual)
+            if (templateAtual.Elementos.Count == 0)
             {
-                MessageBox.Show("Configure o template primeiro usando o Designer!", "Atenção", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                MessageBox.Show("O template selecionado não possui elementos configurados. Configure-o primeiro usando o Designer!",
+                                "Atenção", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
 
-            // ⭐ VERIFICA SE HÁ CONFIGURAÇÃO
+            // 4. VERIFICA SE HÁ CONFIGURAÇÃO DE PAPEL (LÓGICA EXISTENTE)
             if (configuracaoAtual == null)
             {
                 var resultado = MessageBox.Show(
-                    "Nenhuma configuração de impressão foi definida.\n\n" +
+                    "Nenhuma configuração de impressão (papel/impressora) foi definida.\n\n" +
                     "Deseja configurar agora?",
                     "Configuração Necessária",
                     MessageBoxButtons.YesNo,
@@ -318,18 +467,23 @@ namespace EtiquetaFORNew
                 if (resultado == DialogResult.Yes)
                 {
                     btnConfigPapel_Click(sender, e);
+                    // Se o usuário configurar e salvar, o configuracaoAtual será definido. 
+                    // O botão btnConfigPapel_Click deve recarregar a tela para que o usuário clique em imprimir novamente.
                     return;
                 }
                 else
                 {
                     return;
                 }
-                
+
             }
 
-            //// ⭐ PASSA A CONFIGURAÇÃO PARA O FORM DE IMPRESSÃO
-            var formImpressao = new FormImpressao(produtosSelecionados, template, configuracaoAtual);
-            formImpressao.ShowDialog();
+            // 5. ABRE O FORM DE IMPRESSÃO
+            // Passa o template recém-carregado (templateAtual)
+            using (var formImpressao = new FormImpressao(produtosSelecionados, templateAtual, configuracaoAtual))
+            {
+                formImpressao.ShowDialog();
+            }
         }
 
         private void btnAdicionar_Click(object sender, EventArgs e)
@@ -456,44 +610,104 @@ namespace EtiquetaFORNew
         // ========================================
         private void btnConfigPapel_Click(object sender, EventArgs e)
         {
-            // Usa a configuração atual ou cria uma nova baseada no template
-            var configParaEditar = configuracaoAtual ?? new ConfiguracaoEtiqueta
+            //// Usa a configuração atual ou cria uma nova baseada no template
+            //var configParaEditar = configuracaoAtual ?? new ConfiguracaoEtiqueta
+            //{
+            //    NomeEtiqueta = "Etiqueta Atual",
+            //    ImpressoraPadrao = "BTP-L42(D)",
+            //    PapelPadrao = "Tamanho do papel-SoftcomGondBar",
+            //    LarguraEtiqueta = template.Largura,
+            //    AlturaEtiqueta = template.Altura,
+            //    NumColunas = 1,
+            //    NumLinhas = 1,
+            //    EspacamentoColunas = 0,
+            //    EspacamentoLinhas = 0,
+            //    MargemSuperior = 0,
+            //    MargemInferior = 0,
+            //    MargemEsquerda = 0,
+            //    MargemDireita = 0
+            //};
+
+            //var formConfig = new FormConfigEtiqueta(configParaEditar);
+            //if (formConfig.ShowDialog() == DialogResult.OK)
+            //{
+            //    configuracaoAtual = formConfig.Configuracao;
+
+            //    // Atualiza o template com as novas dimensões
+            //    template.Largura = configuracaoAtual.LarguraEtiqueta;
+            //    template.Altura = configuracaoAtual.AlturaEtiqueta;
+
+            //    // Salva como configuração padrão
+            //    GerenciadorConfiguracoesEtiqueta.SalvarConfiguracaoPadrao(configuracaoAtual);
+
+            //    // Atualiza a lista de configurações
+            //    AtualizarListaConfiguracoes();
+
+            //    MessageBox.Show($"✅ Configuração de etiqueta aplicada com sucesso!\n\n" +
+            //        $"📏 Dimensões: {configuracaoAtual.LarguraEtiqueta} x {configuracaoAtual.AlturaEtiqueta} mm\n" +
+            //        $"📐 Layout: {configuracaoAtual.NumColunas} coluna(s) x {configuracaoAtual.NumLinhas} linha(s)\n" +
+            //        $"🖨️ Impressora: {configuracaoAtual.ImpressoraPadrao}",
+            //        "Configuração Aplicada", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            //}
+            ConfiguracaoPapel papelParaAbrir = null;
+
+            // 1. Abre o Menu de Configuração (NOVO ou CARREGAR)
+            using (var formMenu = new FormMenuConfiguracao())
             {
-                NomeEtiqueta = "Etiqueta Atual",
-                ImpressoraPadrao = "BTP-L42(D)",
-                PapelPadrao = "Tamanho do papel-SoftcomGondBar",
-                LarguraEtiqueta = template.Largura,
-                AlturaEtiqueta = template.Altura,
-                NumColunas = 1,
-                NumLinhas = 1,
-                EspacamentoColunas = 0,
-                EspacamentoLinhas = 0,
-                MargemSuperior = 0,
-                MargemInferior = 0,
-                MargemEsquerda = 0,
-                MargemDireita = 0
-            };
+                var escolha = formMenu.ShowDialog(this);
 
-            var formConfig = new FormConfigEtiqueta(configParaEditar);
-            if (formConfig.ShowDialog() == DialogResult.OK)
+                if (escolha == DialogResult.Cancel)
+                    return;
+
+                if (escolha == DialogResult.Yes) // NOVO
+                {
+                    papelParaAbrir = GerenciadorConfiguracoesEtiqueta.ConverterConfigParaPapel(
+                        GerenciadorConfiguracoesEtiqueta.CarregarConfiguracaoPadrao()
+                    );
+                    papelParaAbrir.NomePapel = "Nova Configuração";
+                }
+                else if (escolha == DialogResult.No) // CARREGAR
+                {
+                    using (var formListaConfig = new FormListaConfiguracoes())
+                    {
+                        if (formListaConfig.ShowDialog(this) == DialogResult.OK)
+                        {
+                            string nomeConfig = formListaConfig.ConfiguracaoSelecionada;
+                            papelParaAbrir = GerenciadorConfiguracoesEtiqueta.CarregarConfiguracao(nomeConfig);
+                        }
+                        else
+                        {
+                            return;
+                        }
+                    }
+                }
+
+            }
+
+            // 2. Abre o FormConfigEtiqueta (o editor)
+            if (papelParaAbrir != null)
             {
-                configuracaoAtual = formConfig.Configuracao;
+                ConfiguracaoEtiqueta configParaEditar = GerenciadorConfiguracoesEtiqueta.ConverterPapelParaConfig(
+                    papelParaAbrir, configuracaoAtual?.ImpressoraPadrao
+                );
 
-                // Atualiza o template com as novas dimensões
-                template.Largura = configuracaoAtual.LarguraEtiqueta;
-                template.Altura = configuracaoAtual.AlturaEtiqueta;
+                ConfiguracaoEtiqueta novaConfig = GerenciadorConfiguracoesEtiqueta.AbrirDialogoConfiguracao(this, configParaEditar);
 
-                // Salva como configuração padrão
-                GerenciadorConfiguracoesEtiqueta.SalvarConfiguracaoPadrao(configuracaoAtual);
+                if (novaConfig != null && novaConfig != configParaEditar)
+                {
+                    // O FormConfigEtiqueta já salvou a nova configuração no XML e como padrão.
+                    configuracaoAtual = novaConfig;
 
-                // Atualiza a lista de configurações
-                AtualizarListaConfiguracoes();
+                    // 3. ⭐ CORREÇÃO AQUI: Recarrega a lista do ComboBox chamando o método correto.
+                    CarregarComboboxModelos();
 
-                MessageBox.Show($"✅ Configuração de etiqueta aplicada com sucesso!\n\n" +
-                    $"📏 Dimensões: {configuracaoAtual.LarguraEtiqueta} x {configuracaoAtual.AlturaEtiqueta} mm\n" +
-                    $"📐 Layout: {configuracaoAtual.NumColunas} coluna(s) x {configuracaoAtual.NumLinhas} linha(s)\n" +
-                    $"🖨️ Impressora: {configuracaoAtual.ImpressoraPadrao}",
-                    "Configuração Aplicada", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    // 4. Seleciona o item recém-salvo no ComboBox
+                    // Passamos o nome da etiqueta/modelo que acabamos de salvar
+                    SelecionarConfiguracaoNaLista(configuracaoAtual.NomeEtiqueta);
+
+                    MessageBox.Show("Configuração de papel salva e atualizada com sucesso!", "Sucesso",
+                                    MessageBoxButtons.OK, MessageBoxIcon.Information);
+                }
             }
         }
 
@@ -889,6 +1103,211 @@ namespace EtiquetaFORNew
                     MessageBoxIcon.Error);
             }
         }
+        private void CarregarTemplatesDisponiveis()
+        {
+            // Verifica se a ComboBox existe antes de usar (se foi adicionada no Designer)
+            if (cmbTemplates == null) return;
+
+            cmbTemplates.Items.Clear();
+
+            try
+            {
+                // ⭐ Necessário: TemplateManager deve ter um método que retorne uma lista de nomes de templates
+                // O FormListaTemplates implica que essa função existe.
+                List<string> nomesTemplates = TemplateManager.ListarTemplates();
+
+                if (nomesTemplates != null && nomesTemplates.Any())
+                {
+                    cmbTemplates.Items.AddRange(nomesTemplates.ToArray());
+
+                    // Seleciona o primeiro item por padrão
+                    if (cmbTemplates.Items.Count > 0)
+                    {
+                        cmbTemplates.SelectedIndex = 0;
+                    }
+                }
+                else
+                {
+                    cmbTemplates.Items.Add("(Nenhum Template Encontrado)");
+                    cmbTemplates.SelectedIndex = 0;
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Erro ao carregar lista de templates: {ex.Message}");
+            }
+        }
+        private void CarregarConfiguracoesPapel()
+        {
+            cmbConfiguracao.Items.Clear();
+
+            // 1. Usa o Gerenciador para listar os nomes
+            List<string> nomesConfig = GerenciadorConfiguracoesEtiqueta.ListarNomesConfiguracoes();
+
+            if (nomesConfig != null && nomesConfig.Any())
+            {
+                cmbConfiguracao.Items.AddRange(nomesConfig.ToArray());
+            }
+
+            // 2. Tenta selecionar a última configuração salva como padrão
+            if (configuracaoAtual != null)
+            {
+                SelecionarConfiguracaoNaLista(configuracaoAtual.PapelPadrao);
+            }
+
+            // 3. Se ainda não houver seleção, selecione o primeiro item
+            if (cmbConfiguracao.Items.Count > 0 && cmbConfiguracao.SelectedIndex == -1)
+            {
+                cmbConfiguracao.SelectedIndex = 0;
+            }
+
+            // Carrega o objeto completo da configuração que foi selecionada/padrão
+            CarregarConfiguracaoSelecionada();
+        }
+
+        /// <summary>
+        /// Procura e seleciona um nome de configuração no ComboBox.
+        /// </summary>
+        private void SelecionarConfiguracaoNaLista(string nomeConfiguracao)
+        {
+            if (string.IsNullOrEmpty(nomeConfiguracao))
+            {
+                nomeConfiguracao = "(Configuração Atual)";
+            }
+
+            for (int i = 0; i < cmbConfiguracao.Items.Count; i++)
+            {
+                if (cmbConfiguracao.Items[i] is ConfiguracaoPapel papel)
+                {
+                    if (papel.NomePapel.Equals(nomeConfiguracao, StringComparison.OrdinalIgnoreCase)) // Compara com NomePapel
+                    {
+                        cmbConfiguracao.SelectedIndex = i;
+                        return;
+                    }
+                }
+                else if (cmbConfiguracao.Items[i].ToString().Equals(nomeConfiguracao, StringComparison.OrdinalIgnoreCase))
+                {
+                    cmbConfiguracao.SelectedIndex = i;
+                    return;
+                }
+            }
+
+            // Fallback
+            if (cmbConfiguracao.Items.Count > 0 && cmbConfiguracao.Items[0].ToString() == "(Configuração Atual)")
+            {
+                cmbConfiguracao.SelectedIndex = 0;
+            }
+        }
+
+        /// <summary>
+        /// Carrega o objeto de configuração completo quando o usuário seleciona um item no ComboBox.
+        /// </summary>
+        private void CarregarConfiguracaoSelecionada()
+        {
+            if (cmbConfiguracao.SelectedItem == null) return;
+
+            string nomeConfig = cmbConfiguracao.SelectedItem.ToString();
+
+            // 1. Carrega o objeto ConfiguracaoPapel completo
+            ConfiguracaoPapel papel = GerenciadorConfiguracoesEtiqueta.CarregarConfiguracao(nomeConfig);
+
+            if (papel != null)
+            {
+                // 2. Define a impressora padrão (se já tiver uma, mantém)
+                string impressoraPadraoAtual = configuracaoAtual != null ? configuracaoAtual.ImpressoraPadrao : null;
+
+                // 3. Converte ConfiguracaoPapel para o objeto de trabalho (ConfiguracaoEtiqueta)
+                configuracaoAtual = GerenciadorConfiguracoesEtiqueta.ConverterPapelParaConfig(papel, impressoraPadraoAtual);
+
+                // 4. Salva a nova configuração como padrão (última usada)
+                GerenciadorConfiguracoesEtiqueta.SalvarConfiguracaoPadrao(configuracaoAtual);
+
+                // 5. Atualiza a exibição no form principal (se necessário)
+                // AtualizarDisplayConfiguracao(configuracaoAtual); 
+            }
+
+        }
+        private ConfiguracaoEtiqueta CarregarConfiguracaoAtual()
+        {
+            if (File.Exists(CAMINHO_CONFIGURACOES))
+            {
+                try
+                {
+                    XmlSerializer serializer = new XmlSerializer(typeof(ConfiguracaoEtiqueta));
+                    using (StreamReader reader = new StreamReader(CAMINHO_CONFIGURACOES))
+                    {
+                        return (ConfiguracaoEtiqueta)serializer.Deserialize(reader);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show($"Erro ao carregar configuração salva: {ex.Message}",
+                                    "Erro de Leitura", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+            }
+            // Retorna uma configuração padrão (assumindo que ConfiguracaoEtiqueta tem um construtor sem argumentos)
+            return new ConfiguracaoEtiqueta();
+        }
+
+        private List<ConfiguracaoPapel> CarregarModelosPapel()
+        {
+            if (!File.Exists(CAMINHO_MODELOS_PAPEL))
+            {
+                // Se o arquivo não existe, é normal retornar vazio.
+                return new List<ConfiguracaoPapel>();
+            }
+
+            // ⭐ NOVO: Verificação de arquivo vazio
+            FileInfo info = new FileInfo(CAMINHO_MODELOS_PAPEL);
+            if (info.Length == 0)
+            {
+                // Se o arquivo estiver vazio (0 bytes), a desserialização falhará.
+                // Isso pode indicar que o salvamento falhou ou o arquivo foi corrompido.
+                return new List<ConfiguracaoPapel>();
+            }
+
+            try
+            {
+                XmlSerializer serializer = new XmlSerializer(typeof(List<ConfiguracaoPapel>));
+                using (StreamReader reader = new StreamReader(CAMINHO_MODELOS_PAPEL))
+                {
+                    // Tenta desserializar
+                    var modelos = (List<ConfiguracaoPapel>)serializer.Deserialize(reader);
+                    return modelos ?? new List<ConfiguracaoPapel>(); // Garante que não retorne null
+                }
+            }
+            catch (Exception ex)
+            {
+                // Se a leitura falhar, mostre o erro e retorne vazio
+                MessageBox.Show($"Erro CRÍTICO ao ler o arquivo de modelos ({CAMINHO_MODELOS_PAPEL}). O arquivo pode estar corrompido ou o formato da classe mudou. Detalhes: {ex.Message}",
+                                "Erro de Dados", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return new List<ConfiguracaoPapel>();
+            }
+        }
+
+        private void CarregarComboboxModelos()
+        {
+            // 1. Carrega os modelos salvos
+            var modelos = CarregarModelosPapel();
+
+            // 2. Limpa e popula o ComboBox
+            cmbConfiguracao.Items.Clear();
+
+            // Adiciona a opção de CONFIGURAÇÃO ATUAL
+            cmbConfiguracao.Items.Add("(Configuração Atual)");
+
+            // Adiciona TODAS as configurações salvas do arquivo
+            foreach (var modelo in modelos)
+            {
+                cmbConfiguracao.Items.Add(modelo);
+            }
+
+            // 3. Chama a seleção
+            //SelecionarConfiguracaoNaLista(nomeParaSelecionar);
+        }
+
+
+
 
     }
 }

@@ -29,6 +29,9 @@ namespace EtiquetaFORNew
                 Elementos = new List<ElementoEtiqueta>(templateAtual.Elementos.Select(e => ClonarElemento(e)))
             };
 
+            this.KeyPreview = true; // Permite que o Form "escute" o teclado
+            this.KeyDown += FormDesigner_KeyDown; // Liga o evento de pressionar tecla
+
             CarregarConfiguracoes();
             AtualizarListaElementos();
 
@@ -40,6 +43,7 @@ namespace EtiquetaFORNew
 
             // Salvar automaticamente ao fechar com OK
             this.FormClosing += FormDesigner_FormClosing;
+
         }
 
         private void FormDesigner_FormClosing(object sender, FormClosingEventArgs e)
@@ -523,8 +527,11 @@ namespace EtiquetaFORNew
 
         private void DesenharHandle(Graphics g, SolidBrush brush, Pen pen, int x, int y, int tamanho)
         {
-            g.FillRectangle(brush, x - tamanho / 2, y - tamanho / 2, tamanho, tamanho);
-            g.DrawRectangle(pen, x - tamanho / 2, y - tamanho / 2, tamanho, tamanho);
+            // Adiciona uma sombra leve ou borda dupla para visibilidade
+            g.FillRectangle(Brushes.White, x - tamanho / 2, y - tamanho / 2, tamanho, tamanho);
+            g.DrawRectangle(Pens.Black, x - tamanho / 2, y - tamanho / 2, tamanho, tamanho);
+            // Desenha o interior menor para parecer profissional
+            g.FillRectangle(Brushes.RoyalBlue, x - tamanho / 2 + 2, y - tamanho / 2 + 2, tamanho - 4, tamanho - 4);
         }
 
         private void PanelCanvas_MouseDown(object sender, MouseEventArgs e)
@@ -575,12 +582,21 @@ namespace EtiquetaFORNew
 
             if (arrastando)
             {
+                int gridSize = 5;
                 int novoX = e.X - offsetArrastar.X;
                 int novoY = e.Y - offsetArrastar.Y;
 
+                float xMM = novoX / escala;
+                float yMM = novoY / escala;
+
+                xMM = (float)Math.Round(xMM / gridSize) * gridSize; // Arredonda para 0, 5, 10...
+                yMM = (float)Math.Round(yMM / gridSize) * gridSize;
+
                 var bounds = elementoSelecionado.Bounds;
-                bounds.X = (int)(novoX / escala);
-                bounds.Y = (int)(novoY / escala);
+                bounds.X = (int)xMM;
+                bounds.Y = (int)yMM;
+                //bounds.X = (int)(novoX / escala);
+                //bounds.Y = (int)(novoY / escala);
 
                 bounds.X = Math.Max(0, Math.Min(bounds.X, (int)template.Largura - bounds.Width));
                 bounds.Y = Math.Max(0, Math.Min(bounds.Y, (int)template.Altura - bounds.Height));
@@ -848,6 +864,18 @@ namespace EtiquetaFORNew
             }
 
         }
+        
+        public class CanvasPanel : Panel
+        {
+            public CanvasPanel()
+            {
+                this.DoubleBuffered = true;
+                this.SetStyle(ControlStyles.UserPaint |
+                              ControlStyles.AllPaintingInWmPaint |
+                              ControlStyles.OptimizedDoubleBuffer, true);
+                this.UpdateStyles();
+            }
+        }
         public void CarregarTemplate(TemplateEtiqueta novoTemplate)
         {
             // Atualiza o template atual
@@ -869,6 +897,60 @@ namespace EtiquetaFORNew
             // Re-renderiza o canvas
             panelCanvas.Invalidate();
         }
+        private void FormDesigner_KeyDown(object sender, KeyEventArgs e)
+        {
+            // 1. Se nada estiver selecionado, não faz nada
+            if (elementoSelecionado == null) return;
+
+            // 2. Se o usuário estiver digitando na caixa de texto de conteúdo, 
+            // não queremos mover o elemento (queremos que ele digite o texto)
+            if (txtConteudo.Focused) return;
+
+            // Variável para saber se precisamos redesenhar a tela
+            bool houveAlteracao = false;
+
+            // Pega a posição atual (Bounds é uma struct, precisamos copiar, mudar e devolver)
+            var novaPosicao = elementoSelecionado.Bounds;
+            int passo = 1; // Quantos 'pixels' move por vez (ajuste fino)
+
+            // Verifica as Setas (Movimento)
+            if (e.KeyCode == Keys.Left)
+            {
+                novaPosicao.X -= passo;
+                houveAlteracao = true;
+            }
+            if (e.KeyCode == Keys.Right)
+            {
+                novaPosicao.X += passo;
+                houveAlteracao = true;
+            }
+            if (e.KeyCode == Keys.Up)
+            {
+                novaPosicao.Y -= passo;
+                houveAlteracao = true;
+            }
+            if (e.KeyCode == Keys.Down)
+            {
+                novaPosicao.Y += passo;
+                houveAlteracao = true;
+            }
+
+            // Verifica o Delete (Remover)
+            if (e.KeyCode == Keys.Delete)
+            {
+                // Chama o mesmo botão de remover que já existe
+                btnRemover.PerformClick();
+                return; // Sai do método pois o elemento já foi excluído
+            }
+
+            // Se moveu, atualiza o objeto e a tela
+            if (houveAlteracao)
+            {
+                elementoSelecionado.Bounds = novaPosicao;
+                panelCanvas.Invalidate(); // Força o Panel a se redesenhar na nova posição
+            }
+        }
+
         private void btnSalvar_Click(object sender, EventArgs e)
 {
     try

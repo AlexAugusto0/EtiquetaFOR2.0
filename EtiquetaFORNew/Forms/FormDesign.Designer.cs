@@ -8,7 +8,7 @@
         private System.Windows.Forms.Panel panelFerramentas;
         private System.Windows.Forms.Panel panelPropriedades;
         private System.Windows.Forms.Panel panelCentro;
-        private System.Windows.Forms.Panel panelCanvas;
+        private CanvasPanel panelCanvas;
         private System.Windows.Forms.Panel panelBotoes;
 
         private System.Windows.Forms.Label lblFerramentas;
@@ -74,6 +74,7 @@
             this.btnTexto = new System.Windows.Forms.Button();
             this.lblFerramentas = new System.Windows.Forms.Label();
             this.panelPropriedades = new System.Windows.Forms.Panel();
+            this.btnCarregarTemplate = new System.Windows.Forms.Button();
             this.btnSalvarTemplate = new System.Windows.Forms.Button();
             this.btnCor = new System.Windows.Forms.Button();
             this.chkItalico = new System.Windows.Forms.CheckBox();
@@ -84,11 +85,10 @@
             this.lblConteudo = new System.Windows.Forms.Label();
             this.lblPropriedades = new System.Windows.Forms.Label();
             this.panelCentro = new System.Windows.Forms.Panel();
-            this.panelCanvas = new System.Windows.Forms.Panel();
+            this.panelCanvas = new EtiquetaFORNew.FormDesigner.CanvasPanel();
             this.panelBotoes = new System.Windows.Forms.Panel();
             this.btnCancelar = new System.Windows.Forms.Button();
             this.btnSalvar = new System.Windows.Forms.Button();
-            this.btnCarregarTemplate = new System.Windows.Forms.Button();
             this.panelFerramentas.SuspendLayout();
             this.groupPresets.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numAltura)).BeginInit();
@@ -394,6 +394,22 @@
             this.panelPropriedades.Size = new System.Drawing.Size(250, 700);
             this.panelPropriedades.TabIndex = 1;
             // 
+            // btnCarregarTemplate
+            // 
+            this.btnCarregarTemplate.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(241)))), ((int)(((byte)(196)))), ((int)(((byte)(15)))));
+            this.btnCarregarTemplate.FlatAppearance.BorderSize = 0;
+            this.btnCarregarTemplate.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnCarregarTemplate.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
+            this.btnCarregarTemplate.ForeColor = System.Drawing.Color.Black;
+            this.btnCarregarTemplate.Location = new System.Drawing.Point(10, 300);
+            this.btnCarregarTemplate.Name = "btnCarregarTemplate";
+            this.btnCarregarTemplate.Size = new System.Drawing.Size(140, 30);
+            this.btnCarregarTemplate.TabIndex = 8;
+            this.btnCarregarTemplate.Text = "💾 Editar Template";
+            this.btnCarregarTemplate.UseVisualStyleBackColor = false;
+            this.btnCarregarTemplate.Visible = false;
+            this.btnCarregarTemplate.Click += new System.EventHandler(this.btnCarregarTemplate_Click);
+            // 
             // btnSalvarTemplate
             // 
             this.btnSalvarTemplate.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(241)))), ((int)(((byte)(196)))), ((int)(((byte)(15)))));
@@ -407,7 +423,6 @@
             this.btnSalvarTemplate.TabIndex = 4;
             this.btnSalvarTemplate.Text = "💾 Salvar Template";
             this.btnSalvarTemplate.UseVisualStyleBackColor = false;
-            this.btnSalvarTemplate.Visible = false;
             this.btnSalvarTemplate.Click += new System.EventHandler(this.btnSalvarTemplate_Click);
             // 
             // btnCor
@@ -573,21 +588,6 @@
             this.btnSalvar.TabIndex = 0;
             this.btnSalvar.Text = "Salvar Configuração";
             this.btnSalvar.UseVisualStyleBackColor = false;
-            // 
-            // btnCarregarTemplate
-            // 
-            this.btnCarregarTemplate.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(241)))), ((int)(((byte)(196)))), ((int)(((byte)(15)))));
-            this.btnCarregarTemplate.FlatAppearance.BorderSize = 0;
-            this.btnCarregarTemplate.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnCarregarTemplate.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
-            this.btnCarregarTemplate.ForeColor = System.Drawing.Color.Black;
-            this.btnCarregarTemplate.Location = new System.Drawing.Point(10, 300);
-            this.btnCarregarTemplate.Name = "btnCarregarTemplate";
-            this.btnCarregarTemplate.Size = new System.Drawing.Size(140, 30);
-            this.btnCarregarTemplate.TabIndex = 8;
-            this.btnCarregarTemplate.Text = "💾 Editar Template";
-            this.btnCarregarTemplate.UseVisualStyleBackColor = false;
-            this.btnCarregarTemplate.Click += new System.EventHandler(this.btnCarregarTemplate_Click);
             // 
             // FormDesigner
             // 
