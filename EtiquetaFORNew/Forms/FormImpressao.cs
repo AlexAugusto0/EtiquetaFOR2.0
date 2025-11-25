@@ -436,26 +436,34 @@ namespace EtiquetaFORNew
             {
                 Barcode b = new Barcode();
 
-                int largura = (int)Math.Round(bounds.Width);
-                int altura = (int)Math.Round(bounds.Height);
+                // PASSO CRÍTICO 1: Obter o DPI (Resolução) da impressora
+                float dpiX = g.DpiX;
+                float dpiY = g.DpiY;
 
-                if (largura <= 1) largura = 10;
-                if (altura <= 1) altura = 10;
+                // PASSO CRÍTICO 2: Converter as dimensões em MM (bounds) para PIXELS de ALTA RESOLUÇÃO
+                // Fórmula: Pixels = (Milímetros / 25.4) * DPI
+                int larguraPixels = (int)Math.Round((bounds.Width / 25.4f) * dpiX);
+                int alturaPixels = (int)Math.Round((bounds.Height / 25.4f) * dpiY);
 
-                // 1. Configurações de Dimensão (DEFINIDAS COMO PROPRIEDADES)
-                b.Width = largura;
-                b.Height = altura;
+                if (larguraPixels <= 1 || alturaPixels <= 1)
+                {
+                    throw new Exception("Dimensões de código de barras calculadas são inválidas.");
+                }
+
+                // 1. Configurações de Dimensão (AGORA EM PIXELS DE ALTA RESOLUÇÃO)
+                b.Width = larguraPixels;
+                b.Height = alturaPixels;
 
                 // 2. Outras Configurações
                 b.IncludeLabel = true;
                 b.Alignment = AlignmentPositions.Center;
 
-                // 3. Configurações de Cor (CORRIGIDO PARA SKColors)
+                // 3. Configurações de Cor
                 b.ForeColor = SKColors.Black;
                 b.BackColor = SKColors.White;
 
-                // 4. Gera o código de barras (USANDO O ENCODE DE 2 ARGUMENTOS)
-                using (SKImage skImage = b.Encode( // Retorna SKImage (Corrigido)
+                // 4. Gera o código de barras
+                using (SKImage skImage = b.Encode(
                     BarcodeStandard.Type.Code128,
                     codigoLimpo
                 ))
@@ -465,7 +473,7 @@ namespace EtiquetaFORNew
                         throw new Exception("Falha ao gerar o SKImage do código de barras.");
                     }
 
-                    // 5. CONVERSÃO: SKImage -> SKData -> MemoryStream -> System.Drawing.Image (Corrigido)
+                    // 5. CONVERSÃO: SKImage -> SKData -> MemoryStream -> System.Drawing.Image
                     using (SKData skData = skImage.Encode(SKEncodedImageFormat.Png, 100))
                     {
                         if (skData == null)
@@ -480,7 +488,7 @@ namespace EtiquetaFORNew
 
                             using (System.Drawing.Image barcodeImage = System.Drawing.Image.FromStream(ms))
                             {
-                                // 6. Desenha a imagem gerada
+                                // 6. Desenha a imagem gerada (agora de alta resolução) no retângulo (bounds em MM)
                                 g.DrawImage(barcodeImage, bounds);
                             }
                         }
