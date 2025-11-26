@@ -12,7 +12,6 @@
         private System.Windows.Forms.TextBox txtPreco;
         private System.Windows.Forms.Label lblQtd;
         private System.Windows.Forms.NumericUpDown numQtd;
-        private System.Windows.Forms.Button btnAdicionar;
         private System.Windows.Forms.DataGridView dgvProdutos;
         private System.Windows.Forms.DataGridViewCheckBoxColumn colSelecionar;
         private System.Windows.Forms.DataGridViewTextBoxColumn colNome;
@@ -48,7 +47,6 @@
             this.label2 = new System.Windows.Forms.Label();
             this.cmbBuscaCodigo = new System.Windows.Forms.ComboBox();
             this.label1 = new System.Windows.Forms.Label();
-            this.btnAdicionar = new System.Windows.Forms.Button();
             this.numQtd = new System.Windows.Forms.NumericUpDown();
             this.lblQtd = new System.Windows.Forms.Label();
             this.txtPreco = new System.Windows.Forms.TextBox();
@@ -112,7 +110,6 @@
             this.panel1.Controls.Add(this.label2);
             this.panel1.Controls.Add(this.cmbBuscaCodigo);
             this.panel1.Controls.Add(this.label1);
-            this.panel1.Controls.Add(this.btnAdicionar);
             this.panel1.Controls.Add(this.numQtd);
             this.panel1.Controls.Add(this.lblQtd);
             this.panel1.Controls.Add(this.txtPreco);
@@ -196,21 +193,6 @@
             this.label1.Size = new System.Drawing.Size(49, 15);
             this.label1.TabIndex = 9;
             this.label1.Text = "Código:";
-            // 
-            // btnAdicionar
-            // 
-            this.btnAdicionar.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(143)))), ((int)(((byte)(0)))));
-            this.btnAdicionar.FlatAppearance.BorderSize = 0;
-            this.btnAdicionar.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnAdicionar.ForeColor = System.Drawing.Color.Black;
-            this.btnAdicionar.Location = new System.Drawing.Point(745, 46);
-            this.btnAdicionar.Name = "btnAdicionar";
-            this.btnAdicionar.Size = new System.Drawing.Size(90, 25);
-            this.btnAdicionar.TabIndex = 8;
-            this.btnAdicionar.Text = "Adicionar";
-            this.btnAdicionar.UseVisualStyleBackColor = false;
-            this.btnAdicionar.Visible = false;
-            this.btnAdicionar.Click += new System.EventHandler(this.btnAdicionar_Click);
             // 
             // numQtd
             // 
