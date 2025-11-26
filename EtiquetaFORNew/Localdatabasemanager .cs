@@ -44,6 +44,12 @@ namespace EtiquetaFORNew.Data
                             CodBarras TEXT,
                             Mercadoria TEXT NOT NULL,
                             PrecoVenda REAL,
+                            VendaA REAL,
+                            VendaB REAL,
+                            VendaC REAL,
+                            Fornecedor TEXT,
+                            Fabricante TEXT,
+                            Grupo TEXT,
                             Registro INTEGER,
                             UltimaAtualizacao DATETIME DEFAULT CURRENT_TIMESTAMP
                         );
@@ -51,6 +57,9 @@ namespace EtiquetaFORNew.Data
                         CREATE INDEX IF NOT EXISTS idx_codfabricante ON Mercadorias(CodFabricante);
                         CREATE INDEX IF NOT EXISTS idx_mercadoria ON Mercadorias(Mercadoria);
                         CREATE INDEX IF NOT EXISTS idx_codbarras ON Mercadorias(CodBarras);
+                        CREATE INDEX IF NOT EXISTS idx_fornecedor ON Mercadorias(Fornecedor);
+                        CREATE INDEX IF NOT EXISTS idx_fabricante ON Mercadorias(Fabricante);
+                        CREATE INDEX IF NOT EXISTS idx_grupo ON Mercadorias(Grupo);
 
                         CREATE TABLE IF NOT EXISTS ProdutosSelecionados (
                             Id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -111,7 +120,13 @@ namespace EtiquetaFORNew.Data
                             [Cód Fabricante] as CodFabricante,
                             [Cód Barra] as CodBarras,
                             [Mercadoria],
-                            [Preço de Venda] as PrecoVenda
+                            [Preço de Venda] as PrecoVenda,
+                            [VendaA] as VendaA,
+                            [VendaB] as VendaB,
+                            [VendaC] as VendaC,
+                            [Fornecedor] as Fornecedor,
+                            [Fabricante] as Fabricante,
+                            [Grupo] as Grupo
                         FROM [Cadastro de Mercadorias]
                         " + (string.IsNullOrEmpty(filtro) ? "" : "WHERE " + filtro) + @"
                         ORDER BY [Código da Mercadoria]
@@ -136,8 +151,8 @@ namespace EtiquetaFORNew.Data
                             {
                                 string insertQuery = @"
                                     INSERT INTO Mercadorias 
-                                    (CodigoMercadoria, CodFabricante, CodBarras, Mercadoria, PrecoVenda)
-                                    VALUES (@cod, @fabr, @barras, @merc, @preco)
+                                    (CodigoMercadoria, CodFabricante, CodBarras, Mercadoria, PrecoVenda, VendaA, VendaB, VendaC, Fornecedor, Fabricante, Grupo)
+                                    VALUES (@cod, @fabr, @barras, @merc, @preco, @vendaA, @vendaB, @vendaC, @fornecedor, @fabricante, @grupo)
                                 ";
 
                                 using (var insertCmd = new SQLiteCommand(insertQuery, localConn))
@@ -150,6 +165,12 @@ namespace EtiquetaFORNew.Data
                                         insertCmd.Parameters.AddWithValue("@barras", reader["CodBarras"] ?? DBNull.Value);
                                         insertCmd.Parameters.AddWithValue("@merc", reader["Mercadoria"]);
                                         insertCmd.Parameters.AddWithValue("@preco", reader["PrecoVenda"] ?? DBNull.Value);
+                                        insertCmd.Parameters.AddWithValue("@vendaA", reader["VendaA"] ?? DBNull.Value);
+                                        insertCmd.Parameters.AddWithValue("@vendaB", reader["VendaB"] ?? DBNull.Value);
+                                        insertCmd.Parameters.AddWithValue("@vendaC", reader["VendaC"] ?? DBNull.Value);
+                                        insertCmd.Parameters.AddWithValue("@fornecedor", reader["Fornecedor"] ?? DBNull.Value);
+                                        insertCmd.Parameters.AddWithValue("@fabricante", reader["Fabricante"] ?? DBNull.Value);
+                                        insertCmd.Parameters.AddWithValue("@grupo", reader["Grupo"] ?? DBNull.Value);
                                         //insertCmd.Parameters.AddWithValue("@reg", reader["Registro"] ?? DBNull.Value);
 
                                         insertCmd.ExecuteNonQuery();
@@ -200,6 +221,12 @@ namespace EtiquetaFORNew.Data
                             CodBarras,
                             Mercadoria,
                             PrecoVenda,
+                            VendaA,
+                            VendaB,
+                            VendaC,
+                            Fornecedor,
+                            Fabricante,
+                            Grupo,
                             Registro
                         FROM Mercadorias
                     ";
