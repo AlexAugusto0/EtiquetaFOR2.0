@@ -13,10 +13,10 @@
 
         private System.Windows.Forms.Label lblFerramentas;
         private System.Windows.Forms.Button btnTexto;
-        private System.Windows.Forms.Button btnCampoNome;
-        private System.Windows.Forms.Button btnCampoCodigo;
-        private System.Windows.Forms.Button btnCampoPreco;
-        private System.Windows.Forms.Button btnCodigoBarras;
+        private System.Windows.Forms.Label lblCampos;
+        private System.Windows.Forms.ComboBox cmbCampos;
+        private System.Windows.Forms.Label lblCodigoBarras;
+        private System.Windows.Forms.ComboBox cmbCodigoBarras;
         private System.Windows.Forms.Button btnImagem;
 
         private System.Windows.Forms.Label lblTamanho;
@@ -67,10 +67,10 @@
             this.lblLargura = new System.Windows.Forms.Label();
             this.lblTamanho = new System.Windows.Forms.Label();
             this.btnImagem = new System.Windows.Forms.Button();
-            this.btnCodigoBarras = new System.Windows.Forms.Button();
-            this.btnCampoPreco = new System.Windows.Forms.Button();
-            this.btnCampoCodigo = new System.Windows.Forms.Button();
-            this.btnCampoNome = new System.Windows.Forms.Button();
+            this.lblCodigoBarras = new System.Windows.Forms.Label();
+            this.cmbCodigoBarras = new System.Windows.Forms.ComboBox();
+            this.lblCampos = new System.Windows.Forms.Label();
+            this.cmbCampos = new System.Windows.Forms.ComboBox();
             this.btnTexto = new System.Windows.Forms.Button();
             this.lblFerramentas = new System.Windows.Forms.Label();
             this.panelPropriedades = new System.Windows.Forms.Panel();
@@ -112,10 +112,10 @@
             this.panelFerramentas.Controls.Add(this.lblLargura);
             this.panelFerramentas.Controls.Add(this.lblTamanho);
             this.panelFerramentas.Controls.Add(this.btnImagem);
-            this.panelFerramentas.Controls.Add(this.btnCodigoBarras);
-            this.panelFerramentas.Controls.Add(this.btnCampoPreco);
-            this.panelFerramentas.Controls.Add(this.btnCampoCodigo);
-            this.panelFerramentas.Controls.Add(this.btnCampoNome);
+            this.panelFerramentas.Controls.Add(this.lblCodigoBarras);
+            this.panelFerramentas.Controls.Add(this.cmbCodigoBarras);
+            this.panelFerramentas.Controls.Add(this.lblCampos);
+            this.panelFerramentas.Controls.Add(this.cmbCampos);
             this.panelFerramentas.Controls.Add(this.btnTexto);
             this.panelFerramentas.Controls.Add(this.lblFerramentas);
             this.panelFerramentas.Dock = System.Windows.Forms.DockStyle.Left;
@@ -283,69 +283,63 @@
             this.btnImagem.UseVisualStyleBackColor = false;
             this.btnImagem.Click += new System.EventHandler(this.btnImagem_Click);
             // 
-            // btnCodigoBarras
+            // lblCodigoBarras
             // 
-            this.btnCodigoBarras.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(52)))), ((int)(((byte)(152)))), ((int)(((byte)(219)))));
-            this.btnCodigoBarras.FlatAppearance.BorderSize = 0;
-            this.btnCodigoBarras.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnCodigoBarras.ForeColor = System.Drawing.Color.White;
-            this.btnCodigoBarras.Location = new System.Drawing.Point(10, 210);
-            this.btnCodigoBarras.Name = "btnCodigoBarras";
-            this.btnCodigoBarras.Padding = new System.Windows.Forms.Padding(10, 0, 0, 0);
-            this.btnCodigoBarras.Size = new System.Drawing.Size(220, 30);
-            this.btnCodigoBarras.TabIndex = 5;
-            this.btnCodigoBarras.Text = "Código de Barras";
-            this.btnCodigoBarras.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.btnCodigoBarras.UseVisualStyleBackColor = false;
-            this.btnCodigoBarras.Click += new System.EventHandler(this.btnCodigoBarras_Click);
+            this.lblCodigoBarras.AutoSize = true;
+            this.lblCodigoBarras.ForeColor = System.Drawing.Color.White;
+            this.lblCodigoBarras.Location = new System.Drawing.Point(10, 170);
+            this.lblCodigoBarras.Name = "lblCodigoBarras";
+            this.lblCodigoBarras.Size = new System.Drawing.Size(160, 15);
+            this.lblCodigoBarras.TabIndex = 5;
+            this.lblCodigoBarras.Text = "Código de Barras (escolha):";
             // 
-            // btnCampoPreco
+            // cmbCodigoBarras
             // 
-            this.btnCampoPreco.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(52)))), ((int)(((byte)(152)))), ((int)(((byte)(219)))));
-            this.btnCampoPreco.FlatAppearance.BorderSize = 0;
-            this.btnCampoPreco.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnCampoPreco.ForeColor = System.Drawing.Color.White;
-            this.btnCampoPreco.Location = new System.Drawing.Point(10, 170);
-            this.btnCampoPreco.Name = "btnCampoPreco";
-            this.btnCampoPreco.Padding = new System.Windows.Forms.Padding(10, 0, 0, 0);
-            this.btnCampoPreco.Size = new System.Drawing.Size(220, 30);
-            this.btnCampoPreco.TabIndex = 4;
-            this.btnCampoPreco.Text = "Campo: Preço";
-            this.btnCampoPreco.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.btnCampoPreco.UseVisualStyleBackColor = false;
-            this.btnCampoPreco.Click += new System.EventHandler(this.btnCampoPreco_Click);
+            this.cmbCodigoBarras.BackColor = System.Drawing.Color.White;
+            this.cmbCodigoBarras.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cmbCodigoBarras.FormattingEnabled = true;
+            this.cmbCodigoBarras.Items.AddRange(new object[] {
+            "CodigoMercadoria",
+            "CodFabricante",
+            "CodBarras"});
+            this.cmbCodigoBarras.Location = new System.Drawing.Point(10, 190);
+            this.cmbCodigoBarras.Name = "cmbCodigoBarras";
+            this.cmbCodigoBarras.Size = new System.Drawing.Size(220, 23);
+            this.cmbCodigoBarras.TabIndex = 4;
+            this.cmbCodigoBarras.SelectedIndexChanged += new System.EventHandler(this.cmbCodigoBarras_SelectedIndexChanged);
             // 
-            // btnCampoCodigo
+            // lblCampos
             // 
-            this.btnCampoCodigo.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(52)))), ((int)(((byte)(152)))), ((int)(((byte)(219)))));
-            this.btnCampoCodigo.FlatAppearance.BorderSize = 0;
-            this.btnCampoCodigo.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnCampoCodigo.ForeColor = System.Drawing.Color.White;
-            this.btnCampoCodigo.Location = new System.Drawing.Point(10, 130);
-            this.btnCampoCodigo.Name = "btnCampoCodigo";
-            this.btnCampoCodigo.Padding = new System.Windows.Forms.Padding(10, 0, 0, 0);
-            this.btnCampoCodigo.Size = new System.Drawing.Size(220, 30);
-            this.btnCampoCodigo.TabIndex = 3;
-            this.btnCampoCodigo.Text = "Campo: Código";
-            this.btnCampoCodigo.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.btnCampoCodigo.UseVisualStyleBackColor = false;
-            this.btnCampoCodigo.Click += new System.EventHandler(this.btnCampoCodigo_Click);
+            this.lblCampos.AutoSize = true;
+            this.lblCampos.ForeColor = System.Drawing.Color.White;
+            this.lblCampos.Location = new System.Drawing.Point(10, 90);
+            this.lblCampos.Name = "lblCampos";
+            this.lblCampos.Size = new System.Drawing.Size(150, 15);
+            this.lblCampos.TabIndex = 3;
+            this.lblCampos.Text = "Campos do Produto:";
             // 
-            // btnCampoNome
+            // cmbCampos
             // 
-            this.btnCampoNome.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(52)))), ((int)(((byte)(152)))), ((int)(((byte)(219)))));
-            this.btnCampoNome.FlatAppearance.BorderSize = 0;
-            this.btnCampoNome.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnCampoNome.ForeColor = System.Drawing.Color.White;
-            this.btnCampoNome.Location = new System.Drawing.Point(10, 90);
-            this.btnCampoNome.Name = "btnCampoNome";
-            this.btnCampoNome.Padding = new System.Windows.Forms.Padding(10, 0, 0, 0);
-            this.btnCampoNome.Size = new System.Drawing.Size(220, 30);
-            this.btnCampoNome.TabIndex = 2;
-            this.btnCampoNome.Text = "Campo: Nome";
-            this.btnCampoNome.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.btnCampoNome.UseVisualStyleBackColor = false;
-            this.btnCampoNome.Click += new System.EventHandler(this.btnCampoNome_Click);
+            this.cmbCampos.BackColor = System.Drawing.Color.White;
+            this.cmbCampos.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cmbCampos.FormattingEnabled = true;
+            this.cmbCampos.Items.AddRange(new object[] {
+            "Mercadoria",
+            "CodigoMercadoria",
+            "CodFabricante",
+            "CodBarras",
+            "PrecoVenda",
+            "VendaA",
+            "VendaB",
+            "VendaC",
+            "Fornecedor",
+            "Fabricante",
+            "Grupo"});
+            this.cmbCampos.Location = new System.Drawing.Point(10, 110);
+            this.cmbCampos.Name = "cmbCampos";
+            this.cmbCampos.Size = new System.Drawing.Size(220, 23);
+            this.cmbCampos.TabIndex = 2;
+            this.cmbCampos.SelectedIndexChanged += new System.EventHandler(this.cmbCampos_SelectedIndexChanged);
             // 
             // btnTexto
             // 

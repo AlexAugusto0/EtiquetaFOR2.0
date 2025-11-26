@@ -392,9 +392,9 @@ namespace EtiquetaFORNew
                         break;
 
                     case TipoElemento.CodigoBarras:
-                        // O DesenharCodigoBarras precisa que 'bounds' esteja na unidade correta (MM na impressão, Pixels na visualização).
-                        // Como a escala está sendo aplicada corretamente nas chamadas de função, este método deve funcionar.
-                        DesenharCodigoBarras(g, produto.Codigo, bounds);
+                        // ⭐ ATUALIZADO: Agora suporta diferentes campos de código
+                        string codigoBarras = ObterCodigoBarras(elem.Conteudo, produto);
+                        DesenharCodigoBarras(g, codigoBarras, bounds);
                         break;
 
                     case TipoElemento.Imagem:
@@ -405,6 +405,24 @@ namespace EtiquetaFORNew
             }
         }
 
+        // ⭐ NOVO MÉTODO: Obtém o valor correto para o código de barras
+        private string ObterCodigoBarras(string campo, Produto produto)
+        {
+            if (produto == null) return "";
+
+            switch (campo)
+            {
+                case "CodigoMercadoria":
+                    return produto.Codigo ?? "";
+                case "CodFabricante":
+                    return produto.CodFabricante ?? "";
+                case "CodBarras":
+                    return produto.CodBarras ?? "";
+                default:
+                    return produto.Codigo ?? "";
+            }
+        }
+
         // ... (Seu código original ObterValorCampo)
         private string ObterValorCampo(string campo, Produto produto)
         {
@@ -412,12 +430,42 @@ namespace EtiquetaFORNew
 
             switch (campo)
             {
-                case "Nome": return produto.Nome ?? "";
-                case "Codigo": return produto.Codigo ?? "";
-                case "Preco": return produto.Preco.ToString("C2");
-                case "Quantidade": return produto.Quantidade.ToString();
-                case "CodFabricante": return produto.CodFabricante ?? "";
-                default: return "";
+                // Campos originais
+                case "Nome":
+                    return produto.Nome ?? "";
+                case "Codigo":
+                    return produto.Codigo ?? "";
+                case "Preco":
+                    return produto.Preco.ToString("C2");
+                case "Quantidade":
+                    return produto.Quantidade.ToString();
+                case "CodFabricante":
+                    return produto.CodFabricante ?? "";
+
+                // ⭐ NOVOS CAMPOS - Usando propriedades reais da classe Produto
+                case "Mercadoria":
+                    return produto.Nome ?? "";
+                case "CodigoMercadoria":
+                    return produto.Codigo ?? "";
+                case "CodBarras":
+                    return produto.CodBarras ?? "";
+                case "PrecoVenda":
+                    return produto.PrecoVenda > 0 ? produto.PrecoVenda.ToString("C2") : produto.Preco.ToString("C2");
+                case "VendaA":
+                    return produto.VendaA > 0 ? produto.VendaA.ToString("C2") : "-";
+                case "VendaB":
+                    return produto.VendaB > 0 ? produto.VendaB.ToString("C2") : "-";
+                case "VendaC":
+                    return produto.VendaC > 0 ? produto.VendaC.ToString("C2") : "-";
+                case "Fornecedor":
+                    return produto.Fornecedor ?? "";
+                case "Fabricante":
+                    return produto.Fabricante ?? "";
+                case "Grupo":
+                    return produto.Grupo ?? "";
+
+                default:
+                    return "";
             }
         }
 

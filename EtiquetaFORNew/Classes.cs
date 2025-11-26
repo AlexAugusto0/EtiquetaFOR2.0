@@ -12,6 +12,16 @@ namespace EtiquetaFORNew
         public decimal Preco { get; set; }
         public int Quantidade { get; set; }
         public string CodFabricante { get; set; }
+
+        // ⭐ NOVOS CAMPOS - Compatíveis com a tabela Mercadorias
+        public string CodBarras { get; set; }
+        public decimal PrecoVenda { get; set; }
+        public decimal VendaA { get; set; }
+        public decimal VendaB { get; set; }
+        public decimal VendaC { get; set; }
+        public string Fornecedor { get; set; }
+        public string Fabricante { get; set; }
+        public string Grupo { get; set; }
     }
 
     // Enum de tipos de elementos

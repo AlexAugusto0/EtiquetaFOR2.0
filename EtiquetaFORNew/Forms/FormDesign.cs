@@ -128,24 +128,26 @@ namespace EtiquetaFORNew
             AdicionarElemento(TipoElemento.Texto);
         }
 
-        private void btnCampoNome_Click(object sender, EventArgs e)
+        private void cmbCampos_SelectedIndexChanged(object sender, EventArgs e)
         {
-            AdicionarCampo("Nome");
+            if (cmbCampos.SelectedItem == null) return;
+
+            string campoSelecionado = cmbCampos.SelectedItem.ToString();
+            AdicionarCampo(campoSelecionado);
+
+            // Limpa a seleção após adicionar
+            cmbCampos.SelectedIndex = -1;
         }
 
-        private void btnCampoCodigo_Click(object sender, EventArgs e)
+        private void cmbCodigoBarras_SelectedIndexChanged(object sender, EventArgs e)
         {
-            AdicionarCampo("Codigo");
-        }
+            if (cmbCodigoBarras.SelectedItem == null) return;
 
-        private void btnCampoPreco_Click(object sender, EventArgs e)
-        {
-            AdicionarCampo("Preco");
-        }
+            string campoSelecionado = cmbCodigoBarras.SelectedItem.ToString();
+            AdicionarCodigoBarras(campoSelecionado);
 
-        private void btnCodigoBarras_Click(object sender, EventArgs e)
-        {
-            AdicionarElemento(TipoElemento.CodigoBarras);
+            // Limpa a seleção após adicionar
+            cmbCodigoBarras.SelectedIndex = -1;
         }
 
         private void btnImagem_Click(object sender, EventArgs e)
@@ -182,19 +184,30 @@ namespace EtiquetaFORNew
                     elemento.Bounds = new Rectangle(1, 1, Math.Max(3, largura), Math.Max(2, altura));
                 }
             }
-            else if (tipo == TipoElemento.CodigoBarras)
+
+            template.Elementos.Add(elemento);
+            AtualizarListaElementos();
+            panelCanvas.Invalidate();
+        }
+
+        private void AdicionarCodigoBarras(string campoCodigo)
+        {
+            var elemento = new ElementoEtiqueta
             {
-                elemento.Conteudo = "CodFabricante";
+                Tipo = TipoElemento.CodigoBarras,
+                Conteudo = campoCodigo,
+                Fonte = new Font("Arial", 8),
+                Cor = Color.Black
+            };
 
-                // ⭐ Para etiquetas pequenas, ajusta proporcionalmente
-                int largura = (int)(template.Largura * 0.8f);
-                int altura = (int)(template.Altura * 0.4f);
+            // ⭐ Para etiquetas pequenas, ajusta proporcionalmente
+            int largura = (int)(template.Largura * 0.8f);
+            int altura = (int)(template.Altura * 0.4f);
 
-                largura = Math.Max(10, Math.Min(largura, (int)template.Largura - 2));
-                altura = Math.Max(5, Math.Min(altura, (int)template.Altura - 2));
+            largura = Math.Max(10, Math.Min(largura, (int)template.Largura - 2));
+            altura = Math.Max(5, Math.Min(altura, (int)template.Altura - 2));
 
-                elemento.Bounds = new Rectangle(1, 1, largura, altura);
-            }
+            elemento.Bounds = new Rectangle(1, 1, largura, altura);
 
             template.Elementos.Add(elemento);
             AtualizarListaElementos();
@@ -970,7 +983,7 @@ namespace EtiquetaFORNew
             }
 
         }
-        
+
         public class CanvasPanel : Panel
         {
             public CanvasPanel()
@@ -1078,38 +1091,38 @@ namespace EtiquetaFORNew
         }
 
         private void btnSalvar_Click(object sender, EventArgs e)
-{
-    try
-    {
-        // Atualiza as dimensões no objeto template
-        template.Largura = (float)numLargura.Value;
-        template.Altura = (float)numAltura.Value;
-
-        // Aqui você pode escolher onde salvar.
-        // Se quiser salvar no mesmo arquivo do template original:
-        string caminho = template.CaminhoArquivo; // precisa existir dentro de TemplateEtiqueta
-
-        // Se TemplateEtiqueta não tiver esse campo, podemos salvar sempre como “último template”
-        if (string.IsNullOrEmpty(caminho))
         {
-            TemplateManager.SalvarUltimoTemplate(template);
-            MessageBox.Show("Template salvo com sucesso (como último template usado).", 
-                            "Sucesso", MessageBoxButtons.OK, MessageBoxIcon.Information);
-            return;
+            try
+            {
+                // Atualiza as dimensões no objeto template
+                template.Largura = (float)numLargura.Value;
+                template.Altura = (float)numAltura.Value;
+
+                // Aqui você pode escolher onde salvar.
+                // Se quiser salvar no mesmo arquivo do template original:
+                string caminho = template.CaminhoArquivo; // precisa existir dentro de TemplateEtiqueta
+
+                // Se TemplateEtiqueta não tiver esse campo, podemos salvar sempre como “último template”
+                if (string.IsNullOrEmpty(caminho))
+                {
+                    TemplateManager.SalvarUltimoTemplate(template);
+                    MessageBox.Show("Template salvo com sucesso (como último template usado).",
+                                    "Sucesso", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    return;
+                }
+
+                // Caso contrário, salve no mesmo arquivo
+                TemplateManager.SalvarTemplate(template, caminho);
+
+                MessageBox.Show("Template salvo com sucesso!",
+                                "Sucesso", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Erro ao salvar o template: {ex.Message}",
+                                "Erro", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
-
-        // Caso contrário, salve no mesmo arquivo
-        TemplateManager.SalvarTemplate(template, caminho);
-
-        MessageBox.Show("Template salvo com sucesso!", 
-                        "Sucesso", MessageBoxButtons.OK, MessageBoxIcon.Information);
-    }
-    catch (Exception ex)
-    {
-        MessageBox.Show($"Erro ao salvar o template: {ex.Message}", 
-                        "Erro", MessageBoxButtons.OK, MessageBoxIcon.Error);
-    }
-}
 
     }
 }
