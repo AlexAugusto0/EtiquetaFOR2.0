@@ -12,8 +12,6 @@ namespace EtiquetaFORNew
         public decimal Preco { get; set; }
         public int Quantidade { get; set; }
         public string CodFabricante { get; set; }
-
-        // ⭐ NOVOS CAMPOS - Compatíveis com a tabela Mercadorias
         public string CodBarras { get; set; }
         public decimal PrecoVenda { get; set; }
         public decimal VendaA { get; set; }
@@ -37,7 +35,7 @@ namespace EtiquetaFORNew
     public class ElementoEtiqueta
     {
         public TipoElemento Tipo { get; set; }
-        public string Conteudo { get; set; } // Para texto fixo ou nome do campo
+        public string Conteudo { get; set; }
         public Rectangle Bounds { get; set; }
         public Font Fonte { get; set; }
         public Color Cor { get; set; }
@@ -45,24 +43,25 @@ namespace EtiquetaFORNew
         public bool Negrito { get; set; }
         public bool Italico { get; set; }
 
+        // ✅ NOVA PROPRIEDADE: Alinhamento do texto
+        public StringAlignment Alinhamento { get; set; }
+
         public ElementoEtiqueta()
         {
             Fonte = new Font("Arial", 10);
             Cor = Color.Black;
+            Alinhamento = StringAlignment.Near;  // Padrão: esquerda
         }
     }
 
     // Classe do Template de Etiqueta
     public class TemplateEtiqueta
     {
-        public float Largura { get; set; } = 50; // mm
-        public float Altura { get; set; } = 30; // mm
+        public float Largura { get; set; } = 50;
+        public float Altura { get; set; } = 30;
         public List<ElementoEtiqueta> Elementos { get; set; } = new List<ElementoEtiqueta>();
-
-        // 🔹 Caminho do arquivo do template
         public string CaminhoArquivo { get; set; }
 
-        // 🔹 (Opcional) método para clonar o template sem perder dados
         public TemplateEtiqueta Clone()
         {
             return new TemplateEtiqueta
@@ -73,6 +72,5 @@ namespace EtiquetaFORNew
                 Elementos = new List<ElementoEtiqueta>(this.Elementos)
             };
         }
-
     }
 }

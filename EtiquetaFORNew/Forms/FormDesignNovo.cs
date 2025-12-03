@@ -37,6 +37,15 @@ namespace EtiquetaFORNew.Forms
         private NumericUpDown numMargemEsquerda;
         private NumericUpDown numMargemDireita;
         private CheckBox chkPadraoDesativar;
+        private Panel panelPropriedades;
+        private Button btnAlinharEsquerda;
+        private Button btnAlinharCentro;
+        private Button btnAlinharDireita;
+        private NumericUpDown numTamanhoFonte;
+        private CheckBox chkNegrito;
+        private CheckBox chkItalico;
+        private Button btnCor;
+        private Label lblPropriedadesElemento;
 
         // Toolbox de elementos
         private Panel panelToolbox;
@@ -216,7 +225,8 @@ namespace EtiquetaFORNew.Forms
                 Width = 200,
                 BackColor = Color.FromArgb(236, 240, 241),
                 Padding = new Padding(10),
-                AutoScroll = true
+                AutoScroll = true,                      // ✅ ADICIONAR
+                AutoScrollMinSize = new Size(0, 800)
             };
             this.Controls.Add(panelToolbox);
 
@@ -585,6 +595,171 @@ namespace EtiquetaFORNew.Forms
             // Botão Remover
             Button btnRemover = CriarBotaoElemento("🗑️ Remover", yPos, () => RemoverElementoSelecionado());
             btnRemover.BackColor = Color.FromArgb(231, 76, 60);
+            CriarPainelPropriedades();
+        }
+        private void CriarPainelPropriedades()
+        {
+            panelPropriedades = new Panel
+            {
+                Location = new Point(10, 400),
+                Size = new Size(180, 320),
+                BackColor = Color.White,
+                BorderStyle = BorderStyle.FixedSingle,
+                Visible = false  // Invisível até selecionar elemento
+            };
+            panelToolbox.Controls.Add(panelPropriedades);
+
+            int yPos = 10;
+
+            // Título
+            lblPropriedadesElemento = new Label
+            {
+                Text = "⚙ PROPRIEDADES",
+                Location = new Point(10, yPos),
+                Size = new Size(160, 25),
+                Font = new Font("Segoe UI", 10, FontStyle.Bold),
+                ForeColor = Color.FromArgb(52, 73, 94)
+            };
+            panelPropriedades.Controls.Add(lblPropriedadesElemento);
+            yPos += 35;
+
+            // Label Alinhamento
+            Label lblAlinhamento = new Label
+            {
+                Text = "Alinhamento:",
+                Location = new Point(10, yPos),
+                Size = new Size(160, 20),
+                Font = new Font("Segoe UI", 8, FontStyle.Bold),
+                ForeColor = Color.Gray
+            };
+            panelPropriedades.Controls.Add(lblAlinhamento);
+            yPos += 25;
+
+            // Botões de alinhamento
+            btnAlinharEsquerda = new Button
+            {
+                Text = "⬅️",
+                Location = new Point(10, yPos),
+                Size = new Size(50, 35),
+                Font = new Font("Segoe UI", 12),
+                BackColor = Color.FromArgb(236, 240, 241),
+                FlatStyle = FlatStyle.Flat,
+                Cursor = Cursors.Hand
+            };
+            btnAlinharEsquerda.FlatAppearance.BorderColor = Color.FromArgb(189, 195, 199);
+            btnAlinharEsquerda.Click += (s, e) => AlterarAlinhamento(StringAlignment.Near);
+            panelPropriedades.Controls.Add(btnAlinharEsquerda);
+
+            btnAlinharCentro = new Button
+            {
+                Text = "↔️",
+                Location = new Point(65, yPos),
+                Size = new Size(50, 35),
+                Font = new Font("Segoe UI", 12),
+                BackColor = Color.FromArgb(236, 240, 241),
+                FlatStyle = FlatStyle.Flat,
+                Cursor = Cursors.Hand
+            };
+            btnAlinharCentro.FlatAppearance.BorderColor = Color.FromArgb(189, 195, 199);
+            btnAlinharCentro.Click += (s, e) => AlterarAlinhamento(StringAlignment.Center);
+            panelPropriedades.Controls.Add(btnAlinharCentro);
+
+            btnAlinharDireita = new Button
+            {
+                Text = "➡️",
+                Location = new Point(120, yPos),
+                Size = new Size(50, 35),
+                Font = new Font("Segoe UI", 12),
+                BackColor = Color.FromArgb(236, 240, 241),
+                FlatStyle = FlatStyle.Flat,
+                Cursor = Cursors.Hand
+            };
+            btnAlinharDireita.FlatAppearance.BorderColor = Color.FromArgb(189, 195, 199);
+            btnAlinharDireita.Click += (s, e) => AlterarAlinhamento(StringAlignment.Far);
+            panelPropriedades.Controls.Add(btnAlinharDireita);
+            yPos += 45;
+
+            // Label Fonte
+            Label lblFonte = new Label
+            {
+                Text = "Tamanho da Fonte:",
+                Location = new Point(10, yPos),
+                Size = new Size(160, 20),
+                Font = new Font("Segoe UI", 8, FontStyle.Bold),
+                ForeColor = Color.Gray
+            };
+            panelPropriedades.Controls.Add(lblFonte);
+            yPos += 25;
+
+            numTamanhoFonte = new NumericUpDown
+            {
+                Location = new Point(10, yPos),
+                Size = new Size(70, 23),
+                Minimum = 6,
+                Maximum = 72,
+                Value = 10
+            };
+            numTamanhoFonte.ValueChanged += (s, e) => AlterarTamanhoFonte();
+            panelPropriedades.Controls.Add(numTamanhoFonte);
+            yPos += 35;
+
+            // Estilo
+            Label lblEstilo = new Label
+            {
+                Text = "Estilo:",
+                Location = new Point(10, yPos),
+                Size = new Size(160, 20),
+                Font = new Font("Segoe UI", 8, FontStyle.Bold),
+                ForeColor = Color.Gray
+            };
+            panelPropriedades.Controls.Add(lblEstilo);
+            yPos += 25;
+
+            chkNegrito = new CheckBox
+            {
+                Text = "Negrito",
+                Location = new Point(10, yPos),
+                Size = new Size(80, 20),
+                Font = new Font("Segoe UI", 8, FontStyle.Bold)
+            };
+            chkNegrito.CheckedChanged += (s, e) => AlterarEstiloFonte();
+            panelPropriedades.Controls.Add(chkNegrito);
+
+            chkItalico = new CheckBox
+            {
+                Text = "Itálico",
+                Location = new Point(95, yPos),
+                Size = new Size(75, 20),
+                Font = new Font("Segoe UI", 8, FontStyle.Italic)
+            };
+            chkItalico.CheckedChanged += (s, e) => AlterarEstiloFonte();
+            panelPropriedades.Controls.Add(chkItalico);
+            yPos += 35;
+
+            // Cor
+            Label lblCor = new Label
+            {
+                Text = "Cor do Texto:",
+                Location = new Point(10, yPos),
+                Size = new Size(160, 20),
+                Font = new Font("Segoe UI", 8, FontStyle.Bold),
+                ForeColor = Color.Gray
+            };
+            panelPropriedades.Controls.Add(lblCor);
+            yPos += 25;
+
+            btnCor = new Button
+            {
+                Text = "Escolher Cor",
+                Location = new Point(10, yPos),
+                Size = new Size(160, 30),
+                BackColor = Color.Black,
+                ForeColor = Color.White,
+                FlatStyle = FlatStyle.Flat,
+                Cursor = Cursors.Hand
+            };
+            btnCor.Click += BtnCor_Click;
+            panelPropriedades.Controls.Add(btnCor);
         }
 
         private Button CriarBotaoElemento(string texto, int yPos, Action onClick)
@@ -635,6 +810,7 @@ namespace EtiquetaFORNew.Forms
 
             template.Elementos.Add(elemento);
             elementoSelecionado = elemento;
+            AtualizarPainelPropriedades();
             pbCanvas.Invalidate();
         }
 
@@ -659,6 +835,7 @@ namespace EtiquetaFORNew.Forms
 
             template.Elementos.Add(elemento);
             elementoSelecionado = elemento;
+            AtualizarPainelPropriedades();
             pbCanvas.Invalidate();
         }
 
@@ -678,6 +855,7 @@ namespace EtiquetaFORNew.Forms
             elemento.Bounds = new Rectangle(1, 1, largura, altura);
             template.Elementos.Add(elemento);
             elementoSelecionado = elemento;
+            AtualizarPainelPropriedades();
             pbCanvas.Invalidate();
         }
 
@@ -697,6 +875,7 @@ namespace EtiquetaFORNew.Forms
 
                     template.Elementos.Add(elemento);
                     elementoSelecionado = elemento;
+                    AtualizarPainelPropriedades();
                     pbCanvas.Invalidate();
                 }
             }
@@ -716,6 +895,7 @@ namespace EtiquetaFORNew.Forms
                 {
                     template.Elementos.Remove(elementoSelecionado);
                     elementoSelecionado = null;
+                    AtualizarPainelPropriedades();
                     pbCanvas.Invalidate();
                 }
             }
@@ -723,6 +903,109 @@ namespace EtiquetaFORNew.Forms
             {
                 MessageBox.Show("Nenhum elemento selecionado!", "Atenção",
                     MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+        }
+        private void AtualizarPainelPropriedades()
+        {
+            if (elementoSelecionado == null)
+            {
+                panelPropriedades.Visible = false;
+                return;
+            }
+
+            panelPropriedades.Visible = true;
+
+            // Atualiza valores baseado no elemento selecionado
+            if (elementoSelecionado.Fonte != null)
+            {
+                numTamanhoFonte.Value = (decimal)elementoSelecionado.Fonte.Size;
+                chkNegrito.Checked = elementoSelecionado.Fonte.Bold;
+                chkItalico.Checked = elementoSelecionado.Fonte.Italic;
+            }
+
+            btnCor.BackColor = elementoSelecionado.Cor;
+            btnCor.ForeColor = elementoSelecionado.Cor.GetBrightness() > 0.5 ? Color.Black : Color.White;
+
+            // Atualiza visual dos botões de alinhamento
+            AtualizarBotoesAlinhamento();
+            panelToolbox.ScrollControlIntoView(panelPropriedades);
+        }
+
+        private void AtualizarBotoesAlinhamento()
+        {
+            if (elementoSelecionado == null) return;
+
+            // Reseta cores
+            btnAlinharEsquerda.BackColor = Color.FromArgb(236, 240, 241);
+            btnAlinharCentro.BackColor = Color.FromArgb(236, 240, 241);
+            btnAlinharDireita.BackColor = Color.FromArgb(236, 240, 241);
+
+            // Destaca o alinhamento atual
+            StringAlignment alinhamento = elementoSelecionado.Alinhamento;
+
+            if (alinhamento == StringAlignment.Near)
+                btnAlinharEsquerda.BackColor = Color.FromArgb(52, 152, 219);
+            else if (alinhamento == StringAlignment.Center)
+                btnAlinharCentro.BackColor = Color.FromArgb(52, 152, 219);
+            else if (alinhamento == StringAlignment.Far)
+                btnAlinharDireita.BackColor = Color.FromArgb(52, 152, 219);
+        }
+
+        private void AlterarAlinhamento(StringAlignment novoAlinhamento)
+        {
+            if (elementoSelecionado == null) return;
+
+            elementoSelecionado.Alinhamento = novoAlinhamento;
+            AtualizarBotoesAlinhamento();
+            pbCanvas.Invalidate();
+        }
+
+        private void AlterarTamanhoFonte()
+        {
+            if (elementoSelecionado == null || elementoSelecionado.Fonte == null) return;
+
+            float novoTamanho = (float)numTamanhoFonte.Value;
+            FontStyle estilo = elementoSelecionado.Fonte.Style;
+
+            elementoSelecionado.Fonte = new Font(elementoSelecionado.Fonte.FontFamily, novoTamanho, estilo);
+            pbCanvas.Invalidate();
+        }
+
+        private void AlterarEstiloFonte()
+        {
+            if (elementoSelecionado == null || elementoSelecionado.Fonte == null) return;
+
+            FontStyle estilo = FontStyle.Regular;
+
+            if (chkNegrito.Checked)
+                estilo |= FontStyle.Bold;
+
+            if (chkItalico.Checked)
+                estilo |= FontStyle.Italic;
+
+            elementoSelecionado.Fonte = new Font(
+                elementoSelecionado.Fonte.FontFamily,
+                elementoSelecionado.Fonte.Size,
+                estilo);
+
+            pbCanvas.Invalidate();
+        }
+
+        private void BtnCor_Click(object sender, EventArgs e)
+        {
+            if (elementoSelecionado == null) return;
+
+            using (ColorDialog colorDialog = new ColorDialog())
+            {
+                colorDialog.Color = elementoSelecionado.Cor;
+
+                if (colorDialog.ShowDialog() == DialogResult.OK)
+                {
+                    elementoSelecionado.Cor = colorDialog.Color;
+                    btnCor.BackColor = colorDialog.Color;
+                    btnCor.ForeColor = colorDialog.Color.GetBrightness() > 0.5 ? Color.Black : Color.White;
+                    pbCanvas.Invalidate();
+                }
             }
         }
 
@@ -828,7 +1111,7 @@ namespace EtiquetaFORNew.Forms
                     {
                         StringFormat sf = new StringFormat
                         {
-                            Alignment = StringAlignment.Near,
+                            Alignment = elem.Alinhamento,
                             LineAlignment = StringAlignment.Center
                         };
                         g.DrawString(elem.Conteudo ?? "Texto", elem.Fonte, brush, bounds, sf);
@@ -841,7 +1124,7 @@ namespace EtiquetaFORNew.Forms
                     {
                         StringFormat sf = new StringFormat
                         {
-                            Alignment = StringAlignment.Near,
+                            Alignment = elem.Alinhamento,
                             LineAlignment = StringAlignment.Center
                         };
                         g.DrawString(valor, elem.Fonte, brush, bounds, sf);
@@ -1062,6 +1345,7 @@ namespace EtiquetaFORNew.Forms
             }
 
             elementoSelecionado = null;
+            AtualizarPainelPropriedades();
             pbCanvas.Invalidate();
         }
 
