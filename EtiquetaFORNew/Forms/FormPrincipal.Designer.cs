@@ -96,7 +96,7 @@
             this.groupProduto.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
             this.groupProduto.Location = new System.Drawing.Point(3, 3);
             this.groupProduto.Name = "groupProduto";
-            this.groupProduto.Size = new System.Drawing.Size(851, 124);
+            this.groupProduto.Size = new System.Drawing.Size(851, 60);
             this.groupProduto.TabIndex = 1;
             this.groupProduto.TabStop = false;
             this.groupProduto.Text = "Adicionar Produto";
@@ -295,9 +295,9 @@
             this.colPreco,
             this.colQuantidade,
             this.colRemover});
-            this.dgvProdutos.Location = new System.Drawing.Point(12, 297);
+            this.dgvProdutos.Location = new System.Drawing.Point(12, 223);
             this.dgvProdutos.Name = "dgvProdutos";
-            this.dgvProdutos.Size = new System.Drawing.Size(859, 276);
+            this.dgvProdutos.Size = new System.Drawing.Size(859, 350);
             this.dgvProdutos.TabIndex = 2;
             this.dgvProdutos.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgvProdutos_CellContentClick);
             // 
@@ -409,6 +409,7 @@
             this.btnConfigPapel.TabIndex = 10;
             this.btnConfigPapel.Text = "Configurar Papel";
             this.btnConfigPapel.UseVisualStyleBackColor = false;
+            this.btnConfigPapel.Visible = false;
             this.btnConfigPapel.Click += new System.EventHandler(this.btnConfigPapel_Click);
             // 
             // btnCarregarTemplate
@@ -458,9 +459,9 @@
             this.panel2.BackColor = System.Drawing.Color.Transparent;
             this.panel2.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.panel2.Controls.Add(this.groupProduto);
-            this.panel2.Location = new System.Drawing.Point(12, 163);
+            this.panel2.Location = new System.Drawing.Point(12, 146);
             this.panel2.Name = "panel2";
-            this.panel2.Size = new System.Drawing.Size(859, 128);
+            this.panel2.Size = new System.Drawing.Size(859, 71);
             this.panel2.TabIndex = 3;
             // 
             // panelConfiguracao
@@ -475,7 +476,7 @@
             this.panelConfiguracao.Controls.Add(this.lblStatusConfig);
             this.panelConfiguracao.Location = new System.Drawing.Point(12, 103);
             this.panelConfiguracao.Name = "panelConfiguracao";
-            this.panelConfiguracao.Size = new System.Drawing.Size(860, 54);
+            this.panelConfiguracao.Size = new System.Drawing.Size(860, 37);
             this.panelConfiguracao.TabIndex = 4;
             // 
             // label4
@@ -486,6 +487,7 @@
             this.label4.Size = new System.Drawing.Size(59, 15);
             this.label4.TabIndex = 5;
             this.label4.Text = "Template:";
+            this.label4.Visible = false;
             // 
             // cmbTemplates
             // 
@@ -496,6 +498,7 @@
             this.cmbTemplates.Name = "cmbTemplates";
             this.cmbTemplates.Size = new System.Drawing.Size(280, 23);
             this.cmbTemplates.TabIndex = 4;
+            this.cmbTemplates.Visible = false;
             // 
             // pictureBox2
             // 
@@ -518,6 +521,7 @@
             this.lblConfiguracao.Size = new System.Drawing.Size(99, 15);
             this.lblConfiguracao.TabIndex = 0;
             this.lblConfiguracao.Text = "⚙️ Configuração:";
+            this.lblConfiguracao.Visible = false;
             // 
             // cmbConfiguracao
             // 
@@ -528,6 +532,7 @@
             this.cmbConfiguracao.Name = "cmbConfiguracao";
             this.cmbConfiguracao.Size = new System.Drawing.Size(280, 23);
             this.cmbConfiguracao.TabIndex = 1;
+            this.cmbConfiguracao.Visible = false;
             this.cmbConfiguracao.SelectedIndexChanged += new System.EventHandler(this.cmbConfiguracao_SelectedIndexChanged);
             // 
             // lblStatusConfig
@@ -540,6 +545,7 @@
             this.lblStatusConfig.Size = new System.Drawing.Size(197, 13);
             this.lblStatusConfig.TabIndex = 2;
             this.lblStatusConfig.Text = "⚠️ Nenhuma configuração carregada";
+            this.lblStatusConfig.Visible = false;
             // 
             // FormPrincipal
             // 

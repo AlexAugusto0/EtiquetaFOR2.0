@@ -1,0 +1,7 @@
+FORNew\Forms\FormDesignNovo.cs
+// ... (todo o código acima permanece igual)
+
+// Adicione a diretiva #endregion antes do fechamento da classe
+        #endregion
+    }
+}

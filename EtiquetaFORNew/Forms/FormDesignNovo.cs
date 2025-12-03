@@ -1,0 +1,1427 @@
+﻿using System;
+using System.Drawing;
+using System.Drawing.Drawing2D;
+using System.Windows.Forms;
+using System.Collections.Generic;
+using System.Linq;
+
+namespace EtiquetaFORNew.Forms
+{
+    /// <summary>
+    /// FormDesign modernizado com configuração de página integrada e funcionalidade completa de elementos
+    /// </summary>
+    public partial class FormDesignNovo : Form
+    {
+        #region Campos Privados
+
+        private TemplateEtiqueta template;
+        private ConfiguracaoEtiqueta configuracao;
+        private string nomeTemplateAtual;
+
+        // Controles do canvas
+        private Panel panelCanvas;
+        private PictureBox pbCanvas;
+
+        // Controles do painel de configuração
+        private Panel panelConfiguracao;
+        private NumericUpDown numLargura;
+        private NumericUpDown numAltura;
+        private ComboBox cmbImpressora;
+        private ComboBox cmbPapel;
+        private NumericUpDown numColunas;
+        private NumericUpDown numLinhas;
+        private NumericUpDown numEspacamentoColunas;
+        private NumericUpDown numEspacamentoLinhas;
+        private NumericUpDown numMargemSuperior;
+        private NumericUpDown numMargemInferior;
+        private NumericUpDown numMargemEsquerda;
+        private NumericUpDown numMargemDireita;
+        private CheckBox chkPadraoDesativar;
+
+        // Toolbox de elementos
+        private Panel panelToolbox;
+
+        // Controles de elementos e seleção
+        private ElementoEtiqueta elementoSelecionado;
+        private bool arrastando = false;
+        private bool redimensionando = false;
+        private Point pontoInicialMouse;
+        private Rectangle boundsIniciais;
+        private int handleSelecionado = -1;
+
+        // Constantes
+        private const float MM_PARA_PIXEL = 3.78f;
+        private float zoom = 1.0f;
+
+        #endregion
+
+        #region Construtor e Inicialização
+
+        public FormDesignNovo(TemplateEtiqueta templateInicial, string nomeTemplate = null)
+        {
+            InitializeComponent();
+
+            this.template = templateInicial ?? new TemplateEtiqueta();
+            this.nomeTemplateAtual = nomeTemplate;
+
+            // Carrega ou cria configuração
+            if (!string.IsNullOrEmpty(nomeTemplate))
+            {
+                configuracao = ConfiguracaoManager.CarregarConfiguracao(nomeTemplate);
+            }
+
+            if (configuracao == null)
+            {
+                configuracao = new ConfiguracaoEtiqueta
+                {
+                    NomeEtiqueta = nomeTemplate ?? "Novo Template",
+                    LarguraEtiqueta = template.Largura > 0 ? template.Largura : 100,
+                    AlturaEtiqueta = template.Altura > 0 ? template.Altura : 30,
+                    ImpressoraPadrao = "BTP-L42(D)",
+                    NumColunas = 1,
+                    NumLinhas = 1,
+                    EspacamentoColunas = 0,
+                    EspacamentoLinhas = 0,
+                    MargemSuperior = 0,
+                    MargemInferior = 0,
+                    MargemEsquerda = 0,
+                    MargemDireita = 0
+                };
+            }
+
+            // Sincroniza template com config
+            template.Largura = configuracao.LarguraEtiqueta;
+            template.Altura = configuracao.AlturaEtiqueta;
+
+            ConfigurarFormulario();
+        }
+
+        private void FormDesignNovo_Load(object sender, EventArgs e)
+        {
+            CriarInterface();
+            CarregarDadosNaInterface();
+        }
+
+        private void ConfigurarFormulario()
+        {
+            this.WindowState = FormWindowState.Maximized;
+            this.DoubleBuffered = true;
+            this.BackColor = Color.FromArgb(240, 240, 240);
+            this.KeyPreview = true;
+            this.KeyDown += FormDesignNovo_KeyDown;
+        }
+
+        #endregion
+
+        #region Criação de Interface
+
+        private void CriarInterface()
+        {
+            // ==================== BARRA SUPERIOR ====================
+            Panel panelTop = new Panel
+            {
+                Dock = DockStyle.Top,
+                Height = 60,
+                BackColor = Color.FromArgb(52, 73, 94)
+            };
+            this.Controls.Add(panelTop);
+
+            // Logo e título
+            Label lblTitulo = new Label
+            {
+                Text = "🎨 DESIGNER DE ETIQUETAS",
+                Location = new Point(20, 15),
+                Size = new Size(300, 30),
+                Font = new Font("Segoe UI", 14, FontStyle.Bold),
+                ForeColor = Color.White
+            };
+            panelTop.Controls.Add(lblTitulo);
+
+            // ==================== BOTÕES DE AÇÃO ====================
+            // Painel para os botões (ancorado à direita)
+            Panel panelBotoes = new Panel
+            {
+                Dock = DockStyle.Right,
+                Width = 340,
+                Height = 60,
+                BackColor = Color.Transparent
+            };
+            panelTop.Controls.Add(panelBotoes);
+
+            // Botão Fechar (mais à direita)
+            Button btnFechar = new Button
+            {
+                Text = "✕ Fechar",
+                Location = new Point(230, 15),
+                Size = new Size(100, 30),
+                Font = new Font("Segoe UI", 9, FontStyle.Bold),
+                BackColor = Color.FromArgb(231, 76, 60),
+                ForeColor = Color.White,
+                FlatStyle = FlatStyle.Flat,
+                Cursor = Cursors.Hand
+            };
+            btnFechar.FlatAppearance.BorderSize = 0;
+            btnFechar.Click += BtnFechar_Click;
+            panelBotoes.Controls.Add(btnFechar);
+
+            // Botão Novo (meio)
+            Button btnNovo = new Button
+            {
+                Text = "📄 Novo",
+                Location = new Point(120, 15),
+                Size = new Size(100, 30),
+                Font = new Font("Segoe UI", 9, FontStyle.Bold),
+                BackColor = Color.FromArgb(52, 152, 219),
+                ForeColor = Color.White,
+                FlatStyle = FlatStyle.Flat,
+                Cursor = Cursors.Hand
+            };
+            btnNovo.FlatAppearance.BorderSize = 0;
+            btnNovo.Click += BtnNovo_Click;
+            panelBotoes.Controls.Add(btnNovo);
+
+            // Botão Salvar (mais à esquerda do painel)
+            Button btnSalvar = new Button
+            {
+                Text = "💾 Salvar",
+                Location = new Point(10, 15),
+                Size = new Size(100, 30),
+                Font = new Font("Segoe UI", 9, FontStyle.Bold),
+                BackColor = Color.FromArgb(46, 204, 113),
+                ForeColor = Color.White,
+                FlatStyle = FlatStyle.Flat,
+                Cursor = Cursors.Hand
+            };
+            btnSalvar.FlatAppearance.BorderSize = 0;
+            btnSalvar.Click += BtnSalvar_Click;
+            panelBotoes.Controls.Add(btnSalvar);
+
+            // ==================== PAINEL LATERAL DIREITO - CONFIGURAÇÃO ====================
+            panelConfiguracao = new Panel
+            {
+                Dock = DockStyle.Right,
+                Width = 350,
+                BackColor = Color.White,
+                Padding = new Padding(10),
+                AutoScroll = true
+            };
+            this.Controls.Add(panelConfiguracao);
+
+            CriarPainelConfiguracao();
+
+            // ==================== PAINEL LATERAL ESQUERDO - TOOLBOX ====================
+            panelToolbox = new Panel
+            {
+                Dock = DockStyle.Left,
+                Width = 200,
+                BackColor = Color.FromArgb(236, 240, 241),
+                Padding = new Padding(10),
+                AutoScroll = true
+            };
+            this.Controls.Add(panelToolbox);
+
+            CriarToolbox();
+
+            // ==================== CANVAS CENTRAL ====================
+            panelCanvas = new Panel
+            {
+                Dock = DockStyle.Fill,
+                BackColor = Color.FromArgb(189, 195, 199),
+                AutoScroll = true
+            };
+            this.Controls.Add(panelCanvas);
+
+            pbCanvas = new PictureBox
+            {
+                BackColor = Color.White,
+                BorderStyle = BorderStyle.FixedSingle,
+                SizeMode = PictureBoxSizeMode.AutoSize,
+                Location = new Point(50, 50)
+            };
+            pbCanvas.Paint += PbCanvas_Paint;
+            pbCanvas.MouseDown += PbCanvas_MouseDown;
+            pbCanvas.MouseMove += PbCanvas_MouseMove;
+            pbCanvas.MouseUp += PbCanvas_MouseUp;
+
+            panelCanvas.Controls.Add(pbCanvas);
+
+            AtualizarTamanhoCanvas();
+        }
+
+        #endregion
+
+        #region Painel de Configuração
+
+        private void CriarPainelConfiguracao()
+        {
+            int yPos = 10;
+
+            // Título
+            Label lblTituloConfig = new Label
+            {
+                Text = "⚙ CONFIGURAÇÕES DA PÁGINA",
+                Location = new Point(10, yPos),
+                Size = new Size(320, 30),
+                Font = new Font("Segoe UI", 11, FontStyle.Bold),
+                ForeColor = Color.FromArgb(52, 73, 94)
+            };
+            panelConfiguracao.Controls.Add(lblTituloConfig);
+            yPos += 40;
+
+            // Linha separadora
+            Panel linha1 = new Panel
+            {
+                Location = new Point(10, yPos),
+                Size = new Size(320, 2),
+                BackColor = Color.FromArgb(230, 126, 34)
+            };
+            panelConfiguracao.Controls.Add(linha1);
+            yPos += 15;
+
+            // DIMENSÕES DA ETIQUETA
+            Label lblDimensoes = CriarLabelSecao("📐 Dimensões da Etiqueta", yPos);
+            panelConfiguracao.Controls.Add(lblDimensoes);
+            yPos += 25;
+
+            yPos = CriarCampoNumerico("Largura (mm):", out numLargura, yPos, 1, 500, (decimal)configuracao.LarguraEtiqueta);
+            numLargura.ValueChanged += (s, e) => AtualizarConfiguracao();
+
+            yPos = CriarCampoNumerico("Altura (mm):", out numAltura, yPos, 1, 500, (decimal)configuracao.AlturaEtiqueta);
+            numAltura.ValueChanged += (s, e) => AtualizarConfiguracao();
+
+            yPos += 10;
+
+            // IMPRESSORA E PAPEL
+            Label lblImpressao = CriarLabelSecao("🖨️ Impressão", yPos);
+            panelConfiguracao.Controls.Add(lblImpressao);
+            yPos += 25;
+
+            Label lblImpressora = new Label
+            {
+                Text = "Impressora:",
+                Location = new Point(15, yPos),
+                Size = new Size(100, 20),
+                Font = new Font("Segoe UI", 9)
+            };
+            panelConfiguracao.Controls.Add(lblImpressora);
+
+            cmbImpressora = new ComboBox
+            {
+                Location = new Point(120, yPos - 2),
+                Size = new Size(210, 23),
+                DropDownStyle = ComboBoxStyle.DropDownList
+            };
+            cmbImpressora.SelectedIndexChanged += CmbImpressora_SelectedIndexChanged;
+            panelConfiguracao.Controls.Add(cmbImpressora);
+            yPos += 30;
+
+            Label lblPapel = new Label
+            {
+                Text = "Papel:",
+                Location = new Point(15, yPos),
+                Size = new Size(100, 20),
+                Font = new Font("Segoe UI", 9)
+            };
+            panelConfiguracao.Controls.Add(lblPapel);
+
+            cmbPapel = new ComboBox
+            {
+                Location = new Point(120, yPos - 2),
+                Size = new Size(210, 23),
+                DropDownStyle = ComboBoxStyle.DropDownList
+            };
+            panelConfiguracao.Controls.Add(cmbPapel);
+            yPos += 35;
+
+            // LAYOUT
+            Label lblLayout = CriarLabelSecao("📊 Layout da Página", yPos);
+            panelConfiguracao.Controls.Add(lblLayout);
+            yPos += 25;
+
+            Label lblColunas = new Label
+            {
+                Text = "Colunas:",
+                Location = new Point(15, yPos),
+                Size = new Size(60, 20)
+            };
+            panelConfiguracao.Controls.Add(lblColunas);
+
+            numColunas = new NumericUpDown
+            {
+                Location = new Point(80, yPos - 2),
+                Size = new Size(60, 23),
+                Minimum = 1,
+                Maximum = 10,
+                Value = configuracao.NumColunas
+            };
+            numColunas.ValueChanged += (s, e) => AtualizarConfiguracao();
+            panelConfiguracao.Controls.Add(numColunas);
+
+            Label lblLinhas = new Label
+            {
+                Text = "Linhas:",
+                Location = new Point(175, yPos),
+                Size = new Size(50, 20)
+            };
+            panelConfiguracao.Controls.Add(lblLinhas);
+
+            numLinhas = new NumericUpDown
+            {
+                Location = new Point(230, yPos - 2),
+                Size = new Size(60, 23),
+                Minimum = 1,
+                Maximum = 20,
+                Value = configuracao.NumLinhas
+            };
+            numLinhas.ValueChanged += (s, e) => AtualizarConfiguracao();
+            panelConfiguracao.Controls.Add(numLinhas);
+            yPos += 30;
+
+            // ESPAÇAMENTOS
+            Label lblEspacamento = CriarLabelSecao("↔️ Espaçamentos", yPos);
+            panelConfiguracao.Controls.Add(lblEspacamento);
+            yPos += 25;
+
+            yPos = CriarCampoNumerico("Entre Colunas (mm):", out numEspacamentoColunas, yPos, 0, 50,
+                (decimal)configuracao.EspacamentoColunas, 0.1m);
+            numEspacamentoColunas.ValueChanged += (s, e) => AtualizarConfiguracao();
+
+            yPos = CriarCampoNumerico("Entre Linhas (mm):", out numEspacamentoLinhas, yPos, 0, 50,
+                (decimal)configuracao.EspacamentoLinhas, 0.1m);
+            numEspacamentoLinhas.ValueChanged += (s, e) => AtualizarConfiguracao();
+
+            yPos += 10;
+
+            // MARGENS
+            Label lblMargens = CriarLabelSecao("📏 Margens da Página", yPos);
+            panelConfiguracao.Controls.Add(lblMargens);
+            yPos += 25;
+
+            chkPadraoDesativar = new CheckBox
+            {
+                Text = "Ir no Painel de Controle, clicar no item 'Propriedades do servidor de impressão'",
+                Location = new Point(15, yPos),
+                Size = new Size(300, 40),
+                Font = new Font("Segoe UI", 8),
+                ForeColor = Color.FromArgb(127, 140, 141),
+                Checked = configuracao.MargemSuperior == 0
+            };
+            chkPadraoDesativar.CheckedChanged += ChkPadraoDesativar_CheckedChanged;
+            panelConfiguracao.Controls.Add(chkPadraoDesativar);
+            yPos += 45;
+
+            yPos = CriarCampoNumerico("Superior (mm):", out numMargemSuperior, yPos, 0, 50,
+                (decimal)configuracao.MargemSuperior, 0.1m);
+            numMargemSuperior.ValueChanged += (s, e) => AtualizarConfiguracao();
+
+            yPos = CriarCampoNumerico("Inferior (mm):", out numMargemInferior, yPos, 0, 50,
+                (decimal)configuracao.MargemInferior, 0.1m);
+            numMargemInferior.ValueChanged += (s, e) => AtualizarConfiguracao();
+
+            yPos = CriarCampoNumerico("Esquerda (mm):", out numMargemEsquerda, yPos, 0, 50,
+                (decimal)configuracao.MargemEsquerda, 0.1m);
+            numMargemEsquerda.ValueChanged += (s, e) => AtualizarConfiguracao();
+
+            yPos = CriarCampoNumerico("Direita (mm):", out numMargemDireita, yPos, 0, 50,
+                (decimal)configuracao.MargemDireita, 0.1m);
+            numMargemDireita.ValueChanged += (s, e) => AtualizarConfiguracao();
+
+            AtualizarEstadoMargens();
+        }
+
+        private Label CriarLabelSecao(string texto, int yPos)
+        {
+            return new Label
+            {
+                Text = texto,
+                Location = new Point(10, yPos),
+                Size = new Size(320, 20),
+                Font = new Font("Segoe UI", 9, FontStyle.Bold),
+                ForeColor = Color.FromArgb(52, 73, 94)
+            };
+        }
+
+        private int CriarCampoNumerico(string label, out NumericUpDown control, int yPos,
+            decimal min, decimal max, decimal valor, decimal increment = 1)
+        {
+            Label lbl = new Label
+            {
+                Text = label,
+                Location = new Point(15, yPos),
+                Size = new Size(140, 20),
+                Font = new Font("Segoe UI", 9)
+            };
+            panelConfiguracao.Controls.Add(lbl);
+
+            control = new NumericUpDown
+            {
+                Location = new Point(160, yPos - 2),
+                Size = new Size(100, 23),
+                Minimum = min,
+                Maximum = max,
+                Value = valor,
+                DecimalPlaces = increment < 1 ? 2 : 0,
+                Increment = increment
+            };
+            panelConfiguracao.Controls.Add(control);
+
+            Label lblUnidade = new Label
+            {
+                Text = "mm",
+                Location = new Point(270, yPos),
+                Size = new Size(30, 20),
+                Font = new Font("Segoe UI", 8),
+                ForeColor = Color.Gray
+            };
+            panelConfiguracao.Controls.Add(lblUnidade);
+
+            return yPos + 30;
+        }
+
+        #endregion
+
+        #region Toolbox
+
+        private void CriarToolbox()
+        {
+            Label lblTitulo = new Label
+            {
+                Text = "🧰 ELEMENTOS",
+                Location = new Point(10, 10),
+                Size = new Size(180, 25),
+                Font = new Font("Segoe UI", 10, FontStyle.Bold),
+                ForeColor = Color.FromArgb(52, 73, 94)
+            };
+            panelToolbox.Controls.Add(lblTitulo);
+
+            int yPos = 45;
+
+            // Botão Texto
+            Button btnTexto = CriarBotaoElemento("📝 Texto", yPos, () => AdicionarElemento(TipoElemento.Texto));
+            yPos += 40;
+
+            // Label Campos
+            Label lblCampos = new Label
+            {
+                Text = "Campos Dinâmicos:",
+                Location = new Point(10, yPos),
+                Size = new Size(180, 20),
+                Font = new Font("Segoe UI", 8, FontStyle.Bold),
+                ForeColor = Color.Gray
+            };
+            panelToolbox.Controls.Add(lblCampos);
+            yPos += 25;
+
+            // ComboBox de Campos
+            ComboBox cmbCampos = new ComboBox
+            {
+                Location = new Point(10, yPos),
+                Size = new Size(180, 23),
+                DropDownStyle = ComboBoxStyle.DropDownList,
+                Font = new Font("Segoe UI", 8)
+            };
+            cmbCampos.Items.AddRange(new object[] {
+                "Mercadoria",
+                "CodigoMercadoria",
+                "CodFabricante",
+                "CodBarras",
+                "PrecoVenda",
+                "VendaA",
+                "VendaB",
+                "VendaC",
+                "Fornecedor",
+                "Fabricante",
+                "Grupo"
+            });
+            cmbCampos.SelectedIndexChanged += (s, e) => {
+                if (cmbCampos.SelectedItem != null)
+                {
+                    AdicionarCampo(cmbCampos.SelectedItem.ToString());
+                    cmbCampos.SelectedIndex = -1;
+                }
+            };
+            panelToolbox.Controls.Add(cmbCampos);
+            yPos += 35;
+
+            // Label Códigos de Barras
+            Label lblCodigoBarras = new Label
+            {
+                Text = "Códigos de Barras:",
+                Location = new Point(10, yPos),
+                Size = new Size(180, 20),
+                Font = new Font("Segoe UI", 8, FontStyle.Bold),
+                ForeColor = Color.Gray
+            };
+            panelToolbox.Controls.Add(lblCodigoBarras);
+            yPos += 25;
+
+            // ComboBox de Códigos de Barras
+            ComboBox cmbCodigoBarras = new ComboBox
+            {
+                Location = new Point(10, yPos),
+                Size = new Size(180, 23),
+                DropDownStyle = ComboBoxStyle.DropDownList,
+                Font = new Font("Segoe UI", 8)
+            };
+            cmbCodigoBarras.Items.AddRange(new object[] {
+                "CodigoMercadoria",
+                "CodFabricante",
+                "CodBarras"
+            });
+            cmbCodigoBarras.SelectedIndexChanged += (s, e) => {
+                if (cmbCodigoBarras.SelectedItem != null)
+                {
+                    AdicionarCodigoBarras(cmbCodigoBarras.SelectedItem.ToString());
+                    cmbCodigoBarras.SelectedIndex = -1;
+                }
+            };
+            panelToolbox.Controls.Add(cmbCodigoBarras);
+            yPos += 35;
+
+            // Botão Imagem
+            Button btnImagem = CriarBotaoElemento("🖼️ Imagem", yPos, () => AdicionarImagem());
+            yPos += 40;
+
+            // Botão Remover
+            Button btnRemover = CriarBotaoElemento("🗑️ Remover", yPos, () => RemoverElementoSelecionado());
+            btnRemover.BackColor = Color.FromArgb(231, 76, 60);
+        }
+
+        private Button CriarBotaoElemento(string texto, int yPos, Action onClick)
+        {
+            Button btn = new Button
+            {
+                Text = texto,
+                Location = new Point(10, yPos),
+                Size = new Size(180, 35),
+                Font = new Font("Segoe UI", 9),
+                BackColor = Color.FromArgb(52, 152, 219),
+                ForeColor = Color.White,
+                FlatStyle = FlatStyle.Flat,
+                Cursor = Cursors.Hand,
+                TextAlign = ContentAlignment.MiddleLeft
+            };
+            btn.FlatAppearance.BorderSize = 0;
+            btn.Click += (s, e) => onClick();
+            panelToolbox.Controls.Add(btn);
+            return btn;
+        }
+
+        #endregion
+
+        #region Adicionar Elementos
+
+        private void AdicionarElemento(TipoElemento tipo)
+        {
+            var elemento = new ElementoEtiqueta
+            {
+                Tipo = tipo,
+                Fonte = new Font("Arial", 10),
+                Cor = Color.Black
+            };
+
+            if (tipo == TipoElemento.Texto)
+            {
+                elemento.Conteudo = "Texto";
+
+                using (Graphics g = Graphics.FromImage(new Bitmap(1, 1)))
+                {
+                    SizeF tamanhoTexto = g.MeasureString(elemento.Conteudo, elemento.Fonte);
+                    int largura = Math.Min((int)(tamanhoTexto.Width / MM_PARA_PIXEL) + 2, (int)template.Largura - 2);
+                    int altura = Math.Min((int)(tamanhoTexto.Height / MM_PARA_PIXEL) + 2, (int)template.Altura - 2);
+                    elemento.Bounds = new Rectangle(1, 1, Math.Max(3, largura), Math.Max(2, altura));
+                }
+            }
+
+            template.Elementos.Add(elemento);
+            elementoSelecionado = elemento;
+            pbCanvas.Invalidate();
+        }
+
+        private void AdicionarCampo(string campo)
+        {
+            var elemento = new ElementoEtiqueta
+            {
+                Tipo = TipoElemento.Campo,
+                Conteudo = campo,
+                Fonte = new Font("Arial", 8),
+                Cor = Color.Black
+            };
+
+            string textoExemplo = "[" + campo + "]";
+            using (Graphics g = Graphics.FromImage(new Bitmap(1, 1)))
+            {
+                SizeF tamanhoTexto = g.MeasureString(textoExemplo, elemento.Fonte);
+                int largura = Math.Min((int)(tamanhoTexto.Width / MM_PARA_PIXEL) + 2, (int)template.Largura - 2);
+                int altura = Math.Min((int)(tamanhoTexto.Height / MM_PARA_PIXEL) + 2, (int)template.Altura - 2);
+                elemento.Bounds = new Rectangle(1, 1, Math.Max(3, largura), Math.Max(2, altura));
+            }
+
+            template.Elementos.Add(elemento);
+            elementoSelecionado = elemento;
+            pbCanvas.Invalidate();
+        }
+
+        private void AdicionarCodigoBarras(string campoCodigo)
+        {
+            var elemento = new ElementoEtiqueta
+            {
+                Tipo = TipoElemento.CodigoBarras,
+                Conteudo = campoCodigo,
+                Fonte = new Font("Arial", 8),
+                Cor = Color.Black
+            };
+
+            int largura = Math.Max(10, Math.Min((int)(template.Largura * 0.8f), (int)template.Largura - 2));
+            int altura = Math.Max(5, Math.Min((int)(template.Altura * 0.4f), (int)template.Altura - 2));
+
+            elemento.Bounds = new Rectangle(1, 1, largura, altura);
+            template.Elementos.Add(elemento);
+            elementoSelecionado = elemento;
+            pbCanvas.Invalidate();
+        }
+
+        private void AdicionarImagem()
+        {
+            using (OpenFileDialog ofd = new OpenFileDialog())
+            {
+                ofd.Filter = "Imagens|*.jpg;*.jpeg;*.png;*.bmp;*.gif";
+                if (ofd.ShowDialog() == DialogResult.OK)
+                {
+                    var elemento = new ElementoEtiqueta
+                    {
+                        Tipo = TipoElemento.Imagem,
+                        Imagem = Image.FromFile(ofd.FileName),
+                        Bounds = new Rectangle(1, 1, 20, 20)
+                    };
+
+                    template.Elementos.Add(elemento);
+                    elementoSelecionado = elemento;
+                    pbCanvas.Invalidate();
+                }
+            }
+        }
+
+        private void RemoverElementoSelecionado()
+        {
+            if (elementoSelecionado != null)
+            {
+                var resultado = MessageBox.Show(
+                    "Deseja remover o elemento selecionado?",
+                    "Confirmar Remoção",
+                    MessageBoxButtons.YesNo,
+                    MessageBoxIcon.Question);
+
+                if (resultado == DialogResult.Yes)
+                {
+                    template.Elementos.Remove(elementoSelecionado);
+                    elementoSelecionado = null;
+                    pbCanvas.Invalidate();
+                }
+            }
+            else
+            {
+                MessageBox.Show("Nenhum elemento selecionado!", "Atenção",
+                    MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+        }
+
+        #endregion
+
+        #region Desenhar Canvas
+
+        private void PbCanvas_Paint(object sender, PaintEventArgs e)
+        {
+            Graphics g = e.Graphics;
+            g.SmoothingMode = SmoothingMode.AntiAlias;
+            g.Clear(Color.White);
+
+            float escala = zoom * MM_PARA_PIXEL;
+
+            // Desenha fundo da etiqueta
+            RectangleF rectEtiqueta = new RectangleF(
+                25, 25,
+                configuracao.LarguraEtiqueta * MM_PARA_PIXEL * zoom,
+                configuracao.AlturaEtiqueta * MM_PARA_PIXEL * zoom
+            );
+
+            g.FillRectangle(Brushes.White, rectEtiqueta);
+            g.DrawRectangle(new Pen(Color.FromArgb(230, 126, 34), 2), Rectangle.Round(rectEtiqueta));
+
+            // Desenha grid de colunas/linhas se > 1
+            if (configuracao.NumColunas > 1 || configuracao.NumLinhas > 1)
+            {
+                DesenharGrid(g, rectEtiqueta);
+            }
+
+            // Desenha elementos do template
+            DesenharElementos(g, rectEtiqueta);
+        }
+
+        private void DesenharGrid(Graphics g, RectangleF rect)
+        {
+            using (Pen penGrid = new Pen(Color.FromArgb(100, 189, 195, 199), 1))
+            {
+                penGrid.DashStyle = DashStyle.Dash;
+
+                // Grid vertical (colunas)
+                if (configuracao.NumColunas > 1)
+                {
+                    float larguraColuna = configuracao.LarguraEtiqueta / configuracao.NumColunas;
+                    for (int i = 1; i < configuracao.NumColunas; i++)
+                    {
+                        float x = rect.X + (larguraColuna * i * MM_PARA_PIXEL);
+                        g.DrawLine(penGrid, x, rect.Y, x, rect.Bottom);
+                    }
+                }
+
+                // Grid horizontal (linhas)
+                if (configuracao.NumLinhas > 1)
+                {
+                    float alturaLinha = configuracao.AlturaEtiqueta / configuracao.NumLinhas;
+                    for (int i = 1; i < configuracao.NumLinhas; i++)
+                    {
+                        float y = rect.Y + (alturaLinha * i * MM_PARA_PIXEL);
+                        g.DrawLine(penGrid, rect.X, y, rect.Right, y);
+                    }
+                }
+            }
+        }
+
+        private void DesenharElementos(Graphics g, RectangleF rectEtiqueta)
+        {
+            if (template.Elementos.Count == 0)
+            {
+                string texto = "Adicione elementos usando a toolbox ←";
+                SizeF tamanho = g.MeasureString(texto, this.Font);
+                g.DrawString(texto, this.Font, Brushes.Gray,
+                    rectEtiqueta.X + (rectEtiqueta.Width - tamanho.Width) / 2,
+                    rectEtiqueta.Y + (rectEtiqueta.Height - tamanho.Height) / 2);
+                return;
+            }
+
+            foreach (var elem in template.Elementos)
+            {
+                DesenharElemento(g, elem, rectEtiqueta, null);
+
+                if (elem == elementoSelecionado)
+                {
+                    Rectangle bounds = ConverterParaPixels(elem.Bounds, rectEtiqueta);
+                    using (Pen penSelecao = new Pen(Color.Blue, 2))
+                    {
+                        penSelecao.DashStyle = DashStyle.Dash;
+                        g.DrawRectangle(penSelecao, bounds);
+                    }
+                    DesenharHandles(g, bounds);
+                }
+            }
+        }
+
+        private void DesenharElemento(Graphics g, ElementoEtiqueta elem, RectangleF rectEtiqueta, Produto produto)
+        {
+            Rectangle bounds = ConverterParaPixels(elem.Bounds, rectEtiqueta);
+
+            switch (elem.Tipo)
+            {
+                case TipoElemento.Texto:
+                    using (SolidBrush brush = new SolidBrush(elem.Cor))
+                    {
+                        StringFormat sf = new StringFormat
+                        {
+                            Alignment = StringAlignment.Near,
+                            LineAlignment = StringAlignment.Center
+                        };
+                        g.DrawString(elem.Conteudo ?? "Texto", elem.Fonte, brush, bounds, sf);
+                    }
+                    break;
+
+                case TipoElemento.Campo:
+                    string valor = ObterValorCampo(elem.Conteudo, produto);
+                    using (SolidBrush brush = new SolidBrush(elem.Cor))
+                    {
+                        StringFormat sf = new StringFormat
+                        {
+                            Alignment = StringAlignment.Near,
+                            LineAlignment = StringAlignment.Center
+                        };
+                        g.DrawString(valor, elem.Fonte, brush, bounds, sf);
+                    }
+                    break;
+
+                case TipoElemento.CodigoBarras:
+                    string codigoBarras = ObterValorCampo(elem.Conteudo, produto);
+                    DesenharCodigoBarras(g, codigoBarras, bounds);
+                    break;
+
+                case TipoElemento.Imagem:
+                    if (elem.Imagem != null)
+                    {
+                        g.DrawImage(elem.Imagem, bounds);
+                    }
+                    else
+                    {
+                        g.FillRectangle(Brushes.LightGray, bounds);
+                        g.DrawString("Imagem", new Font("Arial", 8), Brushes.Black, bounds);
+                    }
+                    break;
+            }
+
+            g.DrawRectangle(Pens.LightGray, bounds);
+        }
+
+        #endregion
+
+        #region Métodos Auxiliares de Desenho
+
+        private Rectangle ConverterParaPixels(Rectangle boundsEmMM, RectangleF rectEtiqueta)
+        {
+            return new Rectangle(
+                (int)(rectEtiqueta.X + boundsEmMM.X * MM_PARA_PIXEL),
+                (int)(rectEtiqueta.Y + boundsEmMM.Y * MM_PARA_PIXEL),
+                (int)(boundsEmMM.Width * MM_PARA_PIXEL),
+                (int)(boundsEmMM.Height * MM_PARA_PIXEL)
+            );
+        }
+
+        private Rectangle ConverterParaMM(Rectangle boundsEmPixels, RectangleF rectEtiqueta)
+        {
+            const float pixelParaMM = 1f / MM_PARA_PIXEL;
+
+            return new Rectangle(
+                (int)((boundsEmPixels.X - rectEtiqueta.X) * pixelParaMM),
+                (int)((boundsEmPixels.Y - rectEtiqueta.Y) * pixelParaMM),
+                (int)(boundsEmPixels.Width * pixelParaMM),
+                (int)(boundsEmPixels.Height * pixelParaMM)
+            );
+        }
+
+        private string ObterValorCampo(string campo, Produto produto)
+        {
+            if (produto == null)
+            {
+                return $"[{campo}]";
+            }
+
+            switch (campo)
+            {
+                case "Mercadoria": return produto.Nome ?? "";
+                case "CodigoMercadoria": return produto.Codigo ?? "";
+                case "CodFabricante": return produto.CodFabricante ?? "";
+                case "CodBarras": return produto.CodBarras ?? "";
+                case "PrecoVenda": return produto.Preco.ToString("C2");
+                case "VendaA": return produto.Preco.ToString("C2");
+                case "VendaB": return produto.Preco.ToString("C2");
+                case "VendaC": return produto.Preco.ToString("C2");
+                case "Fornecedor": return produto.Nome ?? "";
+                case "Fabricante": return produto.Nome ?? "";
+                case "Grupo": return "";
+                default: return "";
+            }
+        }
+
+        private void DesenharCodigoBarras(Graphics g, string codigo, Rectangle bounds)
+        {
+            string codigoLimpo = new string(Array.FindAll(codigo.ToCharArray(), c => char.IsDigit(c)));
+            if (string.IsNullOrEmpty(codigoLimpo)) codigoLimpo = "0000000000";
+            if (codigoLimpo.Length < 8) codigoLimpo = codigoLimpo.PadLeft(8, '0');
+
+            float larguraBarra = (float)bounds.Width / (codigoLimpo.Length * 2);
+            float alturaBarras = bounds.Height * 0.7f;
+
+            for (int i = 0; i < codigoLimpo.Length; i++)
+            {
+                int digito = int.Parse(codigoLimpo[i].ToString());
+                float larguraAtual = (digito % 2 == 0) ? larguraBarra : larguraBarra * 1.5f;
+
+                float x = bounds.X + (i * larguraBarra * 2);
+
+                using (SolidBrush brush = new SolidBrush(Color.Black))
+                {
+                    g.FillRectangle(brush, x, bounds.Y, larguraAtual, alturaBarras);
+                }
+            }
+
+            using (Font fonte = new Font("Arial", 7))
+            using (SolidBrush brush = new SolidBrush(Color.Black))
+            {
+                StringFormat sf = new StringFormat
+                {
+                    Alignment = StringAlignment.Center,
+                    LineAlignment = StringAlignment.Far
+                };
+                g.DrawString(codigoLimpo, fonte, brush, bounds, sf);
+            }
+        }
+
+        private void DesenharHandles(Graphics g, Rectangle bounds)
+        {
+            int handleSize = 6;
+            using (SolidBrush brush = new SolidBrush(Color.White))
+            using (Pen pen = new Pen(Color.Blue, 1))
+            {
+                Point[] handles = new Point[]
+                {
+                    new Point(bounds.Left, bounds.Top),
+                    new Point(bounds.Right, bounds.Top),
+                    new Point(bounds.Right, bounds.Bottom),
+                    new Point(bounds.Left, bounds.Bottom),
+                    new Point(bounds.Left + bounds.Width / 2, bounds.Top),
+                    new Point(bounds.Right, bounds.Top + bounds.Height / 2),
+                    new Point(bounds.Left + bounds.Width / 2, bounds.Bottom),
+                    new Point(bounds.Left, bounds.Top + bounds.Height / 2)
+                };
+
+                foreach (Point handle in handles)
+                {
+                    Rectangle handleRect = new Rectangle(
+                        handle.X - handleSize / 2,
+                        handle.Y - handleSize / 2,
+                        handleSize,
+                        handleSize
+                    );
+                    g.FillRectangle(brush, handleRect);
+                    g.DrawRectangle(pen, handleRect);
+                }
+            }
+        }
+
+        private int ObterHandleClicado(Point mouse, Rectangle bounds)
+        {
+            int handleSize = 6;
+            int tolerance = 3;
+
+            Point[] handles = new Point[]
+            {
+                new Point(bounds.Left, bounds.Top),
+                new Point(bounds.Right, bounds.Top),
+                new Point(bounds.Right, bounds.Bottom),
+                new Point(bounds.Left, bounds.Bottom),
+                new Point(bounds.Left + bounds.Width / 2, bounds.Top),
+                new Point(bounds.Right, bounds.Top + bounds.Height / 2),
+                new Point(bounds.Left + bounds.Width / 2, bounds.Bottom),
+                new Point(bounds.Left, bounds.Top + bounds.Height / 2)
+            };
+
+            for (int i = 0; i < handles.Length; i++)
+            {
+                Rectangle handleRect = new Rectangle(
+                    handles[i].X - handleSize / 2 - tolerance,
+                    handles[i].Y - handleSize / 2 - tolerance,
+                    handleSize + tolerance * 2,
+                    handleSize + tolerance * 2
+                );
+
+                if (handleRect.Contains(mouse))
+                {
+                    return i;
+                }
+            }
+
+            return -1;
+        }
+
+        #endregion
+
+        #region Eventos do Mouse
+
+        private void PbCanvas_MouseDown(object sender, MouseEventArgs e)
+        {
+            if (e.Button != MouseButtons.Left) return;
+
+            RectangleF rectEtiqueta = new RectangleF(25, 25,
+                configuracao.LarguraEtiqueta * MM_PARA_PIXEL,
+                configuracao.AlturaEtiqueta * MM_PARA_PIXEL);
+
+            if (elementoSelecionado != null)
+            {
+                Rectangle bounds = ConverterParaPixels(elementoSelecionado.Bounds, rectEtiqueta);
+                handleSelecionado = ObterHandleClicado(e.Location, bounds);
+
+                if (handleSelecionado >= 0)
+                {
+                    redimensionando = true;
+                    pontoInicialMouse = e.Location;
+                    boundsIniciais = bounds;
+                    return;
+                }
+            }
+
+            for (int i = template.Elementos.Count - 1; i >= 0; i--)
+            {
+                Rectangle bounds = ConverterParaPixels(template.Elementos[i].Bounds, rectEtiqueta);
+
+                if (bounds.Contains(e.Location))
+                {
+                    elementoSelecionado = template.Elementos[i];
+                    arrastando = true;
+                    pontoInicialMouse = e.Location;
+                    boundsIniciais = bounds;
+                    pbCanvas.Invalidate();
+                    return;
+                }
+            }
+
+            elementoSelecionado = null;
+            pbCanvas.Invalidate();
+        }
+
+        private void PbCanvas_MouseMove(object sender, MouseEventArgs e)
+        {
+            RectangleF rectEtiqueta = new RectangleF(25, 25,
+                configuracao.LarguraEtiqueta * MM_PARA_PIXEL,
+                configuracao.AlturaEtiqueta * MM_PARA_PIXEL);
+
+            if (redimensionando && elementoSelecionado != null)
+            {
+                int deltaX = e.X - pontoInicialMouse.X;
+                int deltaY = e.Y - pontoInicialMouse.Y;
+
+                Rectangle newBounds = boundsIniciais;
+
+                switch (handleSelecionado)
+                {
+                    case 0:
+                        newBounds = new Rectangle(
+                            boundsIniciais.X + deltaX,
+                            boundsIniciais.Y + deltaY,
+                            boundsIniciais.Width - deltaX,
+                            boundsIniciais.Height - deltaY);
+                        break;
+                    case 1:
+                        newBounds = new Rectangle(
+                            boundsIniciais.X,
+                            boundsIniciais.Y + deltaY,
+                            boundsIniciais.Width + deltaX,
+                            boundsIniciais.Height - deltaY);
+                        break;
+                    case 2:
+                        newBounds = new Rectangle(
+                            boundsIniciais.X,
+                            boundsIniciais.Y,
+                            boundsIniciais.Width + deltaX,
+                            boundsIniciais.Height + deltaY);
+                        break;
+                    case 3:
+                        newBounds = new Rectangle(
+                            boundsIniciais.X + deltaX,
+                            boundsIniciais.Y,
+                            boundsIniciais.Width - deltaX,
+                            boundsIniciais.Height + deltaY);
+                        break;
+                }
+
+                if (newBounds.Width >= 10 && newBounds.Height >= 5)
+                {
+                    elementoSelecionado.Bounds = ConverterParaMM(newBounds, rectEtiqueta);
+                    pbCanvas.Invalidate();
+                }
+            }
+            else if (arrastando && elementoSelecionado != null)
+            {
+                int deltaX = e.X - pontoInicialMouse.X;
+                int deltaY = e.Y - pontoInicialMouse.Y;
+
+                Rectangle newBounds = new Rectangle(
+                    boundsIniciais.X + deltaX,
+                    boundsIniciais.Y + deltaY,
+                    boundsIniciais.Width,
+                    boundsIniciais.Height);
+
+                elementoSelecionado.Bounds = ConverterParaMM(newBounds, rectEtiqueta);
+                pbCanvas.Invalidate();
+            }
+            else
+            {
+                if (elementoSelecionado != null)
+                {
+                    Rectangle bounds = ConverterParaPixels(elementoSelecionado.Bounds, rectEtiqueta);
+                    int handle = ObterHandleClicado(e.Location, bounds);
+
+                    if (handle >= 0)
+                        pbCanvas.Cursor = Cursors.SizeNWSE;
+                    else if (bounds.Contains(e.Location))
+                        pbCanvas.Cursor = Cursors.SizeAll;
+                    else
+                        pbCanvas.Cursor = Cursors.Default;
+                }
+            }
+        }
+
+        private void PbCanvas_MouseUp(object sender, MouseEventArgs e)
+        {
+            arrastando = false;
+            redimensionando = false;
+            handleSelecionado = -1;
+            pbCanvas.Cursor = Cursors.Default;
+        }
+
+        #endregion
+
+        #region Eventos de Configuração
+
+        private void CarregarDadosNaInterface()
+        {
+            cmbImpressora.Items.Clear();
+            foreach (string printer in System.Drawing.Printing.PrinterSettings.InstalledPrinters)
+            {
+                cmbImpressora.Items.Add(printer);
+            }
+
+            if (!string.IsNullOrEmpty(configuracao.ImpressoraPadrao) &&
+                cmbImpressora.Items.Contains(configuracao.ImpressoraPadrao))
+            {
+                cmbImpressora.SelectedItem = configuracao.ImpressoraPadrao;
+            }
+            else if (cmbImpressora.Items.Count > 0)
+            {
+                cmbImpressora.SelectedIndex = 0;
+            }
+
+            CarregarPapeisDaImpressora();
+        }
+
+        private void CmbImpressora_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            CarregarPapeisDaImpressora();
+            AtualizarConfiguracao();
+        }
+
+        private void CarregarPapeisDaImpressora()
+        {
+            cmbPapel.Items.Clear();
+
+            if (cmbImpressora.SelectedItem == null) return;
+
+            try
+            {
+                var printerSettings = new System.Drawing.Printing.PrinterSettings
+                {
+                    PrinterName = cmbImpressora.SelectedItem.ToString()
+                };
+
+                foreach (System.Drawing.Printing.PaperSize papel in printerSettings.PaperSizes)
+                {
+                    cmbPapel.Items.Add(papel.PaperName);
+                }
+
+                if (!string.IsNullOrEmpty(configuracao.PapelPadrao) &&
+                    cmbPapel.Items.Cast<object>().Any(x => x.ToString() == configuracao.PapelPadrao))
+                {
+                    cmbPapel.SelectedItem = configuracao.PapelPadrao;
+                }
+                else if (cmbPapel.Items.Count > 0)
+                {
+                    cmbPapel.SelectedIndex = 0;
+                }
+            }
+            catch
+            {
+                cmbPapel.Items.Add("(Erro ao carregar papéis)");
+                cmbPapel.SelectedIndex = 0;
+            }
+        }
+
+        private void ChkPadraoDesativar_CheckedChanged(object sender, EventArgs e)
+        {
+            AtualizarEstadoMargens();
+        }
+
+        private void AtualizarEstadoMargens()
+        {
+            bool desabilitado = chkPadraoDesativar.Checked;
+
+            numMargemSuperior.Enabled = !desabilitado;
+            numMargemInferior.Enabled = !desabilitado;
+            numMargemEsquerda.Enabled = !desabilitado;
+            numMargemDireita.Enabled = !desabilitado;
+
+            if (desabilitado)
+            {
+                numMargemSuperior.Value = 0;
+                numMargemInferior.Value = 0;
+                numMargemEsquerda.Value = 0;
+                numMargemDireita.Value = 0;
+            }
+        }
+
+        private void AtualizarConfiguracao()
+        {
+            configuracao.LarguraEtiqueta = (float)numLargura.Value;
+            configuracao.AlturaEtiqueta = (float)numAltura.Value;
+            configuracao.ImpressoraPadrao = cmbImpressora.SelectedItem?.ToString() ?? "";
+            configuracao.PapelPadrao = cmbPapel.SelectedItem?.ToString() ?? "";
+            configuracao.NumColunas = (int)numColunas.Value;
+            configuracao.NumLinhas = (int)numLinhas.Value;
+            configuracao.EspacamentoColunas = (float)numEspacamentoColunas.Value;
+            configuracao.EspacamentoLinhas = (float)numEspacamentoLinhas.Value;
+            configuracao.MargemSuperior = (float)numMargemSuperior.Value;
+            configuracao.MargemInferior = (float)numMargemInferior.Value;
+            configuracao.MargemEsquerda = (float)numMargemEsquerda.Value;
+            configuracao.MargemDireita = (float)numMargemDireita.Value;
+
+            template.Largura = configuracao.LarguraEtiqueta;
+            template.Altura = configuracao.AlturaEtiqueta;
+
+            AtualizarTamanhoCanvas();
+            pbCanvas.Invalidate();
+        }
+
+        private void AtualizarTamanhoCanvas()
+        {
+            int larguraPixels = (int)(configuracao.LarguraEtiqueta * MM_PARA_PIXEL * zoom);
+            int alturaPixels = (int)(configuracao.AlturaEtiqueta * MM_PARA_PIXEL * zoom);
+
+            pbCanvas.Size = new Size(larguraPixels + 50, alturaPixels + 50);
+
+            pbCanvas.Location = new Point(
+                Math.Max(50, (panelCanvas.Width - pbCanvas.Width) / 2),
+                Math.Max(50, (panelCanvas.Height - pbCanvas.Height) / 2)
+            );
+        }
+
+        #endregion
+
+        #region Eventos de Teclado
+
+        private void FormDesignNovo_KeyDown(object sender, KeyEventArgs e)
+        {
+            // Ignora se nenhum elemento selecionado
+            if (elementoSelecionado == null) return;
+
+            bool houveAlteracao = false;
+            var novaPosicao = elementoSelecionado.Bounds;
+            int passo = 1;
+
+            // Verifica qual tecla foi pressionada
+            switch (e.KeyCode)
+            {
+                case Keys.Left:
+                    novaPosicao.X -= passo;
+                    houveAlteracao = true;
+                    break;
+
+                case Keys.Right:
+                    novaPosicao.X += passo;
+                    houveAlteracao = true;
+                    break;
+
+                case Keys.Up:
+                    novaPosicao.Y -= passo;
+                    houveAlteracao = true;
+                    break;
+
+                case Keys.Down:
+                    novaPosicao.Y += passo;
+                    houveAlteracao = true;
+                    break;
+
+                case Keys.Delete:
+                    RemoverElementoSelecionado();
+                    e.Handled = true;
+                    e.SuppressKeyPress = true;
+                    return;
+            }
+
+            // Se moveu, atualiza
+            if (houveAlteracao)
+            {
+                elementoSelecionado.Bounds = novaPosicao;
+                pbCanvas.Invalidate();
+
+                // Marca evento como tratado para evitar duplicação
+                e.Handled = true;
+                e.SuppressKeyPress = true;
+            }
+        }
+
+        #endregion
+
+        #region Botões de Ação
+
+        private void BtnSalvar_Click(object sender, EventArgs e)
+        {
+            if (string.IsNullOrEmpty(nomeTemplateAtual))
+            {
+                using (var formNome = new FormNomeTemplate())
+                {
+                    if (formNome.ShowDialog() == DialogResult.OK)
+                    {
+                        nomeTemplateAtual = formNome.NomeTemplate;
+                        configuracao.NomeEtiqueta = nomeTemplateAtual;
+                    }
+                    else
+                    {
+                        return;
+                    }
+                }
+            }
+
+            if (TemplateManager.SalvarTemplate(template, nomeTemplateAtual))
+            {
+                ConfiguracaoManager.SalvarConfiguracao(nomeTemplateAtual, configuracao);
+
+                MessageBox.Show(
+                    $"Template '{nomeTemplateAtual}' salvo com sucesso!\n\n" +
+                    $"✅ Template: {configuracao.LarguraEtiqueta:F1} x {configuracao.AlturaEtiqueta:F1} mm\n" +
+                    $"✅ Elementos: {template.Elementos.Count}\n" +
+                    $"✅ Layout: {configuracao.NumColunas} col x {configuracao.NumLinhas} lin\n" +
+                    $"✅ Configuração vinculada",
+                    "Sucesso", MessageBoxButtons.OK, MessageBoxIcon.Information);
+
+                this.DialogResult = DialogResult.OK;
+            }
+            else
+            {
+                MessageBox.Show("Erro ao salvar template!", "Erro",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private void BtnNovo_Click(object sender, EventArgs e)
+        {
+            var resultado = MessageBox.Show(
+                "Deseja criar um novo template?\n\nAs alterações não salvas serão perdidas.",
+                "Novo Template",
+                MessageBoxButtons.YesNo,
+                MessageBoxIcon.Question);
+
+            if (resultado == DialogResult.Yes)
+            {
+                template = new TemplateEtiqueta { Largura = 100, Altura = 30 };
+                configuracao = new ConfiguracaoEtiqueta
+                {
+                    LarguraEtiqueta = 100,
+                    AlturaEtiqueta = 30,
+                    NumColunas = 1,
+                    NumLinhas = 1
+                };
+                nomeTemplateAtual = null;
+                elementoSelecionado = null;
+
+                CarregarDadosNaInterface();
+                AtualizarConfiguracao();
+            }
+        }
+
+        private void BtnFechar_Click(object sender, EventArgs e)
+        {
+            this.Close();
+        }
+
+        #endregion
+
+        #region Propriedades Públicas
+
+        public TemplateEtiqueta ObterTemplate()
+        {
+            return template;
+        }
+
+        public ConfiguracaoEtiqueta ObterConfiguracao()
+        {
+            return configuracao;
+        }
+
+        #endregion
+    }
+}

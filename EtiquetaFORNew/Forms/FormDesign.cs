@@ -17,6 +17,9 @@ namespace EtiquetaFORNew
         private string handleRedimensionamento = "";
         private float escala = 4.0f;
         private Point offsetArrastar;
+        private ConfiguracaoEtiqueta configuracaoAtual;
+        private string nomeTemplateAtual;
+        private Button btnConfigurarPapel;
 
         public FormDesigner(TemplateEtiqueta templateAtual)
         {

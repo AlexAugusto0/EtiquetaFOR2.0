@@ -1,7 +1,8 @@
-﻿using System;
-using System.IO;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
-using Newtonsoft.Json;
+using System.IO;
+using System.Linq;
 
 namespace EtiquetaFORNew
 {
@@ -96,6 +97,28 @@ namespace EtiquetaFORNew
             {
                 return new List<string>();
             }
+            var templates = new List<string>();
+
+            try
+            {
+                if (!Directory.Exists(pastaTemplates))
+                    return templates;
+
+                var arquivos = Directory.GetFiles(pastaTemplates, "*.json");
+
+                foreach (var arquivo in arquivos)
+                {
+                    string nome = Path.GetFileNameWithoutExtension(arquivo);
+                    templates.Add(nome);
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Erro ao listar templates: {ex.Message}");
+            }
+
+            return templates.OrderBy(x => x).ToList();
+
         }
 
         // Excluir template

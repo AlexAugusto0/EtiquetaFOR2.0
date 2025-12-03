@@ -305,70 +305,88 @@ namespace EtiquetaFORNew
             }
         }
 
-        private void btnDesigner_Click(object sender, EventArgs e)
-        {
-            //var formDesigner = new FormDesigner(template);
-            //if (formDesigner.ShowDialog() == DialogResult.OK)
-            //{
-            //    template = formDesigner.ObterTemplate();
-            //    MessageBox.Show("Template salvo com sucesso!", "Sucesso", MessageBoxButtons.OK, MessageBoxIcon.Information);
-            //}
-            //1.Pergunta ao usuário a intenção
-            // Sim = Novo, Não = Carregar, Cancelar = Sair
-            // Pergunta ao usuário a intenção
-            // SIM = NOVO Template / NÃO = CARREGAR Existente / CANCEL = Sair
-
-            TemplateEtiqueta templateParaAbrir = null;
-            using (var formMenu = new EtiquetaFORNew.Forms.FormMenuDesigner())
-            {
-                // Abre o formulário e verifica o resultado (Yes, No, ou Cancel)
-                var escolha = formMenu.ShowDialog();
-
-                if (escolha == DialogResult.Cancel)
-                    return; // Usuário cancelou ou fechou a janela.
-
-                if (escolha == DialogResult.Yes) // Escolheu NOVO (BtnNovo_Click)
-                {
-                    // Cria um template padrão inicial (ajuste as dimensões)
-                    templateParaAbrir = new TemplateEtiqueta
-                    {
-                        Largura = 50,
-                        Altura = 30,
-                        Elementos = new List<ElementoEtiqueta>()
-                    };
-                }
-                else if (escolha == DialogResult.No) // Escolheu CARREGAR (btnCarregar_Click)
-                {
-                    // 1. Abre a tela de lista de templates
-                    using (var formLista = new FormListaTemplates())
-                    {
-                        if (formLista.ShowDialog() == DialogResult.OK)
-                        {
-                            string nomeTemplate = formLista.TemplateSelecionado;
-                            // Assumindo que TemplateManager.CarregarTemplate existe
-                            templateParaAbrir = TemplateManager.CarregarTemplate(nomeTemplate);
-                        }
-                        else
-                        {
-                            return; // Cancelou na lista de templates
-                        }
-                    }
-                }
-            }
-
-            // Abre o Designer se um template foi preparado
-            if (templateParaAbrir != null)
-            {
-                var formDesigner = new FormDesigner(templateParaAbrir);
-
-                if (formDesigner.ShowDialog() == DialogResult.OK)
-                {
-                    // O FormDesigner salvou o template
-                    MessageBox.Show("Template salvo com sucesso!", "Sucesso", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                }
-            }
-
-
+        private void btnDesigner_Click(object sender, EventArgs e)
+        {
+            // 1. Pergunta ao usuário a intenção
+            DialogResult escolha = MessageBox.Show(
+                "Deseja criar um NOVO template ou CARREGAR um existente?\n\n" +
+                "• SIM = Criar novo template\n" +
+                "• NÃO = Carregar template existente\n" +
+                "• CANCELAR = Voltar",
+                "Designer de Etiquetas",
+                MessageBoxButtons.YesNoCancel,
+                MessageBoxIcon.Question);
+
+            if (escolha == DialogResult.Cancel)
+            {
+                return;
+            }
+
+            TemplateEtiqueta templateParaAbrir = null;
+            string nomeTemplate = null;
+
+            if (escolha == DialogResult.Yes) // NOVO
+            {
+                // Pergunta nome do novo template
+                using (var formNome = new FormNomeTemplate())
+                {
+                    if (formNome.ShowDialog() == DialogResult.OK)
+                    {
+                        nomeTemplate = formNome.NomeTemplate;
+                        templateParaAbrir = new TemplateEtiqueta
+                        {
+                            Largura = 100,
+                            Altura = 30,
+                            Elementos = new List<ElementoEtiqueta>()
+                        };
+                    }
+                    else
+                    {
+                        return;
+                    }
+                }
+            }
+            else if (escolha == DialogResult.No) // CARREGAR
+            {
+                using (var formLista = new FormListaTemplates())
+                {
+                    if (formLista.ShowDialog() == DialogResult.OK)
+                    {
+                        nomeTemplate = formLista.TemplateSelecionado;
+                        templateParaAbrir = TemplateManager.CarregarTemplate(nomeTemplate);
+
+                        if (templateParaAbrir == null)
+                        {
+                            MessageBox.Show($"Erro ao carregar template '{nomeTemplate}'!",
+                                "Erro", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                            return;
+                        }
+                    }
+                    else
+                    {
+                        return;
+                    }
+                }
+            }
+
+            // 2. Abre o Designer NOVO com template e nome
+            if (templateParaAbrir != null && !string.IsNullOrEmpty(nomeTemplate))
+            {
+                using (var formDesigner = new FormDesignNovo(templateParaAbrir, nomeTemplate))
+                {
+                    if (formDesigner.ShowDialog() == DialogResult.OK)
+                    {
+                        MessageBox.Show(
+                            $"Template '{nomeTemplate}' salvo com sucesso!",
+                            "Sucesso",
+                            MessageBoxButtons.OK,
+                            MessageBoxIcon.Information);
+
+                        // Atualiza lista de templates
+                        CarregarTemplatesDisponiveis();
+                    }
+                }
+            }
         }
 
         // ========================================
@@ -416,75 +434,78 @@ namespace EtiquetaFORNew
         //    formImpressao.ShowDialog();
         //}
 
-        private void btnImprimir_Click(object sender, EventArgs e)
-        {
-            // 1. OBTÉM O TEMPLATE SELECIONADO NA COMBOBOX (NOVA LÓGICA)
-            if (cmbTemplates.SelectedItem == null || cmbTemplates.SelectedItem.ToString().Contains("Nenhum Template"))
-            {
-                MessageBox.Show("Por favor, selecione um template de etiqueta para impressão.", "Atenção", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                return;
-            }
-
-            // Carrega o template selecionado dinamicamente
-            string nomeTemplateSelecionado = cmbTemplates.SelectedItem.ToString();
-            TemplateEtiqueta templateAtual = TemplateManager.CarregarTemplate(nomeTemplateSelecionado);
-
-            if (templateAtual == null)
-            {
-                MessageBox.Show($"Falha ao carregar o template: {nomeTemplateSelecionado}", "Erro", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                return;
-            }
-
-            // 2. OBTÉM OS PRODUTOS SELECIONADOS
-            var produtosSelecionados = ObterProdutosSelecionados();
-            if (produtosSelecionados.Count == 0)
-            {
-                MessageBox.Show("Selecione pelo menos um produto!", "Atenção", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                return;
-            }
-
-            // 3. VALIDA TEMPLATE (AGORA USANDO templateAtual)
-            if (templateAtual.Elementos.Count == 0)
-            {
-                MessageBox.Show("O template selecionado não possui elementos configurados. Configure-o primeiro usando o Designer!",
-                                "Atenção", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                return;
-            }
-
-            // 4. VERIFICA SE HÁ CONFIGURAÇÃO DE PAPEL (LÓGICA EXISTENTE)
-            if (configuracaoAtual == null)
-            {
-                var resultado = MessageBox.Show(
-                    "Nenhuma configuração de impressão (papel/impressora) foi definida.\n\n" +
-                    "Deseja configurar agora?",
-                    "Configuração Necessária",
-                    MessageBoxButtons.YesNo,
-                    MessageBoxIcon.Question);
-
-                if (resultado == DialogResult.Yes)
-                {
-                    btnConfigPapel_Click(sender, e);
-                    // Se o usuário configurar e salvar, o configuracaoAtual será definido. 
-                    // O botão btnConfigPapel_Click deve recarregar a tela para que o usuário clique em imprimir novamente.
-                    return;
-                }
-                else
-                {
-                    return;
-                }
-
-            }
-
-            // 5. ABRE O FORM DE IMPRESSÃO
-            // Passa o template recém-carregado (templateAtual)
-            using (var formImpressao = new FormImpressao(produtosSelecionados, templateAtual, configuracaoAtual))
-            {
-                formImpressao.ShowDialog();
-            }
-        }
-
-    
-
+        private void btnImprimir_Click(object sender, EventArgs e)
+        {
+            // 1. OBTÉM OS PRODUTOS SELECIONADOS
+            var produtosSelecionados = ObterProdutosSelecionados();
+            if (produtosSelecionados.Count == 0)
+            {
+                MessageBox.Show("Selecione pelo menos um produto!", "Atenção",
+                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            // 2. ABRE O DIÁLOGO DE SELEÇÃO DE IMPRESSÃO
+            using (var formSelecao = new FormSelecaoImpressao())
+            {
+                if (formSelecao.ShowDialog() == DialogResult.OK)
+                {
+                    string nomeTemplateSelecionado = formSelecao.TemplateSelecionado;
+                    ConfiguracaoEtiqueta configSelecionada = formSelecao.ConfiguracaoSelecionada;
+
+                    // 3. CARREGA O TEMPLATE SELECIONADO
+                    TemplateEtiqueta templateAtual = TemplateManager.CarregarTemplate(nomeTemplateSelecionado);
+
+                    if (templateAtual == null)
+                    {
+                        MessageBox.Show($"Falha ao carregar o template: {nomeTemplateSelecionado}",
+                            "Erro", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        return;
+                    }
+
+                    // 4. VALIDA TEMPLATE
+                    if (templateAtual.Elementos.Count == 0)
+                    {
+                        MessageBox.Show("O template selecionado não possui elementos configurados!\n\n" +
+                                       "Configure-o primeiro usando o Designer.",
+                                       "Atenção", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        return;
+                    }
+
+                    // 5. VALIDA CONFIGURAÇÃO
+                    if (configSelecionada == null)
+                    {
+                        MessageBox.Show("Erro ao carregar configuração de impressão!",
+                            "Erro", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        return;
+                    }
+
+                    // 6. ATUALIZA DIMENSÕES DO TEMPLATE COM A CONFIGURAÇÃO
+                    templateAtual.Largura = configSelecionada.LarguraEtiqueta;
+                    templateAtual.Altura = configSelecionada.AlturaEtiqueta;
+
+                    // 7. ATUALIZA CONFIGURAÇÃO ATUAL DO FORM
+                    configuracaoAtual = configSelecionada;
+                    template = templateAtual;
+
+                    // 8. SALVA COMO CONFIGURAÇÃO PADRÃO
+                    GerenciadorConfiguracoesEtiqueta.SalvarConfiguracaoPadrao(configSelecionada);
+
+                    // 9. ABRE O FORM DE IMPRESSÃO
+                    using (var formImpressao = new FormImpressao(produtosSelecionados, templateAtual, configSelecionada))
+                    {
+                        formImpressao.ShowDialog();
+                    }
+                }
+            }
+        }
+
+
+
+
+
+
+
         private void dgvProdutos_CellContentClick(object sender, DataGridViewCellEventArgs e)
         {
             if (e.RowIndex >= 0 && dgvProdutos.Columns[e.ColumnIndex].Name == "colRemover")

@@ -216,8 +216,12 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Classes.cs" />
+    <Compile Include="ConfiguracaoManager.cs" />
     <Compile Include="Data\Funcoes.cs" />
     <Compile Include="Data\SmartPrintRepository.cs" />
+    <Compile Include="FormNomeTemplate.cs">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="Forms\ConfigForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -250,6 +254,12 @@
     </Compile>
     <Compile Include="Forms\FormDesign.Designer.cs">
       <DependentUpon>FormDesign.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\FormDesignNovo.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\FormDesignNovo.Designer.cs">
+      <DependentUpon>FormDesignNovo.cs</DependentUpon>
     </Compile>
     <Compile Include="Forms\FormImpressao.cs">
       <SubType>Form</SubType>
@@ -287,6 +297,9 @@
     <Compile Include="Forms\FormPrincipal.Designer.cs">
       <DependentUpon>FormPrincipal.cs</DependentUpon>
     </Compile>
+    <Compile Include="Forms\FormSelecaoImpressao.cs">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="Forms\telaTecnico.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -322,6 +335,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\FormDesign.resx">
       <DependentUpon>FormDesign.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\FormDesignNovo.resx">
+      <DependentUpon>FormDesignNovo.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\FormMenuConfiguracao.resx">
       <DependentUpon>FormMenuConfiguracao.cs</DependentUpon>
