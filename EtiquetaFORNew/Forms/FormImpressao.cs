@@ -148,7 +148,7 @@ namespace EtiquetaFORNew
             panelVisualizacao.Controls.Clear();
 
             // Escala para visualização (pixels por mm)
-            float escala = 8.0f;
+            float escala = 3.78f;
 
             // Calcula dimensões totais da página
             float larguraTotalMm = (configuracaoEtiqueta.NumColunas * template.Largura) +
@@ -365,7 +365,7 @@ namespace EtiquetaFORNew
             else
             {
                 // Visualização: Aplicamos a escala visual (mantendo a aproximação original)
-                tamanhoFonte = elem.Fonte.Size * escala / 4.0f;
+                tamanhoFonte = elem.Fonte.Size;
             }
 
             // A unidade GraphicsUnit.Point é a correta para fontes.
@@ -394,7 +394,7 @@ namespace EtiquetaFORNew
                     case TipoElemento.CodigoBarras:
                         // ⭐ ATUALIZADO: Agora suporta diferentes campos de código
                         string codigoBarras = ObterCodigoBarras(elem.Conteudo, produto);
-                        DesenharCodigoBarras(g, codigoBarras, bounds);
+                        DesenharCodigoBarras(g, codigoBarras, bounds, escala);
                         break;
 
                     case TipoElemento.Imagem:
@@ -470,9 +470,10 @@ namespace EtiquetaFORNew
         }
 
         // ... (Seu código original DesenharCodigoBarras)
-        private void DesenharCodigoBarras(Graphics g, string codigo, RectangleF bounds)
+        private void DesenharCodigoBarras(Graphics g, string codigo, RectangleF bounds, float escala)
         {
-            string codigoLimpo = codigo.ToUpper().Trim();
+            // Limpa o código (remove caracteres não numéricos)
+            string codigoLimpo = new string(Array.FindAll(codigo.ToCharArray(), c => char.IsDigit(c)));
 
             if (string.IsNullOrEmpty(codigoLimpo))
             {
@@ -484,44 +485,48 @@ namespace EtiquetaFORNew
             {
                 Barcode b = new Barcode();
 
-                // PASSO CRÍTICO 1: Obter o DPI (Resolução) da impressora
-                float dpiX = g.DpiX;
-                float dpiY = g.DpiY;
+                int larguraPixels, alturaPixels;
 
-                // PASSO CRÍTICO 2: Converter as dimensões em MM (bounds) para PIXELS de ALTA RESOLUÇÃO
-                // Fórmula: Pixels = (Milímetros / 25.4) * DPI
-                int larguraPixels = (int)Math.Round((bounds.Width / 25.4f) * dpiX);
-                int alturaPixels = (int)Math.Round((bounds.Height / 25.4f) * dpiY);
+                if (escala == 1.0f)
+                {
+                    // IMPRESSÃO: bounds está em MM, usa DPI da impressora
+                    float dpiX = g.DpiX;
+                    float dpiY = g.DpiY;
+
+                    larguraPixels = (int)Math.Round((bounds.Width / 25.4f) * dpiX);
+                    alturaPixels = (int)Math.Round((bounds.Height / 25.4f) * dpiY);
+                }
+                else
+                {
+                    // VISUALIZAÇÃO: bounds JÁ está em pixels, usa direto
+                    float qualityFactor = 2.0f;
+
+                    larguraPixels = (int)Math.Round(bounds.Width * qualityFactor);
+                    alturaPixels = (int)Math.Round(bounds.Height * qualityFactor);
+                }
 
                 if (larguraPixels <= 1 || alturaPixels <= 1)
                 {
-                    throw new Exception("Dimensões de código de barras calculadas são inválidas.");
+                    throw new Exception("Dimensões de código de barras inválidas.");
                 }
 
-                // 1. Configurações de Dimensão (AGORA EM PIXELS DE ALTA RESOLUÇÃO)
+                // Configurações do código de barras
                 b.Width = larguraPixels;
                 b.Height = alturaPixels;
-
-                // 2. Outras Configurações
                 b.IncludeLabel = true;
                 b.Alignment = AlignmentPositions.Center;
-
-                // 3. Configurações de Cor
                 b.ForeColor = SKColors.Black;
                 b.BackColor = SKColors.White;
 
-                // 4. Gera o código de barras
-                using (SKImage skImage = b.Encode(
-                    BarcodeStandard.Type.Code128,
-                    codigoLimpo
-                ))
+                // Gera o código de barras
+                using (SKImage skImage = b.Encode(BarcodeStandard.Type.Code128, codigoLimpo))
                 {
                     if (skImage == null)
                     {
                         throw new Exception("Falha ao gerar o SKImage do código de barras.");
                     }
 
-                    // 5. CONVERSÃO: SKImage -> SKData -> MemoryStream -> System.Drawing.Image
+                    // Converte para System.Drawing.Image
                     using (SKData skData = skImage.Encode(SKEncodedImageFormat.Png, 100))
                     {
                         if (skData == null)
@@ -536,7 +541,7 @@ namespace EtiquetaFORNew
 
                             using (System.Drawing.Image barcodeImage = System.Drawing.Image.FromStream(ms))
                             {
-                                // 6. Desenha a imagem gerada (agora de alta resolução) no retângulo (bounds em MM)
+                                // Desenha a imagem no retângulo especificado
                                 g.DrawImage(barcodeImage, bounds);
                             }
                         }
@@ -545,7 +550,7 @@ namespace EtiquetaFORNew
             }
             catch (Exception ex)
             {
-                // Tratamento de erro robusto
+                // Tratamento de erro
                 using (Font fontErro = new Font("Arial", bounds.Height * 0.10f))
                 {
                     StringFormat sf = new StringFormat

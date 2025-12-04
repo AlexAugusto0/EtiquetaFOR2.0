@@ -1401,7 +1401,7 @@ namespace EtiquetaFORNew.Forms
                 if (bounds.Contains(e.Location))
                 {
                     elementoSelecionado = template.Elementos[i];
-                    arrastando = true;
+                    //arrastando = true;
                     pontoInicialMouse = e.Location;
                     boundsIniciais = bounds;
                     AtualizarPainelPropriedades();
@@ -1420,6 +1420,37 @@ namespace EtiquetaFORNew.Forms
             RectangleF rectEtiqueta = new RectangleF(25, 25,
                 configuracao.LarguraEtiqueta * MM_PARA_PIXEL,
                 configuracao.AlturaEtiqueta * MM_PARA_PIXEL);
+            const int DRAG_THRESHOLD = 5;
+
+            if (!arrastando && !redimensionando &&
+                elementoSelecionado != null &&
+                e.Button == MouseButtons.Left)
+            {
+                int deltaX = Math.Abs(e.X - pontoInicialMouse.X);
+                int deltaY = Math.Abs(e.Y - pontoInicialMouse.Y);
+
+                if (deltaX > DRAG_THRESHOLD || deltaY > DRAG_THRESHOLD)
+                {
+                    Rectangle bounds = ConverterParaPixels(elementoSelecionado.Bounds, rectEtiqueta);
+                    int handle = ObterHandleClicado(pontoInicialMouse, bounds);
+
+                    if (handle >= 0)
+                    {
+                        redimensionando = true;
+                        handleSelecionado = handle;
+                        boundsIniciais = bounds;
+                    }
+                    else if (bounds.Contains(pontoInicialMouse))
+                    {
+                        arrastando = true;
+                        boundsIniciais = bounds;
+                    }
+                }
+                else
+                {
+                    return;
+                }
+            }
 
             if (redimensionando && elementoSelecionado != null)
             {
