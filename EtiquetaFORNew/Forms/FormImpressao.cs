@@ -374,10 +374,10 @@ namespace EtiquetaFORNew
             {
                 StringFormat sf = new StringFormat
                 {
-                    Alignment = StringAlignment.Near,
+                    Alignment = elem.Alinhamento,
                     LineAlignment = StringAlignment.Center,
                     Trimming = StringTrimming.EllipsisCharacter,
-                    FormatFlags = StringFormatFlags.NoWrap
+                    FormatFlags = StringFormatFlags.LineLimit
                 };
 
                 switch (elem.Tipo)

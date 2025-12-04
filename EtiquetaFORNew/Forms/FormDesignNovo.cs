@@ -624,6 +624,38 @@ namespace EtiquetaFORNew.Forms
             panelPropriedades.Controls.Add(lblPropriedadesElemento);
             yPos += 35;
 
+            Label lblConteudo = new Label
+            {
+                Name = "lblConteudoTexto",
+                Text = "Conteúdo:",
+                Location = new Point(10, yPos),
+                Size = new Size(160, 20),
+                Font = new Font("Segoe UI", 8, FontStyle.Bold),
+                ForeColor = Color.Gray,
+                Visible = false  // Inicialmente invisível
+            };
+            panelPropriedades.Controls.Add(lblConteudo);
+            yPos += 25;
+
+            TextBox txtConteudo = new TextBox
+            {
+                Name = "txtConteudoElemento",
+                Location = new Point(10, yPos),
+                Size = new Size(160, 25),
+                Font = new Font("Segoe UI", 9),
+                Visible = false  // Inicialmente invisível
+            };
+            txtConteudo.TextChanged += (s, e) =>
+            {
+                if (elementoSelecionado != null && elementoSelecionado.Tipo == TipoElemento.Texto)
+                {
+                    elementoSelecionado.Conteudo = txtConteudo.Text;
+                    pbCanvas.Invalidate();
+                }
+            };
+            panelPropriedades.Controls.Add(txtConteudo);
+            yPos += 35;
+
             // Label Alinhamento
             Label lblAlinhamento = new Label
             {
@@ -930,6 +962,34 @@ namespace EtiquetaFORNew.Forms
             // Atualiza visual dos botões de alinhamento
             AtualizarBotoesAlinhamento();
             panelToolbox.ScrollControlIntoView(panelPropriedades);
+            var txtConteudo = panelPropriedades.Controls.Find("txtConteudoElemento", false).FirstOrDefault() as TextBox;
+            var lblConteudo = panelPropriedades.Controls.Find("lblConteudoTexto", false).FirstOrDefault() as Label;
+
+            if (elementoSelecionado.Tipo == TipoElemento.Texto)
+            {
+                // Mostra e preenche o campo de texto
+                if (txtConteudo != null)
+                {
+                    txtConteudo.Visible = true;
+                    txtConteudo.Text = elementoSelecionado.Conteudo ?? "Texto";
+                }
+                if (lblConteudo != null)
+                {
+                    lblConteudo.Visible = true;
+                }
+            }
+            else
+            {
+                // Esconde o campo de texto para outros tipos
+                if (txtConteudo != null)
+                {
+                    txtConteudo.Visible = false;
+                }
+                if (lblConteudo != null)
+                {
+                    lblConteudo.Visible = false;
+                }
+            }
         }
 
         private void AtualizarBotoesAlinhamento()
@@ -1113,7 +1173,9 @@ namespace EtiquetaFORNew.Forms
                         StringFormat sf = new StringFormat
                         {
                             Alignment = elem.Alinhamento,
-                            LineAlignment = StringAlignment.Center
+                            LineAlignment = StringAlignment.Center,
+                            Trimming = StringTrimming.EllipsisCharacter,  // ← ADICIONAR
+                            FormatFlags = StringFormatFlags.LineLimit     // ← ADICIONAR
                         };
                         g.DrawString(elem.Conteudo ?? "Texto", elem.Fonte, brush, bounds, sf);
                     }
@@ -1126,7 +1188,9 @@ namespace EtiquetaFORNew.Forms
                         StringFormat sf = new StringFormat
                         {
                             Alignment = elem.Alinhamento,
-                            LineAlignment = StringAlignment.Center
+                            LineAlignment = StringAlignment.Center,
+                            Trimming = StringTrimming.EllipsisCharacter,  // ← ADICIONAR
+                            FormatFlags = StringFormatFlags.LineLimit     // ← ADICIONAR
                         };
                         g.DrawString(valor, elem.Fonte, brush, bounds, sf);
                     }
@@ -1340,6 +1404,7 @@ namespace EtiquetaFORNew.Forms
                     arrastando = true;
                     pontoInicialMouse = e.Location;
                     boundsIniciais = bounds;
+                    AtualizarPainelPropriedades();
                     pbCanvas.Invalidate();
                     return;
                 }
@@ -1365,33 +1430,69 @@ namespace EtiquetaFORNew.Forms
 
                 switch (handleSelecionado)
                 {
-                    case 0:
+                    case 0:  // Canto superior esquerdo
                         newBounds = new Rectangle(
                             boundsIniciais.X + deltaX,
                             boundsIniciais.Y + deltaY,
                             boundsIniciais.Width - deltaX,
                             boundsIniciais.Height - deltaY);
                         break;
-                    case 1:
+
+                    case 1:  // Canto superior direito
                         newBounds = new Rectangle(
                             boundsIniciais.X,
                             boundsIniciais.Y + deltaY,
                             boundsIniciais.Width + deltaX,
                             boundsIniciais.Height - deltaY);
                         break;
-                    case 2:
+
+                    case 2:  // Canto inferior direito
                         newBounds = new Rectangle(
                             boundsIniciais.X,
                             boundsIniciais.Y,
                             boundsIniciais.Width + deltaX,
                             boundsIniciais.Height + deltaY);
                         break;
-                    case 3:
+
+                    case 3:  // Canto inferior esquerdo
                         newBounds = new Rectangle(
                             boundsIniciais.X + deltaX,
                             boundsIniciais.Y,
                             boundsIniciais.Width - deltaX,
                             boundsIniciais.Height + deltaY);
+                        break;
+
+                    // ========== ADICIONAR ESTES CASOS ==========
+                    case 4:  // Lado superior (centro)
+                        newBounds = new Rectangle(
+                            boundsIniciais.X,
+                            boundsIniciais.Y + deltaY,
+                            boundsIniciais.Width,
+                            boundsIniciais.Height - deltaY);
+                        break;
+
+                    case 5:  // Lado direito (centro)
+                        newBounds = new Rectangle(
+                            boundsIniciais.X,
+                            boundsIniciais.Y,
+                            boundsIniciais.Width + deltaX,
+                            boundsIniciais.Height);
+                        break;
+
+                    case 6:  // Lado inferior (centro)
+                        newBounds = new Rectangle(
+                            boundsIniciais.X,
+                            boundsIniciais.Y,
+                            boundsIniciais.Width,
+                            boundsIniciais.Height + deltaY);
+                        break;
+
+                    case 7:  // Lado esquerdo (centro)
+                        newBounds = new Rectangle(
+                            boundsIniciais.X + deltaX,
+                            boundsIniciais.Y,
+                            boundsIniciais.Width - deltaX,
+                            boundsIniciais.Height);
                         break;
                 }
 
@@ -1423,7 +1524,31 @@ namespace EtiquetaFORNew.Forms
                     int handle = ObterHandleClicado(e.Location, bounds);
 
                     if (handle >= 0)
-                        pbCanvas.Cursor = Cursors.SizeNWSE;
+                    {
+                        // Define cursor apropriado para cada handle
+                        switch (handle)
+                        {
+                            case 0: // Superior esquerdo
+                            case 2: // Inferior direito
+                                pbCanvas.Cursor = Cursors.SizeNWSE;
+                                break;
+                            case 1: // Superior direito
+                            case 3: // Inferior esquerdo
+                                pbCanvas.Cursor = Cursors.SizeNESW;
+                                break;
+                            case 4: // Superior
+                            case 6: // Inferior
+                                pbCanvas.Cursor = Cursors.SizeNS;
+                                break;
+                            case 5: // Direito
+                            case 7: // Esquerdo
+                                pbCanvas.Cursor = Cursors.SizeWE;
+                                break;
+                            default:
+                                pbCanvas.Cursor = Cursors.SizeAll;
+                                break;
+                        }
+                    }
                     else if (bounds.Contains(e.Location))
                         pbCanvas.Cursor = Cursors.SizeAll;
                     else

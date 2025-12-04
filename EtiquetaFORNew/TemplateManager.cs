@@ -192,7 +192,8 @@ namespace EtiquetaFORNew
                     Italico = elem.Italico,
                     CorR = elem.Cor.R,
                     CorG = elem.Cor.G,
-                    CorB = elem.Cor.B
+                    CorB = elem.Cor.B,
+                    Alinhamento = elem.Alinhamento.ToString()
                 };
 
                 // Se for imagem, salvar como Base64
@@ -232,6 +233,24 @@ namespace EtiquetaFORNew
                     Italico = elemSer.Italico,
                     Cor = System.Drawing.Color.FromArgb(elemSer.CorR, elemSer.CorG, elemSer.CorB)
                 };
+                if (!string.IsNullOrEmpty(elemSer.Alinhamento))
+                {
+                    try
+                    {
+                        elem.Alinhamento = (System.Drawing.StringAlignment)Enum.Parse(
+                            typeof(System.Drawing.StringAlignment),
+                            elemSer.Alinhamento
+                        );
+                    }
+                    catch
+                    {
+                        elem.Alinhamento = System.Drawing.StringAlignment.Near;
+                    }
+                }
+                else
+                {
+                    elem.Alinhamento = System.Drawing.StringAlignment.Near;
+                }
 
                 // Reconstruir fonte
                 System.Drawing.FontStyle estilo = System.Drawing.FontStyle.Regular;
@@ -285,6 +304,7 @@ namespace EtiquetaFORNew
         public int CorR { get; set; }
         public int CorG { get; set; }
         public int CorB { get; set; }
+        public string Alinhamento { get; set; }
         public string ImagemBase64 { get; set; }
     }
 }
