@@ -32,6 +32,9 @@ namespace EtiquetaFORNew.Forms
 
             CriarControles();
             CarregarDados();
+
+            // NOVO: Carrega automaticamente o template padrão
+            CarregarTemplatePadraoAutomaticamente();
         }
 
         private void InitializeComponent()
@@ -103,7 +106,7 @@ namespace EtiquetaFORNew.Forms
                 Size = new Size(300, 23),
                 DropDownStyle = ComboBoxStyle.DropDownList,
                 Font = new Font("Segoe UI", 9),
-                BackColor = Color.FromArgb(255, 255, 204) // Amarelo claro igual sua imagem
+                BackColor = Color.FromArgb(255, 255, 204) // Amarelo claro
             };
             cmbTemplate.SelectedIndexChanged += CmbTemplate_SelectedIndexChanged;
             panelPrincipal.Controls.Add(cmbTemplate);
@@ -180,21 +183,6 @@ namespace EtiquetaFORNew.Forms
             panelPrincipal.Controls.Add(lblInfo);
 
             // ==================== BOTÕES ====================
-            //btnConfigurar = new Button
-            //{
-            //    Text = "⚙ Configurar Papel",
-            //    Location = new Point(30, 305),
-            //    Size = new Size(140, 30),
-            //    Font = new Font("Segoe UI", 9),
-            //    BackColor = Color.FromArgb(52, 152, 219),
-            //    ForeColor = Color.White,
-            //    FlatStyle = FlatStyle.Flat,
-            //    Cursor = Cursors.Hand
-            //};
-            //btnConfigurar.FlatAppearance.BorderSize = 0;
-            //btnConfigurar.Click += BtnConfigurar_Click;
-            //panelPrincipal.Controls.Add(btnConfigurar);
-
             btnConfirmar = new Button
             {
                 Text = "✓ Confirmar",
@@ -212,7 +200,7 @@ namespace EtiquetaFORNew.Forms
 
             btnCancelar = new Button
             {
-                Text = "✕ Fechar",
+                Text = "✗ Fechar",
                 Location = new Point(330, 305),
                 Size = new Size(105, 30),
                 Font = new Font("Segoe UI", 9),
@@ -229,59 +217,83 @@ namespace EtiquetaFORNew.Forms
         private void CarregarDados()
         {
             // Carrega templates disponíveis
-            var templates = TemplateManager.ListarTemplates();
+            var templates = TemplateManager.ListarTemplates()
+                .Where(t => t != "_ultimo_template")
+                .ToList();
+
             cmbTemplate.Items.Clear();
 
-            if (templates.Count == 0)
-            {
-                cmbTemplate.Items.Add("(Nenhum template disponível)");
-                cmbTemplate.SelectedIndex = 0;
-                cmbTemplate.Enabled = false;
-                return;
-            }
+            // Ordena para colocar o template padrão primeiro
+            string templatePadrao = TemplatePadraoManager.ObterTemplatePadrao();
 
-            foreach (var template in templates)
-            {
-                cmbTemplate.Items.Add(template);
-            }
+            var templatesOrdenados = templates.OrderBy(t =>
+                t.Equals(templatePadrao, StringComparison.OrdinalIgnoreCase) ? 0 : 1
+            ).ThenBy(t => t).ToList();
 
-            // Tenta carregar último template usado
-            var ultimoTemplate = ConfiguracaoManager.CarregarUltimoTemplateUsado();
-            if (!string.IsNullOrEmpty(ultimoTemplate) && cmbTemplate.Items.Contains(ultimoTemplate))
+            foreach (var template in templatesOrdenados)
             {
-                cmbTemplate.SelectedItem = ultimoTemplate;
-            }
-            else if (cmbTemplate.Items.Count > 0)
-            {
-                cmbTemplate.SelectedIndex = 0;
+                // Adiciona estrela ao template padrão
+                string item = TemplatePadraoManager.EhTemplatePadrao(template)
+                    ? $"⭐ {template}"
+                    : template;
+                cmbTemplate.Items.Add(item);
             }
 
             // Carrega impressoras disponíveis
             cmbImpressora.Items.Clear();
-            foreach (string printer in System.Drawing.Printing.PrinterSettings.InstalledPrinters)
+            foreach (string impressora in System.Drawing.Printing.PrinterSettings.InstalledPrinters)
             {
-                cmbImpressora.Items.Add(printer);
+                cmbImpressora.Items.Add(impressora);
             }
 
-            // Seleciona impressora padrão do sistema
-            var impressoraPadrao = new System.Drawing.Printing.PrinterSettings().PrinterName;
-            if (cmbImpressora.Items.Contains(impressoraPadrao))
-            {
-                cmbImpressora.SelectedItem = impressoraPadrao;
-            }
-            else if (cmbImpressora.Items.Count > 0)
+            if (cmbImpressora.Items.Count > 0)
             {
                 cmbImpressora.SelectedIndex = 0;
             }
         }
 
+        /// <summary>
+        /// NOVO: Carrega automaticamente o template padrão ao abrir o form
+        /// </summary>
+        private void CarregarTemplatePadraoAutomaticamente()
+        {
+            string templatePadrao = TemplatePadraoManager.ObterTemplatePadrao();
+
+            if (!string.IsNullOrEmpty(templatePadrao) && cmbTemplate.Items.Count > 0)
+            {
+                // Procura o template padrão no combobox
+                for (int i = 0; i < cmbTemplate.Items.Count; i++)
+                {
+                    string item = cmbTemplate.Items[i].ToString();
+                    // Remove a estrela se existir para comparar
+                    string nomeTemplate = item.StartsWith("⭐ ") ? item.Substring(2) : item;
+
+                    if (nomeTemplate.Equals(templatePadrao, StringComparison.OrdinalIgnoreCase))
+                    {
+                        cmbTemplate.SelectedIndex = i;
+                        return;
+                    }
+                }
+            }
+
+            // Se não encontrou template padrão, seleciona o primeiro
+            if (cmbTemplate.Items.Count > 0)
+            {
+                cmbTemplate.SelectedIndex = 0;
+            }
+        }
+
         private void CmbTemplate_SelectedIndexChanged(object sender, EventArgs e)
         {
-            if (cmbTemplate.SelectedItem == null ||
-                cmbTemplate.SelectedItem.ToString().Contains("Nenhum"))
+            if (cmbTemplate.SelectedItem == null)
                 return;
 
-            string nomeTemplate = cmbTemplate.SelectedItem.ToString();
+            // Remove a estrela se existir
+            string itemSelecionado = cmbTemplate.SelectedItem.ToString();
+            string nomeTemplate = itemSelecionado.StartsWith("⭐ ")
+                ? itemSelecionado.Substring(2)
+                : itemSelecionado;
+
             TemplateSelecionado = nomeTemplate;
 
             // Carrega configuração vinculada ao template
