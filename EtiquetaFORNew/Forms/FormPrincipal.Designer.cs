@@ -20,10 +20,9 @@
         private System.Windows.Forms.DataGridViewTextBoxColumn colQuantidade;
         private System.Windows.Forms.DataGridViewButtonColumn colRemover;
 
-        // ⭐ NOVOS CONTROLES PARA CONFIGURAÇÃO
-        private System.Windows.Forms.ComboBox cmbConfiguracao;
-        private System.Windows.Forms.Label lblConfiguracao;
-        private System.Windows.Forms.Label lblStatusConfig;
+        // ⭐ NOVOS CONTROLES PARA GERENCIAMENTO DE PRODUTOS
+        private System.Windows.Forms.CheckBox chkSelecionarTodos;
+        private System.Windows.Forms.Button btnLimparTodos;
 
         protected override void Dispose(bool disposing)
         {
@@ -65,24 +64,19 @@
             this.btnDesigner = new System.Windows.Forms.Button();
             this.btnImprimir = new System.Windows.Forms.Button();
             this.panelTop = new System.Windows.Forms.Panel();
+            this.pictureBox2 = new System.Windows.Forms.PictureBox();
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.panel2 = new System.Windows.Forms.Panel();
-            this.panelConfiguracao = new System.Windows.Forms.Panel();
-            this.label4 = new System.Windows.Forms.Label();
-            this.cmbTemplates = new System.Windows.Forms.ComboBox();
-            this.pictureBox2 = new System.Windows.Forms.PictureBox();
-            this.lblConfiguracao = new System.Windows.Forms.Label();
-            this.cmbConfiguracao = new System.Windows.Forms.ComboBox();
-            this.lblStatusConfig = new System.Windows.Forms.Label();
+            this.chkSelecionarTodos = new System.Windows.Forms.CheckBox();
+            this.btnLimparTodos = new System.Windows.Forms.Button();
             this.groupProduto.SuspendLayout();
             this.panel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numQtd)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.dgvProdutos)).BeginInit();
             this.panelTop.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.panel2.SuspendLayout();
-            this.panelConfiguracao.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).BeginInit();
             this.SuspendLayout();
             // 
             // groupProduto
@@ -114,9 +108,9 @@
             this.panel1.Controls.Add(this.lblCodigo);
             this.panel1.Controls.Add(this.txtNome);
             this.panel1.Controls.Add(this.lblNome);
-            this.panel1.Location = new System.Drawing.Point(6, 19);
+            this.panel1.Location = new System.Drawing.Point(6, 18);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(838, 74);
+            this.panel1.Size = new System.Drawing.Size(838, 35);
             this.panel1.TabIndex = 0;
             // 
             // BtnAdicionar2
@@ -291,9 +285,10 @@
             this.colPreco,
             this.colQuantidade,
             this.colRemover});
-            this.dgvProdutos.Location = new System.Drawing.Point(12, 223);
+            this.dgvProdutos.Location = new System.Drawing.Point(12, 197);
             this.dgvProdutos.Name = "dgvProdutos";
-            this.dgvProdutos.Size = new System.Drawing.Size(859, 350);
+            this.dgvProdutos.RowHeadersVisible = false;
+            this.dgvProdutos.Size = new System.Drawing.Size(859, 376);
             this.dgvProdutos.TabIndex = 2;
             this.dgvProdutos.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgvProdutos_CellContentClick);
             // 
@@ -301,13 +296,13 @@
             // 
             this.colSelecionar.HeaderText = "Sel.";
             this.colSelecionar.Name = "colSelecionar";
-            this.colSelecionar.Width = 40;
+            this.colSelecionar.Width = 35;
             // 
             // colNome
             // 
             this.colNome.HeaderText = "Nome";
             this.colNome.Name = "colNome";
-            this.colNome.Width = 300;
+            this.colNome.Width = 494;
             // 
             // colCodigo
             // 
@@ -328,11 +323,11 @@
             // 
             // colRemover
             // 
-            this.colRemover.HeaderText = "Remover";
+            this.colRemover.HeaderText = "Excluir";
             this.colRemover.Name = "colRemover";
             this.colRemover.Text = "X";
             this.colRemover.UseColumnTextForButtonValue = true;
-            this.colRemover.Width = 80;
+            this.colRemover.Width = 55;
             // 
             // lblTitulo
             // 
@@ -382,12 +377,25 @@
             this.panelTop.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.panelTop.Controls.Add(this.btnImprimir);
             this.panelTop.Controls.Add(this.btnDesigner);
+            this.panelTop.Controls.Add(this.pictureBox2);
             this.panelTop.Controls.Add(this.lblTitulo);
             this.panelTop.Controls.Add(this.pictureBox1);
             this.panelTop.Location = new System.Drawing.Point(12, 12);
             this.panelTop.Name = "panelTop";
             this.panelTop.Size = new System.Drawing.Size(860, 85);
             this.panelTop.TabIndex = 0;
+            // 
+            // pictureBox2
+            // 
+            this.pictureBox2.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.pictureBox2.Image = global::EtiquetaFORNew.Properties.Resources.Sincronizando;
+            this.pictureBox2.Location = new System.Drawing.Point(824, 3);
+            this.pictureBox2.Name = "pictureBox2";
+            this.pictureBox2.Size = new System.Drawing.Size(31, 24);
+            this.pictureBox2.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
+            this.pictureBox2.TabIndex = 3;
+            this.pictureBox2.TabStop = false;
+            this.pictureBox2.Click += new System.EventHandler(this.pictureBox2_Click);
             // 
             // pictureBox1
             // 
@@ -404,93 +412,38 @@
             this.panel2.BackColor = System.Drawing.Color.Transparent;
             this.panel2.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.panel2.Controls.Add(this.groupProduto);
-            this.panel2.Location = new System.Drawing.Point(12, 146);
+            this.panel2.Location = new System.Drawing.Point(12, 100);
             this.panel2.Name = "panel2";
-            this.panel2.Size = new System.Drawing.Size(859, 71);
+            this.panel2.Size = new System.Drawing.Size(859, 68);
             this.panel2.TabIndex = 3;
             // 
-            // panelConfiguracao
+            // chkSelecionarTodos
             // 
-            this.panelConfiguracao.BackColor = System.Drawing.Color.White;
-            this.panelConfiguracao.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.panelConfiguracao.Controls.Add(this.label4);
-            this.panelConfiguracao.Controls.Add(this.cmbTemplates);
-            this.panelConfiguracao.Controls.Add(this.pictureBox2);
-            this.panelConfiguracao.Controls.Add(this.lblConfiguracao);
-            this.panelConfiguracao.Controls.Add(this.cmbConfiguracao);
-            this.panelConfiguracao.Controls.Add(this.lblStatusConfig);
-            this.panelConfiguracao.Location = new System.Drawing.Point(12, 103);
-            this.panelConfiguracao.Name = "panelConfiguracao";
-            this.panelConfiguracao.Size = new System.Drawing.Size(860, 37);
-            this.panelConfiguracao.TabIndex = 4;
+            this.chkSelecionarTodos.AutoSize = true;
+            this.chkSelecionarTodos.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
+            this.chkSelecionarTodos.Location = new System.Drawing.Point(26, 172);
+            this.chkSelecionarTodos.Name = "chkSelecionarTodos";
+            this.chkSelecionarTodos.Size = new System.Drawing.Size(119, 19);
+            this.chkSelecionarTodos.TabIndex = 5;
+            this.chkSelecionarTodos.Text = "Selecionar Todos";
+            this.chkSelecionarTodos.UseVisualStyleBackColor = true;
+            this.chkSelecionarTodos.CheckedChanged += new System.EventHandler(this.chkSelecionarTodos_CheckedChanged);
             // 
-            // label4
+            // btnLimparTodos
             // 
-            this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(418, 8);
-            this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(59, 15);
-            this.label4.TabIndex = 5;
-            this.label4.Text = "Template:";
-            this.label4.Visible = false;
-            // 
-            // cmbTemplates
-            // 
-            this.cmbTemplates.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.cmbTemplates.Font = new System.Drawing.Font("Segoe UI", 9F);
-            this.cmbTemplates.FormattingEnabled = true;
-            this.cmbTemplates.Location = new System.Drawing.Point(483, 5);
-            this.cmbTemplates.Name = "cmbTemplates";
-            this.cmbTemplates.Size = new System.Drawing.Size(280, 23);
-            this.cmbTemplates.TabIndex = 4;
-            this.cmbTemplates.Visible = false;
-            // 
-            // pictureBox2
-            // 
-            this.pictureBox2.Cursor = System.Windows.Forms.Cursors.Hand;
-            this.pictureBox2.Image = global::EtiquetaFORNew.Properties.Resources.Sincronizando;
-            this.pictureBox2.Location = new System.Drawing.Point(823, 3);
-            this.pictureBox2.Name = "pictureBox2";
-            this.pictureBox2.Size = new System.Drawing.Size(31, 24);
-            this.pictureBox2.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
-            this.pictureBox2.TabIndex = 3;
-            this.pictureBox2.TabStop = false;
-            this.pictureBox2.Click += new System.EventHandler(this.pictureBox2_Click);
-            // 
-            // lblConfiguracao
-            // 
-            this.lblConfiguracao.AutoSize = true;
-            this.lblConfiguracao.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
-            this.lblConfiguracao.Location = new System.Drawing.Point(8, 8);
-            this.lblConfiguracao.Name = "lblConfiguracao";
-            this.lblConfiguracao.Size = new System.Drawing.Size(99, 15);
-            this.lblConfiguracao.TabIndex = 0;
-            this.lblConfiguracao.Text = "⚙️ Configuração:";
-            this.lblConfiguracao.Visible = false;
-            // 
-            // cmbConfiguracao
-            // 
-            this.cmbConfiguracao.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.cmbConfiguracao.Font = new System.Drawing.Font("Segoe UI", 9F);
-            this.cmbConfiguracao.FormattingEnabled = true;
-            this.cmbConfiguracao.Location = new System.Drawing.Point(113, 5);
-            this.cmbConfiguracao.Name = "cmbConfiguracao";
-            this.cmbConfiguracao.Size = new System.Drawing.Size(280, 23);
-            this.cmbConfiguracao.TabIndex = 1;
-            this.cmbConfiguracao.Visible = false;
-            this.cmbConfiguracao.SelectedIndexChanged += new System.EventHandler(this.cmbConfiguracao_SelectedIndexChanged);
-            // 
-            // lblStatusConfig
-            // 
-            this.lblStatusConfig.AutoSize = true;
-            this.lblStatusConfig.Font = new System.Drawing.Font("Segoe UI", 8F);
-            this.lblStatusConfig.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(52)))), ((int)(((byte)(73)))), ((int)(((byte)(94)))));
-            this.lblStatusConfig.Location = new System.Drawing.Point(148, 31);
-            this.lblStatusConfig.Name = "lblStatusConfig";
-            this.lblStatusConfig.Size = new System.Drawing.Size(197, 13);
-            this.lblStatusConfig.TabIndex = 2;
-            this.lblStatusConfig.Text = "⚠️ Nenhuma configuração carregada";
-            this.lblStatusConfig.Visible = false;
+            this.btnLimparTodos.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(231)))), ((int)(((byte)(76)))), ((int)(((byte)(60)))));
+            this.btnLimparTodos.FlatAppearance.BorderSize = 0;
+            this.btnLimparTodos.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnLimparTodos.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
+            this.btnLimparTodos.ForeColor = System.Drawing.Color.White;
+            this.btnLimparTodos.Location = new System.Drawing.Point(766, 169);
+            this.btnLimparTodos.Name = "btnLimparTodos";
+            this.btnLimparTodos.Size = new System.Drawing.Size(104, 25);
+            this.btnLimparTodos.TabIndex = 6;
+            this.btnLimparTodos.Text = "🗑️ Excluir Todos";
+            this.btnLimparTodos.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            this.btnLimparTodos.UseVisualStyleBackColor = false;
+            this.btnLimparTodos.Click += new System.EventHandler(this.btnLimparTodos_Click);
             // 
             // FormPrincipal
             // 
@@ -500,7 +453,8 @@
             this.ClientSize = new System.Drawing.Size(887, 582);
             this.Controls.Add(this.dgvProdutos);
             this.Controls.Add(this.panelTop);
-            this.Controls.Add(this.panelConfiguracao);
+            this.Controls.Add(this.chkSelecionarTodos);
+            this.Controls.Add(this.btnLimparTodos);
             this.Controls.Add(this.panel2);
             this.Font = new System.Drawing.Font("Segoe UI", 9F);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
@@ -515,12 +469,11 @@
             ((System.ComponentModel.ISupportInitialize)(this.dgvProdutos)).EndInit();
             this.panelTop.ResumeLayout(false);
             this.panelTop.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
             this.panel2.ResumeLayout(false);
-            this.panelConfiguracao.ResumeLayout(false);
-            this.panelConfiguracao.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).EndInit();
             this.ResumeLayout(false);
+            this.PerformLayout();
 
         }
 
@@ -531,9 +484,6 @@
         private System.Windows.Forms.PictureBox pictureBox1;
         private System.Windows.Forms.Panel panel1;
         private System.Windows.Forms.Panel panel2;
-
-        // ⭐ NOVO: Painel de configuração
-        private System.Windows.Forms.Panel panelConfiguracao;
         private System.Windows.Forms.ComboBox cmbBuscaReferencia;
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.ComboBox cmbBuscaNome;
@@ -542,7 +492,5 @@
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Button BtnAdicionar2;
         private System.Windows.Forms.PictureBox pictureBox2;
-        private System.Windows.Forms.Label label4;
-        private System.Windows.Forms.ComboBox cmbTemplates;
     }
 }

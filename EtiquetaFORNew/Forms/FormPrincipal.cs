@@ -98,13 +98,9 @@ namespace EtiquetaFORNew
 
             cmbBuscaCodigo.KeyDown += ComboBoxBusca_KeyDown;
 
-            CarregarTemplatesDisponiveis();
-
             CarregarConfiguracoesPapel();
 
             configuracaoAtual = CarregarConfiguracaoAtual();
-
-            CarregarComboboxModelos();
 
             CarregarModelosPapel();
 
@@ -275,9 +271,6 @@ namespace EtiquetaFORNew
             }
 
 
-
-            AtualizarStatusConfiguracao();
-
         }
 
 
@@ -291,24 +284,6 @@ namespace EtiquetaFORNew
         private void AtualizarListaConfiguracoes()
 
         {
-
-            cmbConfiguracao.Items.Clear();
-
-
-
-            // Adiciona configuração atual
-
-            cmbConfiguracao.Items.Add(new ConfiguracaoItem
-
-            {
-
-                Nome = "⭐ Configuração Atual",
-
-                Configuracao = configuracaoAtual,
-
-                IsPadrao = true
-
-            });
 
 
 
@@ -331,124 +306,17 @@ namespace EtiquetaFORNew
                 );
 
 
-
-                cmbConfiguracao.Items.Add(new ConfiguracaoItem
-
-                {
-
-                    Nome = $"📄 {papel.NomePapel}",
-
-                    Configuracao = config,
-
-                    IsPadrao = false
-
-                });
-
             }
-
-
-
-            // Seleciona a configuração atual
-
-            if (cmbConfiguracao.Items.Count > 0)
-
-            {
-
-                cmbConfiguracao.SelectedIndex = 0;
-
-            }
-
-
 
             // Atualiza o status
 
-            AtualizarStatusConfiguracao();
+            
 
         }
 
 
 
-        /// <summary>
-
-        /// Atualiza o label de status da configuração
-
-        /// </summary>
-
-        private void AtualizarStatusConfiguracao()
-
-        {
-
-            if (configuracaoAtual != null)
-
-            {
-
-                lblStatusConfig.Text = $"📋 {configuracaoAtual.NomeEtiqueta} | " +
-
-                                      $"📏 {configuracaoAtual.LarguraEtiqueta}x{configuracaoAtual.AlturaEtiqueta}mm | " +
-
-                                      $"🖨️ {configuracaoAtual.ImpressoraPadrao}";
-
-            }
-
-            else
-
-            {
-
-                lblStatusConfig.Text = "⚠️ Nenhuma configuração carregada";
-
-            }
-
-        }
-
-
-
-        /// <summary>
-
-        /// Evento ao mudar a seleção do ComboBox
-
-        /// </summary>
-
-        private void cmbConfiguracao_SelectedIndexChanged(object sender, EventArgs e)
-
-        {
-
-            if (cmbConfiguracao.SelectedItem is ConfiguracaoItem item)
-
-            {
-
-                // Verifica se a configuração realmente mudou
-
-                if (configuracaoAtual != item.Configuracao)
-
-                {
-
-                    configuracaoAtual = item.Configuracao;
-
-
-
-                    // ATUALIZA DIMENSÕES DO TEMPLATE (CRUCIAL para refletir no designer/impressão)
-
-                    template.Largura = configuracaoAtual.LarguraEtiqueta;
-
-                    template.Altura = configuracaoAtual.AlturaEtiqueta;
-
-
-
-                    // Salva a nova configuração como padrão para a próxima inicialização
-
-                    GerenciadorConfiguracoesEtiqueta.SalvarConfiguracaoPadrao(configuracaoAtual);
-
-
-
-                    AtualizarStatusConfiguracao();
-
-                }
-
-            }
-
-        }
-
-
+      
 
         // ========================================
 
@@ -602,32 +470,32 @@ namespace EtiquetaFORNew
 
         private void btnDesigner_Click(object sender, EventArgs e)
         {
-        
+
 
             TemplateEtiqueta templateParaAbrir = null;
             string nomeTemplate = null;
 
 
-                using (var formLista = new FormListaTemplates())
+            using (var formLista = new FormListaTemplates())
+            {
+                if (formLista.ShowDialog() == DialogResult.OK)
                 {
-                    if (formLista.ShowDialog() == DialogResult.OK)
-                    {
-                        nomeTemplate = formLista.TemplateSelecionado;
-                        templateParaAbrir = TemplateManager.CarregarTemplate(nomeTemplate);
+                    nomeTemplate = formLista.TemplateSelecionado;
+                    templateParaAbrir = TemplateManager.CarregarTemplate(nomeTemplate);
 
-                        if (templateParaAbrir == null)
-                        {
-                            MessageBox.Show($"Erro ao carregar template '{nomeTemplate}'!",
-                                "Erro", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                            return;
-                        }
-                    }
-                    else
+                    if (templateParaAbrir == null)
                     {
+                        MessageBox.Show($"Erro ao carregar template '{nomeTemplate}'!",
+                            "Erro", MessageBoxButtons.OK, MessageBoxIcon.Error);
                         return;
                     }
                 }
-            
+                else
+                {
+                    return;
+                }
+            }
+
 
             // 1. Abre o Designer NOVO com template e nome
             if (templateParaAbrir != null && !string.IsNullOrEmpty(nomeTemplate))
@@ -643,7 +511,7 @@ namespace EtiquetaFORNew
                             MessageBoxIcon.Information);
 
                         // Atualiza lista de templates
-                        CarregarTemplatesDisponiveis();
+                        //CarregarTemplatesDisponiveis();
                     }
                 }
             }
@@ -1134,13 +1002,6 @@ namespace EtiquetaFORNew
                         GerenciadorConfiguracoesEtiqueta.SalvarConfiguracaoPadrao(configuracaoAtual);
 
 
-
-                        // ⭐ CORREÇÃO 1: Atualiza a lista de configurações (Recarrega o cmbConfiguracao)
-
-                        AtualizarListaConfiguracoesAposSalvar();
-
-
-
                         // Tenta selecionar a configuração que acabou de ser salva/aplicada no ComboBox
 
                         if (!string.IsNullOrEmpty(configuracaoAtual.PapelPadrao))
@@ -1154,10 +1015,6 @@ namespace EtiquetaFORNew
                             // Se não, AtualizarListaConfiguracoesAposSalvar já deve ter selecionado a padrão.
 
                         }
-
-
-
-                        AtualizarStatusConfiguracao();
 
 
 
@@ -2065,59 +1922,21 @@ namespace EtiquetaFORNew
 
         }
 
- 
+
 
         private void CarregarConfiguracoesPapel()
 
         {
-
-            cmbConfiguracao.Items.Clear();
-
-
 
             // 1. Usa o Gerenciador para listar os nomes
 
             List<string> nomesConfig = GerenciadorConfiguracoesEtiqueta.ListarNomesConfiguracoes();
 
 
-
-            if (nomesConfig != null && nomesConfig.Any())
-
-            {
-
-                cmbConfiguracao.Items.AddRange(nomesConfig.ToArray());
-
-            }
-
-
-
             // 2. Tenta selecionar a última configuração salva como padrão
 
-            if (configuracaoAtual != null)
-
-            {
-
-                SelecionarConfiguracaoNaLista(configuracaoAtual.PapelPadrao);
-
-            }
 
 
-
-            // 3. Se ainda não houver seleção, selecione o primeiro item
-
-            if (cmbConfiguracao.Items.Count > 0 && cmbConfiguracao.SelectedIndex == -1)
-
-            {
-
-                cmbConfiguracao.SelectedIndex = 0;
-
-            }
-
-
-
-            // Carrega o objeto completo da configuração que foi selecionada/padrão
-
-            CarregarConfiguracaoSelecionada();
 
         }
 
@@ -2129,83 +1948,7 @@ namespace EtiquetaFORNew
 
         /// </summary>
 
-        private void SelecionarConfiguracaoNaLista(string nomeConfiguracao)
-
-        {
-
-            if (string.IsNullOrEmpty(nomeConfiguracao))
-
-            {
-
-                if (cmbConfiguracao.Items.Count > 0)
-
-                {
-
-                    cmbConfiguracao.SelectedIndex = 0;
-
-                }
-
-                return;
-
-            }
-
-
-
-            // Percorre os itens do ComboBox
-
-            for (int i = 0; i < cmbConfiguracao.Items.Count; i++)
-
-            {
-
-                var item = cmbConfiguracao.Items[i];
-
-
-
-                // Se for ConfiguracaoPapel, compara com NomePapel
-
-                if (item is ConfiguracaoPapel papel)
-
-                {
-
-                    if (papel.NomePapel.Equals(nomeConfiguracao, StringComparison.OrdinalIgnoreCase))
-
-                    {
-
-                        cmbConfiguracao.SelectedIndex = i;
-
-                        return;
-
-                    }
-
-                }
-
-                // Se for string, compara diretamente
-
-                else if (item.ToString().Equals(nomeConfiguracao, StringComparison.OrdinalIgnoreCase))
-
-                {
-
-                    cmbConfiguracao.SelectedIndex = i;
-
-                    return;
-
-                }
-
-            }
-
-
-
-            // Se não encontrou, seleciona "(Configuração Atual)"
-
-            if (cmbConfiguracao.Items.Count > 0)
-
-            {
-
-                cmbConfiguracao.SelectedIndex = 0;
-
-            }
-
-        }
+        
 
 
 
@@ -2215,55 +1958,7 @@ namespace EtiquetaFORNew
 
         /// </summary>
 
-        private void CarregarConfiguracaoSelecionada()
-
-        {
-
-            if (cmbConfiguracao.SelectedItem == null) return;
-
-
-
-            string nomeConfig = cmbConfiguracao.SelectedItem.ToString();
-
-
-
-            // 1. Carrega o objeto ConfiguracaoPapel completo
-
-            ConfiguracaoPapel papel = GerenciadorConfiguracoesEtiqueta.CarregarConfiguracao(nomeConfig);
-
-
-
-            if (papel != null)
-
-            {
-
-                // 2. Define a impressora padrão (se já tiver uma, mantém)
-
-                string impressoraPadraoAtual = configuracaoAtual != null ? configuracaoAtual.ImpressoraPadrao : null;
-
-
-
-                // 3. Converte ConfiguracaoPapel para o objeto de trabalho (ConfiguracaoEtiqueta)
-
-                configuracaoAtual = GerenciadorConfiguracoesEtiqueta.ConverterPapelParaConfig(papel, impressoraPadraoAtual);
-
-
-
-                // 4. Salva a nova configuração como padrão (última usada)
-
-                GerenciadorConfiguracoesEtiqueta.SalvarConfiguracaoPadrao(configuracaoAtual);
-
-
-
-                // 5. Atualiza a exibição no form principal (se necessário)
-
-                // AtualizarDisplayConfiguracao(configuracaoAtual); 
-
-            }
-
-
-
-        }
+        
 
         private ConfiguracaoEtiqueta CarregarConfiguracaoAtual()
 
@@ -2380,174 +2075,90 @@ namespace EtiquetaFORNew
         }
 
 
+        // ========================================
+        // ⭐ NOVO: GERENCIAMENTO EM MASSA DE PRODUTOS
+        // ========================================
 
-        private void CarregarComboboxModelos()
-
+        /// <summary>
+        /// Seleciona ou desmarca todos os produtos da lista
+        /// </summary>
+        private void chkSelecionarTodos_CheckedChanged(object sender, EventArgs e)
         {
-
-            // Bloqueia eventos temporariamente
-
-            cmbConfiguracao.SelectedIndexChanged -= cmbConfiguracao_SelectedIndexChanged;
-
-
-
-            try
-
+            if (dgvProdutos.Rows.Count == 0)
             {
-
-                // 1. Carrega os modelos salvos
-
-                var modelos = CarregarModelosPapel();
-
-
-
-                // 2. Limpa e popula o ComboBox
-
-                cmbConfiguracao.Items.Clear();
-
-
-
-                // 3. Adiciona a opção de CONFIGURAÇÃO ATUAL
-
-                cmbConfiguracao.Items.Add("(Configuração Atual)");
-
-
-
-                // 4. Adiciona TODAS as configurações salvas do arquivo
-
-                foreach (var modelo in modelos)
-
-                {
-
-                    cmbConfiguracao.Items.Add(modelo);
-
-                }
-
-
-
-                // 5. ⭐ Seleciona o item correspondente à configuração atual
-
-                if (configuracaoAtual != null && !string.IsNullOrEmpty(configuracaoAtual.NomeEtiqueta))
-
-                {
-
-                    SelecionarConfiguracaoNaLista(configuracaoAtual.NomeEtiqueta);
-
-                }
-
-                else
-
-                {
-
-                    // Se não houver configuração atual, seleciona o primeiro item
-
-                    if (cmbConfiguracao.Items.Count > 0)
-
-                    {
-
-                        cmbConfiguracao.SelectedIndex = 0;
-
-                    }
-
-                }
-
+                chkSelecionarTodos.Checked = false;
+                return;
             }
 
+            // Suspende o layout para melhorar performance
+            dgvProdutos.SuspendLayout();
+
+            try
+            {
+                foreach (DataGridViewRow row in dgvProdutos.Rows)
+                {
+                    if (!row.IsNewRow)
+                    {
+                        row.Cells["colSelecionar"].Value = chkSelecionarTodos.Checked;
+                    }
+                }
+            }
             finally
-
             {
-
-                // Reativa o evento
-
-                cmbConfiguracao.SelectedIndexChanged += cmbConfiguracao_SelectedIndexChanged;
-
+                dgvProdutos.ResumeLayout();
             }
-
         }
 
-        public void AtualizarListaConfiguracoesAposSalvar()
-
+        /// <summary>
+        /// Remove todos os produtos da lista
+        /// </summary>
+        private void btnLimparTodos_Click(object sender, EventArgs e)
         {
-
-            CarregarComboboxModelos();
-
-        }
-        public void CarregarTemplatesDisponiveis()
-
-        {
-
-            // Verifica se a ComboBox existe antes de usar (se foi adicionada no Designer)
-
-            if (cmbTemplates == null) return;
-
-
-
-            cmbTemplates.Items.Clear();
-
-
-
-            try
-
+            if (dgvProdutos.Rows.Count == 0)
             {
-
-                // ⭐ Necessário: TemplateManager deve ter um método que retorne uma lista de nomes de templates
-
-                // O FormListaTemplates implica que essa função existe.
-
-                List<string> nomesTemplates = TemplateManager.ListarTemplates();
-
-
-
-                if (nomesTemplates != null && nomesTemplates.Any())
-
-                {
-
-                    cmbTemplates.Items.AddRange(nomesTemplates.ToArray());
-
-
-
-                    // Seleciona o primeiro item por padrão
-
-                    if (cmbTemplates.Items.Count > 0)
-
-                    {
-
-                        cmbTemplates.SelectedIndex = 0;
-
-                    }
-
-                }
-
-                else
-
-                {
-
-                    cmbTemplates.Items.Add("(Nenhum Template Encontrado)");
-
-                    cmbTemplates.SelectedIndex = 0;
-
-                }
-
+                MessageBox.Show(
+                    "Não há produtos na lista para remover.",
+                    "Aviso",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Information);
+                return;
             }
 
-            catch (Exception ex)
+            DialogResult result = MessageBox.Show(
+                $"Deseja realmente remover TODOS os {dgvProdutos.Rows.Count} produtos da lista?\n\n" +
+                "Esta ação não pode ser desfeita.",
+                "Confirmar Remoção",
+                MessageBoxButtons.YesNo,
+                MessageBoxIcon.Warning,
+                MessageBoxDefaultButton.Button2);  // Botão "Não" é o padrão
 
+            if (result == DialogResult.Yes)
             {
+                // Limpa a lista de produtos e o DataGridView
+                produtos.Clear();
+                dgvProdutos.Rows.Clear();
 
-                MessageBox.Show($"Erro ao carregar lista de templates: {ex.Message}");
+                // Desmarca o checkbox de selecionar todos
+                chkSelecionarTodos.Checked = false;
 
+                MessageBox.Show(
+                    "Todos os produtos foram removidos da lista.",
+                    "Sucesso",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Information);
             }
-
         }
-
-
-
-
-
-
-
 
 
     }
 
+
+
+
+
+
+
 }
+
+
+       

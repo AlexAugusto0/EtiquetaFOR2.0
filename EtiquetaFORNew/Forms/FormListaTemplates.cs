@@ -64,60 +64,8 @@ namespace EtiquetaFORNew
                 FlatStyle = FlatStyle.Flat
             };
             btnNovo.FlatAppearance.BorderSize = 0;
-            btnNovo.Click += (s, e) =>
-            {
-                try
-                {
-                    //System.Diagnostics.Process.Start("explorer.exe", TemplateManager.ObterPastaTemplates());
+            btnNovo.Click += (s, e) => NovaEtiqueta();
 
-                    FormPrincipal Entrada = new FormPrincipal();
-                    TemplateEtiqueta templateParaAbrir = null;
-                    string nomeTemplate = null;
-
-
-
-                    // Pergunta nome do novo template
-                    using (var formNome = new FormNomeTemplate())
-                    {
-                        if (formNome.ShowDialog() == DialogResult.OK)
-                        {
-                            nomeTemplate = formNome.NomeTemplate;
-                            templateParaAbrir = new TemplateEtiqueta
-                            {
-                                Largura = 100,
-                                Altura = 30,
-                                Elementos = new List<ElementoEtiqueta>()
-                            };
-                        }
-                        else
-                        {
-                            return;
-                        }
-                    }
-
-                    // 2. Abre o Designer NOVO com template e nome
-                    if (templateParaAbrir != null && !string.IsNullOrEmpty(nomeTemplate))
-                    {
-                        using (var formDesigner = new FormDesignNovo(templateParaAbrir, nomeTemplate))
-                        {
-                            if (formDesigner.ShowDialog() == DialogResult.OK)
-                            {
-                                MessageBox.Show(
-                                    $"Template '{nomeTemplate}' salvo com sucesso!",
-                                    "Sucesso",
-                                    MessageBoxButtons.OK,
-                                    MessageBoxIcon.Information);
-
-                                // Atualiza lista de templates
-                                
-                                Entrada.CarregarTemplatesDisponiveis();
-                            }
-                        }
-                    }
-
-                }
-                catch { }
-            };
 
             Button btnExcluir = new Button
             {
@@ -142,7 +90,9 @@ namespace EtiquetaFORNew
                 DialogResult = DialogResult.OK
             };
             btnCarregar.FlatAppearance.BorderSize = 0;
+            
             btnCarregar.Click += (s, e) => CarregarSelecionado();
+            
 
             Button btnCancelar = new Button
             {
@@ -200,6 +150,65 @@ namespace EtiquetaFORNew
 
             TemplateSelecionado = lstTemplates.SelectedItem.ToString();
             this.DialogResult = DialogResult.OK;
+            this.Close();
+        }
+
+        private void NovaEtiqueta()
+        {
+            try
+            {
+                //System.Diagnostics.Process.Start("explorer.exe", TemplateManager.ObterPastaTemplates());
+
+                FormPrincipal Entrada = new FormPrincipal();
+                TemplateEtiqueta templateParaAbrir = null;
+                string nomeTemplate = null;
+
+
+
+                // Pergunta nome do novo template
+                using (var formNome = new FormNomeTemplate())
+                {
+                    if (formNome.ShowDialog() == DialogResult.OK)
+                    {
+                        nomeTemplate = formNome.NomeTemplate;
+                        templateParaAbrir = new TemplateEtiqueta
+                        {
+                            Largura = 100,
+                            Altura = 30,
+                            Elementos = new List<ElementoEtiqueta>()
+                        };
+                    }
+                    else
+                    {
+                        return;
+                    }
+                }
+
+                // 2. Abre o Designer NOVO com template e nome
+                if (templateParaAbrir != null && !string.IsNullOrEmpty(nomeTemplate))
+                {
+                    using (var formDesigner = new FormDesignNovo(templateParaAbrir, nomeTemplate))
+                    {
+                        if (formDesigner.ShowDialog() == DialogResult.OK)
+                        {
+                            MessageBox.Show(
+                                $"Template '{nomeTemplate}' salvo com sucesso!",
+                                "Sucesso",
+                                MessageBoxButtons.OK,
+                                MessageBoxIcon.Information);
+
+
+                            // Atualiza lista de templates
+
+                            // Entrada.CarregarTemplatesDisponiveis();
+                        }
+                    }
+                }
+
+            }
+
+            catch { }
+
             this.Close();
         }
 
