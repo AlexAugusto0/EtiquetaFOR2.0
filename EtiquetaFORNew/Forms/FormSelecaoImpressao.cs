@@ -180,20 +180,20 @@ namespace EtiquetaFORNew.Forms
             panelPrincipal.Controls.Add(lblInfo);
 
             // ==================== BOTÕES ====================
-            btnConfigurar = new Button
-            {
-                Text = "⚙ Configurar Papel",
-                Location = new Point(30, 305),
-                Size = new Size(140, 30),
-                Font = new Font("Segoe UI", 9),
-                BackColor = Color.FromArgb(52, 152, 219),
-                ForeColor = Color.White,
-                FlatStyle = FlatStyle.Flat,
-                Cursor = Cursors.Hand
-            };
-            btnConfigurar.FlatAppearance.BorderSize = 0;
-            btnConfigurar.Click += BtnConfigurar_Click;
-            panelPrincipal.Controls.Add(btnConfigurar);
+            //btnConfigurar = new Button
+            //{
+            //    Text = "⚙ Configurar Papel",
+            //    Location = new Point(30, 305),
+            //    Size = new Size(140, 30),
+            //    Font = new Font("Segoe UI", 9),
+            //    BackColor = Color.FromArgb(52, 152, 219),
+            //    ForeColor = Color.White,
+            //    FlatStyle = FlatStyle.Flat,
+            //    Cursor = Cursors.Hand
+            //};
+            //btnConfigurar.FlatAppearance.BorderSize = 0;
+            //btnConfigurar.Click += BtnConfigurar_Click;
+            //panelPrincipal.Controls.Add(btnConfigurar);
 
             btnConfirmar = new Button
             {

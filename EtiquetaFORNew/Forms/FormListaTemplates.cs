@@ -1,7 +1,9 @@
-﻿using System;
+﻿using EtiquetaFORNew.Forms;
+using System;
+using System.Collections.Generic;
 using System.Drawing;
-using System.Windows.Forms;
 using System.Linq;
+using System.Windows.Forms;
 
 namespace EtiquetaFORNew
 {
@@ -14,6 +16,7 @@ namespace EtiquetaFORNew
         {
             InitializeComponent();
             CarregarLista();
+            
         }
 
         private void InitializeComponent()
@@ -51,21 +54,67 @@ namespace EtiquetaFORNew
                 ForeColor = Color.Gray
             };
 
-            Button btnAbrir = new Button
+            Button btnNovo = new Button
             {
-                Text = "Abrir Pasta",
+                Text = "Nova Etiqueta",
                 Location = new Point(20, 320),
                 Size = new Size(100, 30),
                 BackColor = Color.FromArgb(149, 165, 166),
                 ForeColor = Color.White,
                 FlatStyle = FlatStyle.Flat
             };
-            btnAbrir.FlatAppearance.BorderSize = 0;
-            btnAbrir.Click += (s, e) =>
+            btnNovo.FlatAppearance.BorderSize = 0;
+            btnNovo.Click += (s, e) =>
             {
                 try
                 {
-                    System.Diagnostics.Process.Start("explorer.exe", TemplateManager.ObterPastaTemplates());
+                    //System.Diagnostics.Process.Start("explorer.exe", TemplateManager.ObterPastaTemplates());
+
+                    FormPrincipal Entrada = new FormPrincipal();
+                    TemplateEtiqueta templateParaAbrir = null;
+                    string nomeTemplate = null;
+
+
+
+                    // Pergunta nome do novo template
+                    using (var formNome = new FormNomeTemplate())
+                    {
+                        if (formNome.ShowDialog() == DialogResult.OK)
+                        {
+                            nomeTemplate = formNome.NomeTemplate;
+                            templateParaAbrir = new TemplateEtiqueta
+                            {
+                                Largura = 100,
+                                Altura = 30,
+                                Elementos = new List<ElementoEtiqueta>()
+                            };
+                        }
+                        else
+                        {
+                            return;
+                        }
+                    }
+
+                    // 2. Abre o Designer NOVO com template e nome
+                    if (templateParaAbrir != null && !string.IsNullOrEmpty(nomeTemplate))
+                    {
+                        using (var formDesigner = new FormDesignNovo(templateParaAbrir, nomeTemplate))
+                        {
+                            if (formDesigner.ShowDialog() == DialogResult.OK)
+                            {
+                                MessageBox.Show(
+                                    $"Template '{nomeTemplate}' salvo com sucesso!",
+                                    "Sucesso",
+                                    MessageBoxButtons.OK,
+                                    MessageBoxIcon.Information);
+
+                                // Atualiza lista de templates
+                                
+                                Entrada.CarregarTemplatesDisponiveis();
+                            }
+                        }
+                    }
+
                 }
                 catch { }
             };
@@ -109,7 +158,7 @@ namespace EtiquetaFORNew
 
             this.Controls.AddRange(new Control[] {
                 lblInstrucao, lstTemplates, lblInfo,
-                btnAbrir, btnExcluir, btnCarregar, btnCancelar
+                btnNovo, btnExcluir, btnCarregar, btnCancelar
             });
         }
 

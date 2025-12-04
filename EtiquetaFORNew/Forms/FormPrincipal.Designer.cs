@@ -19,7 +19,6 @@
         private System.Windows.Forms.DataGridViewTextBoxColumn colPreco;
         private System.Windows.Forms.DataGridViewTextBoxColumn colQuantidade;
         private System.Windows.Forms.DataGridViewButtonColumn colRemover;
-        private System.Windows.Forms.Button btnBuscarMercadoria;
 
         // ⭐ NOVOS CONTROLES PARA CONFIGURAÇÃO
         private System.Windows.Forms.ComboBox cmbConfiguracao;
@@ -66,9 +65,6 @@
             this.btnDesigner = new System.Windows.Forms.Button();
             this.btnImprimir = new System.Windows.Forms.Button();
             this.panelTop = new System.Windows.Forms.Panel();
-            this.btnConfigPapel = new System.Windows.Forms.Button();
-            this.btnCarregarTemplate = new System.Windows.Forms.Button();
-            this.btnBuscarMercadoria = new System.Windows.Forms.Button();
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.panel2 = new System.Windows.Forms.Panel();
             this.panelConfiguracao = new System.Windows.Forms.Panel();
@@ -384,9 +380,6 @@
             // 
             this.panelTop.BackColor = System.Drawing.Color.White;
             this.panelTop.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.panelTop.Controls.Add(this.btnConfigPapel);
-            this.panelTop.Controls.Add(this.btnCarregarTemplate);
-            this.panelTop.Controls.Add(this.btnBuscarMercadoria);
             this.panelTop.Controls.Add(this.btnImprimir);
             this.panelTop.Controls.Add(this.btnDesigner);
             this.panelTop.Controls.Add(this.lblTitulo);
@@ -395,54 +388,6 @@
             this.panelTop.Name = "panelTop";
             this.panelTop.Size = new System.Drawing.Size(860, 85);
             this.panelTop.TabIndex = 0;
-            // 
-            // btnConfigPapel
-            // 
-            this.btnConfigPapel.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(241)))), ((int)(((byte)(196)))), ((int)(((byte)(15)))));
-            this.btnConfigPapel.FlatAppearance.BorderSize = 0;
-            this.btnConfigPapel.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnConfigPapel.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
-            this.btnConfigPapel.ForeColor = System.Drawing.Color.Black;
-            this.btnConfigPapel.Location = new System.Drawing.Point(366, 45);
-            this.btnConfigPapel.Name = "btnConfigPapel";
-            this.btnConfigPapel.Size = new System.Drawing.Size(150, 30);
-            this.btnConfigPapel.TabIndex = 10;
-            this.btnConfigPapel.Text = "Configurar Papel";
-            this.btnConfigPapel.UseVisualStyleBackColor = false;
-            this.btnConfigPapel.Visible = false;
-            this.btnConfigPapel.Click += new System.EventHandler(this.btnConfigPapel_Click);
-            // 
-            // btnCarregarTemplate
-            // 
-            this.btnCarregarTemplate.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(241)))), ((int)(((byte)(196)))), ((int)(((byte)(15)))));
-            this.btnCarregarTemplate.FlatAppearance.BorderSize = 0;
-            this.btnCarregarTemplate.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnCarregarTemplate.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
-            this.btnCarregarTemplate.ForeColor = System.Drawing.Color.Black;
-            this.btnCarregarTemplate.Location = new System.Drawing.Point(715, 45);
-            this.btnCarregarTemplate.Name = "btnCarregarTemplate";
-            this.btnCarregarTemplate.Size = new System.Drawing.Size(140, 30);
-            this.btnCarregarTemplate.TabIndex = 9;
-            this.btnCarregarTemplate.Text = "📂 Carregar Template";
-            this.btnCarregarTemplate.UseVisualStyleBackColor = false;
-            this.btnCarregarTemplate.Visible = false;
-            this.btnCarregarTemplate.Click += new System.EventHandler(this.btnCarregarTemplate_Click);
-            // 
-            // btnBuscarMercadoria
-            // 
-            this.btnBuscarMercadoria.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(52)))), ((int)(((byte)(152)))), ((int)(((byte)(219)))));
-            this.btnBuscarMercadoria.FlatAppearance.BorderSize = 0;
-            this.btnBuscarMercadoria.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnBuscarMercadoria.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
-            this.btnBuscarMercadoria.ForeColor = System.Drawing.Color.Black;
-            this.btnBuscarMercadoria.Location = new System.Drawing.Point(529, 45);
-            this.btnBuscarMercadoria.Name = "btnBuscarMercadoria";
-            this.btnBuscarMercadoria.Size = new System.Drawing.Size(180, 30);
-            this.btnBuscarMercadoria.TabIndex = 3;
-            this.btnBuscarMercadoria.Text = "🔍 Buscar Mercadoria";
-            this.btnBuscarMercadoria.UseVisualStyleBackColor = false;
-            this.btnBuscarMercadoria.Visible = false;
-            this.btnBuscarMercadoria.Click += new System.EventHandler(this.btnBuscarMercadoria_Click);
             // 
             // pictureBox1
             // 
@@ -586,8 +531,6 @@
         private System.Windows.Forms.PictureBox pictureBox1;
         private System.Windows.Forms.Panel panel1;
         private System.Windows.Forms.Panel panel2;
-        private System.Windows.Forms.Button btnCarregarTemplate;
-        private System.Windows.Forms.Button btnConfigPapel;
 
         // ⭐ NOVO: Painel de configuração
         private System.Windows.Forms.Panel panelConfiguracao;

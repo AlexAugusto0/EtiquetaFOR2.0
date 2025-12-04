@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using System.Windows.Forms;
@@ -86,6 +87,8 @@ namespace EtiquetaFORNew
                 {
                     // Abre a pasta onde o arquivo de configurações de papel está
                     System.Diagnostics.Process.Start("explorer.exe", Path.GetDirectoryName(caminhoListaPapeis));
+                   
+                    
                 }
                 catch { }
             };

@@ -340,6 +340,7 @@ namespace EtiquetaFORNew.Forms
                 Size = new Size(210, 23),
                 DropDownStyle = ComboBoxStyle.DropDownList
             };
+            cmbPapel.SelectedIndexChanged += CmbPapel_SelectedIndexChanged;
             panelConfiguracao.Controls.Add(cmbPapel);
             yPos += 35;
 
@@ -1467,6 +1468,12 @@ namespace EtiquetaFORNew.Forms
         private void CmbImpressora_SelectedIndexChanged(object sender, EventArgs e)
         {
             CarregarPapeisDaImpressora();
+            AtualizarConfiguracao();
+        }
+
+        private void CmbPapel_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            //CarregarPapeisDaImpressora();
             AtualizarConfiguracao();
         }
 
