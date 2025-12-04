@@ -408,18 +408,18 @@ namespace EtiquetaFORNew.Forms
             panelConfiguracao.Controls.Add(lblMargens);
             yPos += 25;
 
-            chkPadraoDesativar = new CheckBox
-            {
-                Text = "Ir no Painel de Controle, clicar no item 'Propriedades do servidor de impressão'",
-                Location = new Point(15, yPos),
-                Size = new Size(300, 40),
-                Font = new Font("Segoe UI", 8),
-                ForeColor = Color.FromArgb(127, 140, 141),
-                Checked = configuracao.MargemSuperior == 0
-            };
-            chkPadraoDesativar.CheckedChanged += ChkPadraoDesativar_CheckedChanged;
-            panelConfiguracao.Controls.Add(chkPadraoDesativar);
-            yPos += 45;
+            //chkPadraoDesativar = new CheckBox
+            //{
+            //    Text = "Ir no Painel de Controle, clicar no item 'Propriedades do servidor de impressão'",
+            //    Location = new Point(15, yPos),
+            //    Size = new Size(300, 40),
+            //    Font = new Font("Segoe UI", 8),
+            //    ForeColor = Color.FromArgb(127, 140, 141),
+            //    Checked = configuracao.MargemSuperior == 0
+            //};
+            //chkPadraoDesativar.CheckedChanged += ChkPadraoDesativar_CheckedChanged;
+            //panelConfiguracao.Controls.Add(chkPadraoDesativar);
+            //yPos += 45;
 
             yPos = CriarCampoNumerico("Superior (mm):", out numMargemSuperior, yPos, 0, 50,
                 (decimal)configuracao.MargemSuperior, 0.1m);
@@ -437,7 +437,7 @@ namespace EtiquetaFORNew.Forms
                 (decimal)configuracao.MargemDireita, 0.1m);
             numMargemDireita.ValueChanged += (s, e) => AtualizarConfiguracao();
 
-            AtualizarEstadoMargens();
+            //AtualizarEstadoMargens();
         }
 
         private Label CriarLabelSecao(string texto, int yPos)
@@ -1554,11 +1554,16 @@ namespace EtiquetaFORNew.Forms
             template.Altura = configuracao.AlturaEtiqueta;
 
             AtualizarTamanhoCanvas();
-            pbCanvas.Invalidate();
+            pbCanvas?.Invalidate();
         }
 
         private void AtualizarTamanhoCanvas()
         {
+
+            // PROTEÇÃO: Verifica se pbCanvas foi inicializado
+            if (pbCanvas == null || panelCanvas == null)
+                return;
+            
             int larguraPixels = (int)(configuracao.LarguraEtiqueta * MM_PARA_PIXEL * zoom);
             int alturaPixels = (int)(configuracao.AlturaEtiqueta * MM_PARA_PIXEL * zoom);
 

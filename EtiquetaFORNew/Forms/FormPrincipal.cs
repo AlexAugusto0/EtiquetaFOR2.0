@@ -82,6 +82,9 @@ namespace EtiquetaFORNew
 
             InitializeComponent();
 
+          
+            TemplatesPreDefinidos.InstalarSeNecessario();
+
             template = new TemplateEtiqueta();
 
             CarregarUltimoTemplate();
