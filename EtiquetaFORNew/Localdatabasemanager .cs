@@ -50,6 +50,7 @@ namespace EtiquetaFORNew.Data
                             Fornecedor TEXT,
                             Fabricante TEXT,
                             Grupo TEXT,
+                            Prateleira TEXT,
                             Registro INTEGER,
                             UltimaAtualizacao DATETIME DEFAULT CURRENT_TIMESTAMP
                         );
@@ -126,7 +127,8 @@ namespace EtiquetaFORNew.Data
                             [VendaC] as VendaC,
                             [Fornecedor] as Fornecedor,
                             [Fabricante] as Fabricante,
-                            [Grupo] as Grupo
+                            [Grupo] as Grupo,
+                            [Prateleira] as Prateleira
                         FROM [Cadastro de Mercadorias]
                         " + (string.IsNullOrEmpty(filtro) ? "" : "WHERE " + filtro) + @"
                         ORDER BY [Código da Mercadoria]
@@ -171,6 +173,7 @@ namespace EtiquetaFORNew.Data
                                         insertCmd.Parameters.AddWithValue("@fornecedor", reader["Fornecedor"] ?? DBNull.Value);
                                         insertCmd.Parameters.AddWithValue("@fabricante", reader["Fabricante"] ?? DBNull.Value);
                                         insertCmd.Parameters.AddWithValue("@grupo", reader["Grupo"] ?? DBNull.Value);
+                                        insertCmd.Parameters.AddWithValue("@Prateleira", reader["Prateleira"] ?? DBNull.Value);
                                         //insertCmd.Parameters.AddWithValue("@reg", reader["Registro"] ?? DBNull.Value);
 
                                         insertCmd.ExecuteNonQuery();
@@ -227,6 +230,7 @@ namespace EtiquetaFORNew.Data
                             Fornecedor,
                             Fabricante,
                             Grupo,
+                            Prateleira,
                             Registro
                         FROM Mercadorias
                     ";

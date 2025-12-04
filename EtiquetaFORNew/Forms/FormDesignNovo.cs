@@ -542,7 +542,8 @@ namespace EtiquetaFORNew.Forms
                 "VendaC",
                 "Fornecedor",
                 "Fabricante",
-                "Grupo"
+                "Grupo",
+                "Prateleira"
             });
             cmbCampos.SelectedIndexChanged += (s, e) => {
                 if (cmbCampos.SelectedItem != null)
