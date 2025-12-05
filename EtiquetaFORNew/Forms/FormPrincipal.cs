@@ -1132,115 +1132,71 @@ namespace EtiquetaFORNew
         }
 
         private void CarregarTodasMercadorias()
-
         {
-
             try
-
             {
+                // ⭐ Carrega TODOS os produtos (ou aumenta muito o limite)
+                mercadorias = LocalDatabaseManager.BuscarMercadorias("", limite: 20000);
 
-                mercadorias = LocalDatabaseManager.BuscarMercadorias("");
-
-
-
-                // Listas para AutoComplete
-
+                // Listas para AutoComplete E para Items
                 AutoCompleteStringCollection acscNome = new AutoCompleteStringCollection();
-
                 AutoCompleteStringCollection acscReferencia = new AutoCompleteStringCollection();
-
                 AutoCompleteStringCollection acscCodigo = new AutoCompleteStringCollection();
 
-
-
-                // ⭐ NOVO: Listas para popular os Items de cada ComboBox (corrige dropdown vazio)
-
                 List<string> listaNome = new List<string>();
-
                 List<string> listaReferencia = new List<string>();
-
                 List<string> listaCodigo = new List<string>();
 
-
-
                 foreach (DataRow row in mercadorias.Rows)
-
                 {
-
                     string nome = row["Mercadoria"]?.ToString();
-
                     string referencia = row["CodFabricante"]?.ToString();
-
                     string codigo = row["CodigoMercadoria"]?.ToString();
 
-
-
-                    if (!string.IsNullOrEmpty(nome)) { acscNome.Add(nome); listaNome.Add(nome); }
-
-                    if (!string.IsNullOrEmpty(referencia)) { acscReferencia.Add(referencia); listaReferencia.Add(referencia); }
-
-                    if (!string.IsNullOrEmpty(codigo)) { acscCodigo.Add(codigo); listaCodigo.Add(codigo); }
-
+                    if (!string.IsNullOrEmpty(nome))
+                    {
+                        acscNome.Add(nome);
+                        listaNome.Add(nome);
+                    }
+                    if (!string.IsNullOrEmpty(referencia))
+                    {
+                        acscReferencia.Add(referencia);
+                        listaReferencia.Add(referencia);
+                    }
+                    if (!string.IsNullOrEmpty(codigo))
+                    {
+                        acscCodigo.Add(codigo);
+                        listaCodigo.Add(codigo);
+                    }
                 }
 
-
-
-                // 1. Configurar AutoComplete Custom Source
-
+                // Configura AutoComplete
                 if (cmbBuscaNome != null) cmbBuscaNome.AutoCompleteCustomSource = acscNome;
-
                 if (cmbBuscaReferencia != null) cmbBuscaReferencia.AutoCompleteCustomSource = acscReferencia;
-
                 if (cmbBuscaCodigo != null) cmbBuscaCodigo.AutoCompleteCustomSource = acscCodigo;
 
-
-
-                // 2. ⭐ NOVO: Configurar Items para que a lista apareça ao clicar
-
+                // ⭐ AGORA SIM: Popular os Items para o dropdown funcionar
                 if (cmbBuscaNome != null)
-
                 {
-
                     cmbBuscaNome.Items.Clear();
-
-                    // Adicionamos valores únicos e ordenados
-
                     cmbBuscaNome.Items.AddRange(listaNome.Distinct().OrderBy(s => s).ToArray());
-
                 }
-
                 if (cmbBuscaReferencia != null)
-
                 {
-
                     cmbBuscaReferencia.Items.Clear();
-
                     cmbBuscaReferencia.Items.AddRange(listaReferencia.Distinct().OrderBy(s => s).ToArray());
-
                 }
-
                 if (cmbBuscaCodigo != null)
-
                 {
-
                     cmbBuscaCodigo.Items.Clear();
-
                     cmbBuscaCodigo.Items.AddRange(listaCodigo.Distinct().OrderBy(s => s).ToArray());
-
                 }
-
-
-
             }
-
             catch (Exception ex)
-
             {
-
-                MessageBox.Show($"Erro ao carregar lista de mercadorias: {ex.Message}", "Erro", MessageBoxButtons.OK, MessageBoxIcon.Error);
-
+                MessageBox.Show($"Erro ao carregar lista de mercadorias: {ex.Message}",
+                    "Erro", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
-
         }
 
         private void cmbBusca_TextUpdate(object sender, EventArgs e)
@@ -1324,147 +1280,105 @@ namespace EtiquetaFORNew
 
 
         private void AdicionarProdutoSelecionado(string termo, string nomeCampo, ComboBox cmbOrigem)
-
         {
-
             if (string.IsNullOrEmpty(termo)) return;
 
-
-
-            // Importante: Remove os eventos para evitar recursão ao setar .Text
-
+            // Remove os eventos para evitar recursão
             RemoverEventosSelecao();
 
-
-
             try
-
             {
-
                 string termoFiltrado = termo.Replace("'", "''");
 
+                // ⭐ CORREÇÃO 1: Busca primeiro na memória (rápido)
                 DataRow[] resultados = mercadorias.Select($"{nomeCampo} = '{termoFiltrado}'");
-
-
+                DataRow row = null;
 
                 if (resultados.Length > 0)
-
                 {
+                    row = resultados[0];
+                }
+                else
+                {
+                    // ⭐ CORREÇÃO 2: Busca DIRETO NO BANCO usando método existente
+                    try
+                    {
+                        // Usa o método existente BuscarMercadorias(termo, nomeCampo)
+                        // que já faz busca LIKE no campo específico
+                        DataTable resultadoBanco = LocalDatabaseManager.BuscarMercadorias(termo, nomeCampo, limite: 10);
 
-                    DataRow row = resultados[0];
+                        if (resultadoBanco != null && resultadoBanco.Rows.Count > 0)
+                        {
+                            // Tenta busca exata primeiro (LIKE pode retornar múltiplos)
+                            DataRow[] resultadosExatos = resultadoBanco.Select($"{nomeCampo} = '{termoFiltrado}'");
 
+                            if (resultadosExatos.Length > 0)
+                            {
+                                row = resultadosExatos[0]; // Busca exata prioritária
+                            }
+                            else
+                            {
+                                row = resultadoBanco.Rows[0]; // Se não houver exata, pega primeira
+                            }
+                        }
+                    }
+                    catch (Exception exBanco)
+                    {
+                        // Log do erro para debug
+                        System.Diagnostics.Debug.WriteLine($"Erro na busca no banco: {exBanco.Message}");
+                    }
+                }
 
-
-                    // ⭐ NOVO: Armazena o DataRow completo para uso no btnAdicionar
-
+                if (row != null)
+                {
+                    // Armazena o DataRow completo para uso no btnAdicionar
                     produtoAtualCompleto = row;
 
-
-
-                    // ⭐ ATUALIZADO: Obter todos os campos da tabela Mercadorias
-
+                    // Obter todos os campos da tabela Mercadorias
                     string codigo = row["CodigoMercadoria"]?.ToString();
-
                     string nome = row["Mercadoria"]?.ToString();
-
                     string referencia = row["CodFabricante"]?.ToString();
-
                     string codBarras = row["CodBarras"]?.ToString();
-
                     decimal preco = row["PrecoVenda"] != DBNull.Value ? Convert.ToDecimal(row["PrecoVenda"]) : 0m;
 
-
-
-                    // Novos campos de preços alternativos
-
+                    // Campos de preços alternativos
                     decimal vendaA = row["VendaA"] != DBNull.Value ? Convert.ToDecimal(row["VendaA"]) : 0m;
-
                     decimal vendaB = row["VendaB"] != DBNull.Value ? Convert.ToDecimal(row["VendaB"]) : 0m;
-
                     decimal vendaC = row["VendaC"] != DBNull.Value ? Convert.ToDecimal(row["VendaC"]) : 0m;
 
-
-
-                    // Novos campos de informação
-
+                    // Campos de informação
                     string fornecedor = row["Fornecedor"]?.ToString();
-
                     string fabricante = row["Fabricante"]?.ToString();
-
                     string grupo = row["Grupo"]?.ToString();
-
                     string prateleira = row["Prateleira"]?.ToString();
 
-
-
-                    // 1. SINCRONIZAR OS COMBOBOXES (Atualiza as 3 buscas)
-
+                    // Sincronizar os ComboBoxes
                     cmbBuscaNome.Text = nome;
-
                     cmbBuscaReferencia.Text = referencia;
-
                     cmbBuscaCodigo.Text = codigo;
 
-
-
-                    // 2. PREENCHER OS CAMPOS DE CADASTRO MANUAL (mantém compatibilidade)
-
+                    // Preencher campos de cadastro
                     txtNome.Text = nome;
-
                     txtCodigo.Text = codigo;
-
                     txtPreco.Text = preco.ToString("F2");
-
-                    numQtd.Value = 1; // Define quantidade inicial como 1
-
-
-
-                    // 3. ⭐ ARMAZENAR DADOS COMPLETOS (para uso posterior se necessário)
-
-                    // Nota: Se você tiver campos adicionais no form para exibir VendaA/B/C, Fornecedor, etc.,
-
-                    // adicione aqui. Por exemplo:
-
-                    // txtFornecedor.Text = fornecedor;
-
-                    // txtGrupo.Text = grupo;
-
-
-
-                    // 4. ⭐ Foco no botão de Adicionar. O próximo ENTER acionará este botão.
-
-                    //btnAdicionar.Focus();
-
+                    numQtd.Value = 1;
                 }
-
                 else
-
                 {
-
-                    MessageBox.Show($"Nenhum produto encontrado com o valor '{termo}' no campo '{nomeCampo}'.", "Busca Vazia", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-
+                    MessageBox.Show($"Nenhum produto encontrado com o valor '{termo}' no campo '{nomeCampo}'.",
+                        "Busca Vazia", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 }
-
             }
-
             catch (Exception ex)
-
             {
-
-                MessageBox.Show($"Erro ao processar o produto: {ex.Message}", "Erro", MessageBoxButtons.OK, MessageBoxIcon.Error);
-
+                MessageBox.Show($"Erro ao processar o produto: {ex.Message}",
+                    "Erro", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
-
             finally
-
             {
-
                 // Adiciona os eventos de volta
-
                 AdicionarEventosSelecao();
-
             }
-
         }
 
         private void AdicionarProdutoNaLista(Produto produto)
@@ -2156,7 +2070,15 @@ namespace EtiquetaFORNew
             }
         }
 
+        private void groupProduto_Enter(object sender, EventArgs e)
+        {
 
+        }
+
+        private void lblQtd_Click(object sender, EventArgs e)
+        {
+
+        }
     }
 
 

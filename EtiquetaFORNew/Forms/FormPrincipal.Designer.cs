@@ -84,12 +84,13 @@
             this.groupProduto.BackColor = System.Drawing.Color.White;
             this.groupProduto.Controls.Add(this.panel1);
             this.groupProduto.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
-            this.groupProduto.Location = new System.Drawing.Point(3, 3);
+            this.groupProduto.Location = new System.Drawing.Point(7, 3);
             this.groupProduto.Name = "groupProduto";
-            this.groupProduto.Size = new System.Drawing.Size(851, 60);
+            this.groupProduto.Size = new System.Drawing.Size(851, 85);
             this.groupProduto.TabIndex = 1;
             this.groupProduto.TabStop = false;
             this.groupProduto.Text = "Adicionar Produto";
+            this.groupProduto.Enter += new System.EventHandler(this.groupProduto_Enter);
             // 
             // panel1
             // 
@@ -110,7 +111,7 @@
             this.panel1.Controls.Add(this.lblNome);
             this.panel1.Location = new System.Drawing.Point(6, 18);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(838, 35);
+            this.panel1.Size = new System.Drawing.Size(838, 67);
             this.panel1.TabIndex = 0;
             // 
             // BtnAdicionar2
@@ -119,7 +120,7 @@
             this.BtnAdicionar2.FlatAppearance.BorderSize = 0;
             this.BtnAdicionar2.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.BtnAdicionar2.ForeColor = System.Drawing.Color.Black;
-            this.BtnAdicionar2.Location = new System.Drawing.Point(744, 5);
+            this.BtnAdicionar2.Location = new System.Drawing.Point(740, 25);
             this.BtnAdicionar2.Name = "BtnAdicionar2";
             this.BtnAdicionar2.Size = new System.Drawing.Size(90, 25);
             this.BtnAdicionar2.TabIndex = 14;
@@ -130,9 +131,9 @@
             // cmbBuscaReferencia
             // 
             this.cmbBuscaReferencia.FormattingEnabled = true;
-            this.cmbBuscaReferencia.Location = new System.Drawing.Point(237, 2);
+            this.cmbBuscaReferencia.Location = new System.Drawing.Point(72, 24);
             this.cmbBuscaReferencia.Name = "cmbBuscaReferencia";
-            this.cmbBuscaReferencia.Size = new System.Drawing.Size(99, 23);
+            this.cmbBuscaReferencia.Size = new System.Drawing.Size(90, 23);
             this.cmbBuscaReferencia.TabIndex = 11;
             this.cmbBuscaReferencia.SelectedIndexChanged += new System.EventHandler(this.cmbBuscaReferencia_SelectedIndexChanged);
             // 
@@ -140,7 +141,7 @@
             // 
             this.label3.AutoSize = true;
             this.label3.Font = new System.Drawing.Font("Segoe UI", 9F);
-            this.label3.Location = new System.Drawing.Point(166, 6);
+            this.label3.Location = new System.Drawing.Point(69, 6);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(65, 15);
             this.label3.TabIndex = 13;
@@ -149,9 +150,9 @@
             // cmbBuscaNome
             // 
             this.cmbBuscaNome.FormattingEnabled = true;
-            this.cmbBuscaNome.Location = new System.Drawing.Point(394, 3);
+            this.cmbBuscaNome.Location = new System.Drawing.Point(168, 24);
             this.cmbBuscaNome.Name = "cmbBuscaNome";
-            this.cmbBuscaNome.Size = new System.Drawing.Size(258, 23);
+            this.cmbBuscaNome.Size = new System.Drawing.Size(520, 23);
             this.cmbBuscaNome.TabIndex = 12;
             this.cmbBuscaNome.SelectedIndexChanged += new System.EventHandler(this.cmbBuscaNome_SelectedIndexChanged);
             // 
@@ -159,18 +160,18 @@
             // 
             this.label2.AutoSize = true;
             this.label2.Font = new System.Drawing.Font("Segoe UI", 9F);
-            this.label2.Location = new System.Drawing.Point(343, 6);
+            this.label2.Location = new System.Drawing.Point(165, 6);
             this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(43, 15);
+            this.label2.Size = new System.Drawing.Size(70, 15);
             this.label2.TabIndex = 11;
-            this.label2.Text = "Nome:";
+            this.label2.Text = "Mercadoria:";
             // 
             // cmbBuscaCodigo
             // 
             this.cmbBuscaCodigo.FormattingEnabled = true;
-            this.cmbBuscaCodigo.Location = new System.Drawing.Point(60, 2);
+            this.cmbBuscaCodigo.Location = new System.Drawing.Point(3, 24);
             this.cmbBuscaCodigo.Name = "cmbBuscaCodigo";
-            this.cmbBuscaCodigo.Size = new System.Drawing.Size(99, 23);
+            this.cmbBuscaCodigo.Size = new System.Drawing.Size(63, 23);
             this.cmbBuscaCodigo.TabIndex = 10;
             this.cmbBuscaCodigo.SelectedIndexChanged += new System.EventHandler(this.cmbBuscaCodigo_SelectedIndexChanged);
             // 
@@ -178,7 +179,7 @@
             // 
             this.label1.AutoSize = true;
             this.label1.Font = new System.Drawing.Font("Segoe UI", 9F);
-            this.label1.Location = new System.Drawing.Point(5, 4);
+            this.label1.Location = new System.Drawing.Point(4, 6);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(49, 15);
             this.label1.TabIndex = 9;
@@ -186,7 +187,7 @@
             // 
             // numQtd
             // 
-            this.numQtd.Location = new System.Drawing.Point(698, 4);
+            this.numQtd.Location = new System.Drawing.Point(694, 24);
             this.numQtd.Maximum = new decimal(new int[] {
             1000,
             0,
@@ -210,11 +211,12 @@
             // 
             this.lblQtd.AutoSize = true;
             this.lblQtd.Font = new System.Drawing.Font("Segoe UI", 9F);
-            this.lblQtd.Location = new System.Drawing.Point(658, 7);
+            this.lblQtd.Location = new System.Drawing.Point(691, 6);
             this.lblQtd.Name = "lblQtd";
             this.lblQtd.Size = new System.Drawing.Size(30, 15);
             this.lblQtd.TabIndex = 6;
             this.lblQtd.Text = "Qtd:";
+            this.lblQtd.Click += new System.EventHandler(this.lblQtd_Click);
             // 
             // txtPreco
             // 
@@ -237,7 +239,7 @@
             // 
             // txtCodigo
             // 
-            this.txtCodigo.Location = new System.Drawing.Point(62, 47);
+            this.txtCodigo.Location = new System.Drawing.Point(525, 42);
             this.txtCodigo.Name = "txtCodigo";
             this.txtCodigo.Size = new System.Drawing.Size(100, 23);
             this.txtCodigo.TabIndex = 3;
@@ -247,7 +249,7 @@
             // 
             this.lblCodigo.AutoSize = true;
             this.lblCodigo.Font = new System.Drawing.Font("Segoe UI", 9F);
-            this.lblCodigo.Location = new System.Drawing.Point(0, 50);
+            this.lblCodigo.Location = new System.Drawing.Point(550, 52);
             this.lblCodigo.Name = "lblCodigo";
             this.lblCodigo.Size = new System.Drawing.Size(49, 15);
             this.lblCodigo.TabIndex = 2;
@@ -256,7 +258,7 @@
             // 
             // txtNome
             // 
-            this.txtNome.Location = new System.Drawing.Point(225, 47);
+            this.txtNome.Location = new System.Drawing.Point(448, 44);
             this.txtNome.Name = "txtNome";
             this.txtNome.Size = new System.Drawing.Size(220, 23);
             this.txtNome.TabIndex = 1;
@@ -266,7 +268,7 @@
             // 
             this.lblNome.AutoSize = true;
             this.lblNome.Font = new System.Drawing.Font("Segoe UI", 9F);
-            this.lblNome.Location = new System.Drawing.Point(174, 50);
+            this.lblNome.Location = new System.Drawing.Point(537, 49);
             this.lblNome.Name = "lblNome";
             this.lblNome.Size = new System.Drawing.Size(43, 15);
             this.lblNome.TabIndex = 0;
@@ -285,10 +287,10 @@
             this.colPreco,
             this.colQuantidade,
             this.colRemover});
-            this.dgvProdutos.Location = new System.Drawing.Point(12, 197);
+            this.dgvProdutos.Location = new System.Drawing.Point(12, 208);
             this.dgvProdutos.Name = "dgvProdutos";
             this.dgvProdutos.RowHeadersVisible = false;
-            this.dgvProdutos.Size = new System.Drawing.Size(859, 376);
+            this.dgvProdutos.Size = new System.Drawing.Size(859, 365);
             this.dgvProdutos.TabIndex = 2;
             this.dgvProdutos.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgvProdutos_CellContentClick);
             // 
@@ -414,14 +416,14 @@
             this.panel2.Controls.Add(this.groupProduto);
             this.panel2.Location = new System.Drawing.Point(12, 100);
             this.panel2.Name = "panel2";
-            this.panel2.Size = new System.Drawing.Size(859, 68);
+            this.panel2.Size = new System.Drawing.Size(859, 77);
             this.panel2.TabIndex = 3;
             // 
             // chkSelecionarTodos
             // 
             this.chkSelecionarTodos.AutoSize = true;
             this.chkSelecionarTodos.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
-            this.chkSelecionarTodos.Location = new System.Drawing.Point(26, 172);
+            this.chkSelecionarTodos.Location = new System.Drawing.Point(26, 183);
             this.chkSelecionarTodos.Name = "chkSelecionarTodos";
             this.chkSelecionarTodos.Size = new System.Drawing.Size(119, 19);
             this.chkSelecionarTodos.TabIndex = 5;
@@ -436,7 +438,7 @@
             this.btnLimparTodos.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnLimparTodos.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
             this.btnLimparTodos.ForeColor = System.Drawing.Color.White;
-            this.btnLimparTodos.Location = new System.Drawing.Point(766, 169);
+            this.btnLimparTodos.Location = new System.Drawing.Point(766, 180);
             this.btnLimparTodos.Name = "btnLimparTodos";
             this.btnLimparTodos.Size = new System.Drawing.Size(104, 25);
             this.btnLimparTodos.TabIndex = 6;
