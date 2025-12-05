@@ -111,7 +111,7 @@
             this.panel1.Controls.Add(this.lblNome);
             this.panel1.Location = new System.Drawing.Point(6, 18);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(838, 67);
+            this.panel1.Size = new System.Drawing.Size(838, 51);
             this.panel1.TabIndex = 0;
             // 
             // BtnAdicionar2
@@ -120,7 +120,7 @@
             this.BtnAdicionar2.FlatAppearance.BorderSize = 0;
             this.BtnAdicionar2.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.BtnAdicionar2.ForeColor = System.Drawing.Color.Black;
-            this.BtnAdicionar2.Location = new System.Drawing.Point(740, 25);
+            this.BtnAdicionar2.Location = new System.Drawing.Point(740, 22);
             this.BtnAdicionar2.Name = "BtnAdicionar2";
             this.BtnAdicionar2.Size = new System.Drawing.Size(90, 25);
             this.BtnAdicionar2.TabIndex = 14;
@@ -287,10 +287,10 @@
             this.colPreco,
             this.colQuantidade,
             this.colRemover});
-            this.dgvProdutos.Location = new System.Drawing.Point(12, 208);
+            this.dgvProdutos.Location = new System.Drawing.Point(12, 164);
             this.dgvProdutos.Name = "dgvProdutos";
             this.dgvProdutos.RowHeadersVisible = false;
-            this.dgvProdutos.Size = new System.Drawing.Size(859, 365);
+            this.dgvProdutos.Size = new System.Drawing.Size(859, 370);
             this.dgvProdutos.TabIndex = 2;
             this.dgvProdutos.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgvProdutos_CellContentClick);
             // 
@@ -337,7 +337,7 @@
             this.lblTitulo.BackColor = System.Drawing.Color.Transparent;
             this.lblTitulo.Font = new System.Drawing.Font("Segoe UI", 16F, System.Drawing.FontStyle.Bold);
             this.lblTitulo.ForeColor = System.Drawing.Color.Black;
-            this.lblTitulo.Location = new System.Drawing.Point(68, 6);
+            this.lblTitulo.Location = new System.Drawing.Point(80, 6);
             this.lblTitulo.Name = "lblTitulo";
             this.lblTitulo.Size = new System.Drawing.Size(260, 30);
             this.lblTitulo.TabIndex = 0;
@@ -345,12 +345,12 @@
             // 
             // btnDesigner
             // 
-            this.btnDesigner.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(241)))), ((int)(((byte)(196)))), ((int)(((byte)(15)))));
+            this.btnDesigner.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(143)))), ((int)(((byte)(0)))));
             this.btnDesigner.FlatAppearance.BorderSize = 0;
             this.btnDesigner.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnDesigner.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
             this.btnDesigner.ForeColor = System.Drawing.Color.Black;
-            this.btnDesigner.Location = new System.Drawing.Point(20, 45);
+            this.btnDesigner.Location = new System.Drawing.Point(638, 7);
             this.btnDesigner.Name = "btnDesigner";
             this.btnDesigner.Size = new System.Drawing.Size(180, 30);
             this.btnDesigner.TabIndex = 1;
@@ -360,12 +360,12 @@
             // 
             // btnImprimir
             // 
-            this.btnImprimir.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(241)))), ((int)(((byte)(196)))), ((int)(((byte)(15)))));
+            this.btnImprimir.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(143)))), ((int)(((byte)(0)))));
             this.btnImprimir.FlatAppearance.BorderSize = 0;
             this.btnImprimir.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnImprimir.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
             this.btnImprimir.ForeColor = System.Drawing.Color.Black;
-            this.btnImprimir.Location = new System.Drawing.Point(210, 45);
+            this.btnImprimir.Location = new System.Drawing.Point(718, 540);
             this.btnImprimir.Name = "btnImprimir";
             this.btnImprimir.Size = new System.Drawing.Size(150, 30);
             this.btnImprimir.TabIndex = 2;
@@ -377,21 +377,20 @@
             // 
             this.panelTop.BackColor = System.Drawing.Color.White;
             this.panelTop.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.panelTop.Controls.Add(this.btnImprimir);
             this.panelTop.Controls.Add(this.btnDesigner);
             this.panelTop.Controls.Add(this.pictureBox2);
             this.panelTop.Controls.Add(this.lblTitulo);
             this.panelTop.Controls.Add(this.pictureBox1);
             this.panelTop.Location = new System.Drawing.Point(12, 12);
             this.panelTop.Name = "panelTop";
-            this.panelTop.Size = new System.Drawing.Size(860, 85);
+            this.panelTop.Size = new System.Drawing.Size(860, 47);
             this.panelTop.TabIndex = 0;
             // 
             // pictureBox2
             // 
             this.pictureBox2.Cursor = System.Windows.Forms.Cursors.Hand;
             this.pictureBox2.Image = global::EtiquetaFORNew.Properties.Resources.Sincronizando;
-            this.pictureBox2.Location = new System.Drawing.Point(824, 3);
+            this.pictureBox2.Location = new System.Drawing.Point(824, 9);
             this.pictureBox2.Name = "pictureBox2";
             this.pictureBox2.Size = new System.Drawing.Size(31, 24);
             this.pictureBox2.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
@@ -402,7 +401,7 @@
             // pictureBox1
             // 
             this.pictureBox1.Image = global::EtiquetaFORNew.Properties.Resources.icone_novo_2025_PNG1;
-            this.pictureBox1.Location = new System.Drawing.Point(18, 3);
+            this.pictureBox1.Location = new System.Drawing.Point(13, 3);
             this.pictureBox1.Name = "pictureBox1";
             this.pictureBox1.Size = new System.Drawing.Size(63, 35);
             this.pictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
@@ -414,7 +413,7 @@
             this.panel2.BackColor = System.Drawing.Color.Transparent;
             this.panel2.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.panel2.Controls.Add(this.groupProduto);
-            this.panel2.Location = new System.Drawing.Point(12, 100);
+            this.panel2.Location = new System.Drawing.Point(12, 57);
             this.panel2.Name = "panel2";
             this.panel2.Size = new System.Drawing.Size(859, 77);
             this.panel2.TabIndex = 3;
@@ -423,7 +422,7 @@
             // 
             this.chkSelecionarTodos.AutoSize = true;
             this.chkSelecionarTodos.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
-            this.chkSelecionarTodos.Location = new System.Drawing.Point(26, 183);
+            this.chkSelecionarTodos.Location = new System.Drawing.Point(26, 139);
             this.chkSelecionarTodos.Name = "chkSelecionarTodos";
             this.chkSelecionarTodos.Size = new System.Drawing.Size(119, 19);
             this.chkSelecionarTodos.TabIndex = 5;
@@ -438,7 +437,7 @@
             this.btnLimparTodos.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnLimparTodos.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
             this.btnLimparTodos.ForeColor = System.Drawing.Color.White;
-            this.btnLimparTodos.Location = new System.Drawing.Point(766, 180);
+            this.btnLimparTodos.Location = new System.Drawing.Point(766, 136);
             this.btnLimparTodos.Name = "btnLimparTodos";
             this.btnLimparTodos.Size = new System.Drawing.Size(104, 25);
             this.btnLimparTodos.TabIndex = 6;
@@ -452,7 +451,8 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(240)))), ((int)(((byte)(235)))), ((int)(((byte)(255)))));
-            this.ClientSize = new System.Drawing.Size(887, 582);
+            this.ClientSize = new System.Drawing.Size(887, 575);
+            this.Controls.Add(this.btnImprimir);
             this.Controls.Add(this.dgvProdutos);
             this.Controls.Add(this.panelTop);
             this.Controls.Add(this.chkSelecionarTodos);

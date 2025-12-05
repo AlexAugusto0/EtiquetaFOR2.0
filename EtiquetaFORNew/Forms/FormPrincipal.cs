@@ -1136,7 +1136,7 @@ namespace EtiquetaFORNew
             try
             {
                 // ⭐ Carrega TODOS os produtos (ou aumenta muito o limite)
-                mercadorias = LocalDatabaseManager.BuscarMercadorias("", limite: 20000);
+                mercadorias = LocalDatabaseManager.BuscarMercadorias("", limite: 100000);
 
                 // Listas para AutoComplete E para Items
                 AutoCompleteStringCollection acscNome = new AutoCompleteStringCollection();

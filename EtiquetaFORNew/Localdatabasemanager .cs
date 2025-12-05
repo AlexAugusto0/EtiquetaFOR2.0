@@ -129,7 +129,7 @@ namespace EtiquetaFORNew.Data
                             [Fabricante] as Fabricante,
                             [Grupo] as Grupo,
                             [Prateleira] as Prateleira
-                        FROM [Cadastro de Mercadorias]
+                        FROM [memoria_MercadoriasLojas]
                         " + (string.IsNullOrEmpty(filtro) ? "" : "WHERE " + filtro) + @"
                         ORDER BY [Código da Mercadoria]
                     ";
