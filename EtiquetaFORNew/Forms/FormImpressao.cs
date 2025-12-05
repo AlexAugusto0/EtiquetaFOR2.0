@@ -463,6 +463,8 @@ namespace EtiquetaFORNew
                     return produto.Fabricante ?? "";
                 case "Grupo":
                     return produto.Grupo ?? "";
+                case "Prateleira":
+                    return produto.Prateleira ?? "";
 
                 default:
                     return "";

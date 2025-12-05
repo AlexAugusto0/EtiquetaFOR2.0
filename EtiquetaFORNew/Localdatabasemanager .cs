@@ -153,8 +153,8 @@ namespace EtiquetaFORNew.Data
                             {
                                 string insertQuery = @"
                                     INSERT INTO Mercadorias 
-                                    (CodigoMercadoria, CodFabricante, CodBarras, Mercadoria, PrecoVenda, VendaA, VendaB, VendaC, Fornecedor, Fabricante, Grupo)
-                                    VALUES (@cod, @fabr, @barras, @merc, @preco, @vendaA, @vendaB, @vendaC, @fornecedor, @fabricante, @grupo)
+                                    (CodigoMercadoria, CodFabricante, CodBarras, Mercadoria, PrecoVenda, VendaA, VendaB, VendaC, Fornecedor, Fabricante, Grupo, Prateleira)
+                                    VALUES (@cod, @fabr, @barras, @merc, @preco, @vendaA, @vendaB, @vendaC, @fornecedor, @fabricante, @grupo, @prateleira)
                                 ";
 
                                 using (var insertCmd = new SQLiteCommand(insertQuery, localConn))
@@ -173,7 +173,7 @@ namespace EtiquetaFORNew.Data
                                         insertCmd.Parameters.AddWithValue("@fornecedor", reader["Fornecedor"] ?? DBNull.Value);
                                         insertCmd.Parameters.AddWithValue("@fabricante", reader["Fabricante"] ?? DBNull.Value);
                                         insertCmd.Parameters.AddWithValue("@grupo", reader["Grupo"] ?? DBNull.Value);
-                                        insertCmd.Parameters.AddWithValue("@Prateleira", reader["Prateleira"] ?? DBNull.Value);
+                                        insertCmd.Parameters.AddWithValue("@prateleira", reader["Prateleira"] ?? DBNull.Value);
                                         //insertCmd.Parameters.AddWithValue("@reg", reader["Registro"] ?? DBNull.Value);
 
                                         insertCmd.ExecuteNonQuery();
@@ -282,6 +282,62 @@ namespace EtiquetaFORNew.Data
         /// <summary>
         /// Busca mercadoria por código
         /// </summary>
+        ///         /// <summary>
+        /// ⭐ NOVO: Busca mercadorias filtrando por um campo específico (busca dinâmica)
+        /// </summary>
+        /// <param name="termoBusca">Termo a ser buscado</param>
+        /// <param name="nomeCampo">Nome do campo específico (Mercadoria, CodFabricante, CodigoMercadoria)</param>
+        /// <param name="limite">Limite de resultados (padrão 500 para performance)</param>
+        public static DataTable BuscarMercadorias(string termoBusca, string nomeCampo, int limite = 500)
+        {
+            if (string.IsNullOrWhiteSpace(nomeCampo))
+                return BuscarMercadorias(termoBusca, limite); // Usa busca genérica
+
+            try
+            {
+                using (var conn = new SQLiteConnection(ConnectionString))
+                {
+                    conn.Open();
+
+                    // ⭐ BUSCA ESPECÍFICA POR CAMPO COM LIMIT CONFIGURÁVEL
+                    string query = $@"
+                        SELECT DISTINCT 
+                            CodigoMercadoria,
+                            CodFabricante,
+                            CodBarras,
+                            Mercadoria,
+                            PrecoVenda,
+                            VendaA,
+                            VendaB,
+                            VendaC,
+                            Fornecedor,
+                            Fabricante,
+                            Grupo,
+                            Prateleira,
+                            Registro
+                        FROM Mercadorias
+                        WHERE {nomeCampo} LIKE @termo
+                        ORDER BY {nomeCampo}
+                        LIMIT {limite}";
+
+                    using (var cmd = new SQLiteCommand(query, conn))
+                    {
+                        cmd.Parameters.AddWithValue("@termo", "%" + termoBusca + "%");
+
+                        using (var adapter = new SQLiteDataAdapter(cmd))
+                        {
+                            DataTable dt = new DataTable();
+                            adapter.Fill(dt);
+                            return dt;
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Erro ao buscar mercadorias por {nomeCampo}: {ex.Message}", ex);
+            }
+        }
         public static DataRow BuscarMercadoriaPorCodigo(int codigo)
         {
             try

@@ -1264,6 +1264,7 @@ namespace EtiquetaFORNew.Forms
                 case "Fornecedor": return produto.Nome ?? "";
                 case "Fabricante": return produto.Nome ?? "";
                 case "Grupo": return "";
+                case "Prateleira": return "";
                 default: return "";
             }
         }

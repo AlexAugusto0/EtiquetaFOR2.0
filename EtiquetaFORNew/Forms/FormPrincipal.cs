@@ -1393,6 +1393,8 @@ namespace EtiquetaFORNew
 
                     string grupo = row["Grupo"]?.ToString();
 
+                    string prateleira = row["Prateleira"]?.ToString();
+
 
 
                     // 1. SINCRONIZAR OS COMBOBOXES (Atualiza as 3 buscas)
@@ -1599,6 +1601,7 @@ namespace EtiquetaFORNew
                     produto.Fornecedor = produtoAtualCompleto["Fornecedor"]?.ToString();
                     produto.Fabricante = produtoAtualCompleto["Fabricante"]?.ToString();
                     produto.Grupo = produtoAtualCompleto["Grupo"]?.ToString();
+                    produto.Prateleira = produtoAtualCompleto["Prateleira"]?.ToString();
                 }
                 catch
                 {
@@ -1635,6 +1638,7 @@ namespace EtiquetaFORNew
                         produto.Fornecedor = row["Fornecedor"]?.ToString();
                         produto.Fabricante = row["Fabricante"]?.ToString();
                         produto.Grupo = row["Grupo"]?.ToString();
+                        produto.Prateleira = row["Prateleira"]?.ToString();
                     }
                 }
                 catch

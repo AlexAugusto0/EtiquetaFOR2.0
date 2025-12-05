@@ -20,6 +20,8 @@ namespace EtiquetaFORNew
         public string Fornecedor { get; set; }
         public string Fabricante { get; set; }
         public string Grupo { get; set; }
+        public string Prateleira { get; set; }
+
     }
 
     // Enum de tipos de elementos
