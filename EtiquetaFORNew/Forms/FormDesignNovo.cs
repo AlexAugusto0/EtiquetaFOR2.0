@@ -131,18 +131,29 @@ namespace EtiquetaFORNew.Forms
             {
                 Dock = DockStyle.Top,
                 Height = 60,
-                BackColor = Color.FromArgb(52, 73, 94)
+                BackColor = Color.FromArgb(94, 97, 99),
+                BorderStyle = BorderStyle.FixedSingle
             };
             this.Controls.Add(panelTop);
 
             // Logo e título
+            Label lblEmoji = new Label
+            {
+                Text = "🎨",
+                Location = new Point(20, 15),
+                Size = new Size(30, 30), // Pequeno, apenas para o emoji
+                Font = new Font("Segoe UI", 14, FontStyle.Bold), // Sem sublinhado
+                ForeColor = Color.FromArgb(231, 129, 39)
+            };
+            panelTop.Controls.Add(lblEmoji);
+
             Label lblTitulo = new Label
             {
-                Text = "🎨 DESIGNER DE ETIQUETAS",
-                Location = new Point(20, 15),
-                Size = new Size(300, 30),
-                Font = new Font("Segoe UI", 14, FontStyle.Bold),
-                ForeColor = Color.White
+                Text = "DESIGNER DE ETIQUETAS",
+                Location = new Point(50, 15),
+                Size = new Size(270, 30),
+                Font = new Font("Segoe UI", 14, FontStyle.Bold | FontStyle.Underline),
+                ForeColor = Color.FromArgb(231, 129, 39)
             };
             panelTop.Controls.Add(lblTitulo);
 
@@ -169,7 +180,8 @@ namespace EtiquetaFORNew.Forms
                 FlatStyle = FlatStyle.Flat,
                 Cursor = Cursors.Hand
             };
-            btnFechar.FlatAppearance.BorderSize = 0;
+            btnFechar.FlatAppearance.BorderSize = 1;
+            btnFechar.FlatAppearance.BorderColor = Color.Black;
             btnFechar.Click += BtnFechar_Click;
             panelBotoes.Controls.Add(btnFechar);
 
@@ -185,7 +197,8 @@ namespace EtiquetaFORNew.Forms
                 FlatStyle = FlatStyle.Flat,
                 Cursor = Cursors.Hand
             };
-            btnNovo.FlatAppearance.BorderSize = 0;
+            btnNovo.FlatAppearance.BorderSize = 1;
+            btnNovo.FlatAppearance.BorderColor = Color.Black;
             btnNovo.Click += BtnNovo_Click;
             panelBotoes.Controls.Add(btnNovo);
 
@@ -201,7 +214,8 @@ namespace EtiquetaFORNew.Forms
                 FlatStyle = FlatStyle.Flat,
                 Cursor = Cursors.Hand
             };
-            btnSalvar.FlatAppearance.BorderSize = 0;
+            btnSalvar.FlatAppearance.BorderSize = 1;
+            btnSalvar.FlatAppearance.BorderColor = Color.Black;
             btnSalvar.Click += BtnSalvar_Click;
             panelBotoes.Controls.Add(btnSalvar);
 
@@ -301,6 +315,15 @@ namespace EtiquetaFORNew.Forms
 
             yPos += 10;
 
+            Panel linha2 = new Panel
+            {
+                Location = new Point(10, yPos),
+                Size = new Size(320, 2),
+                BackColor = Color.FromArgb(230, 126, 34)
+            };
+            panelConfiguracao.Controls.Add(linha2);
+            yPos += 15;
+
             // IMPRESSORA E PAPEL
             Label lblImpressao = CriarLabelSecao("🖨️ Impressão", yPos);
             panelConfiguracao.Controls.Add(lblImpressao);
@@ -343,6 +366,15 @@ namespace EtiquetaFORNew.Forms
             cmbPapel.SelectedIndexChanged += CmbPapel_SelectedIndexChanged;
             panelConfiguracao.Controls.Add(cmbPapel);
             yPos += 35;
+
+            Panel linha3 = new Panel
+            {
+                Location = new Point(10, yPos),
+                Size = new Size(320, 2),
+                BackColor = Color.FromArgb(230, 126, 34)
+            };
+            panelConfiguracao.Controls.Add(linha3);
+            yPos += 15;
 
             // LAYOUT
             Label lblLayout = CriarLabelSecao("📊 Layout da Página", yPos);
@@ -388,6 +420,15 @@ namespace EtiquetaFORNew.Forms
             panelConfiguracao.Controls.Add(numLinhas);
             yPos += 30;
 
+            Panel linha4 = new Panel
+            {
+                Location = new Point(10, yPos),
+                Size = new Size(320, 2),
+                BackColor = Color.FromArgb(230, 126, 34)
+            };
+            panelConfiguracao.Controls.Add(linha4);
+            yPos += 15;
+
             // ESPAÇAMENTOS
             Label lblEspacamento = CriarLabelSecao("↔️ Espaçamentos", yPos);
             panelConfiguracao.Controls.Add(lblEspacamento);
@@ -402,6 +443,15 @@ namespace EtiquetaFORNew.Forms
             numEspacamentoLinhas.ValueChanged += (s, e) => AtualizarConfiguracao();
 
             yPos += 10;
+
+            Panel linha5 = new Panel
+            {
+                Location = new Point(10, yPos),
+                Size = new Size(320, 2),
+                BackColor = Color.FromArgb(230, 126, 34)
+            };
+            panelConfiguracao.Controls.Add(linha5);
+            yPos += 15;
 
             // MARGENS
             Label lblMargens = CriarLabelSecao("📏 Margens da Página", yPos);
@@ -437,6 +487,14 @@ namespace EtiquetaFORNew.Forms
                 (decimal)configuracao.MargemDireita, 0.1m);
             numMargemDireita.ValueChanged += (s, e) => AtualizarConfiguracao();
 
+            Panel linha6 = new Panel
+            {
+                Location = new Point(10, yPos),
+                Size = new Size(320, 2),
+                BackColor = Color.FromArgb(230, 126, 34)
+            };
+            panelConfiguracao.Controls.Add(linha6);
+            yPos += 15;
             //AtualizarEstadoMargens();
         }
 
@@ -506,11 +564,7 @@ namespace EtiquetaFORNew.Forms
             panelToolbox.Controls.Add(lblTitulo);
 
             int yPos = 45;
-
-            // Botão Texto
-            Button btnTexto = CriarBotaoElemento("📝 Texto", yPos, () => AdicionarElemento(TipoElemento.Texto));
-            yPos += 40;
-
+           
             // Label Campos
             Label lblCampos = new Label
             {
@@ -589,6 +643,10 @@ namespace EtiquetaFORNew.Forms
             };
             panelToolbox.Controls.Add(cmbCodigoBarras);
             yPos += 35;
+
+            // Botão Texto
+            Button btnTexto = CriarBotaoElemento("📝 Texto", yPos, () => AdicionarElemento(TipoElemento.Texto));
+            yPos += 40;
 
             // Botão Imagem
             Button btnImagem = CriarBotaoElemento("🖼️ Imagem", yPos, () => AdicionarImagem());
@@ -804,8 +862,8 @@ namespace EtiquetaFORNew.Forms
                 Location = new Point(10, yPos),
                 Size = new Size(180, 35),
                 Font = new Font("Segoe UI", 9),
-                BackColor = Color.FromArgb(52, 152, 219),
-                ForeColor = Color.White,
+                BackColor = Color.FromArgb(255, 143, 0),
+                ForeColor = Color.Black,
                 FlatStyle = FlatStyle.Flat,
                 Cursor = Cursors.Hand,
                 TextAlign = ContentAlignment.MiddleLeft
