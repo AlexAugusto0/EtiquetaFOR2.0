@@ -341,6 +341,9 @@
     <EmbeddedResource Include="Forms\FormDesignNovo.resx">
       <DependentUpon>FormDesignNovo.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Forms\FormImpressao.resx">
+      <DependentUpon>FormImpressao.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Forms\FormMenuConfiguracao.resx">
       <DependentUpon>FormMenuConfiguracao.cs</DependentUpon>
     </EmbeddedResource>

@@ -49,6 +49,7 @@ namespace EtiquetaFORNew
             printDocument1.PrintPage += PrintDoc_PrintPage;
 
             this.Shown += FormImpressao_Shown;
+            this.Resize += (sender, e) => DesenharVisualizacao();
         }
 
         private ConfiguracaoEtiqueta CriarConfiguracaoPadrao()
@@ -172,6 +173,10 @@ namespace EtiquetaFORNew
 
                 DesenharPaginaEtiquetas(g, escala);
             }
+            int xCentralizado = Math.Max(0, (panelVisualizacao.Width - bmp.Width) / 2);
+
+            // ⭐ NOVO: Centralização vertical
+            int yCentralizado = Math.Max(0, (panelVisualizacao.Height - bmp.Height) / 2);
 
             // ... (PictureBox code)
             PictureBox pic = new PictureBox
@@ -179,8 +184,10 @@ namespace EtiquetaFORNew
                 Image = bmp,
                 SizeMode = PictureBoxSizeMode.AutoSize,
                 Location = new Point(
-                    Math.Max(0, (panelVisualizacao.Width - bmp.Width) / 2),
-                    20
+                    //Math.Max(0, (panelVisualizacao.Width - bmp.Width) / 2),
+                    //20
+                    xCentralizado,
+                    yCentralizado
                 )
             };
 

@@ -107,6 +107,8 @@ namespace EtiquetaFORNew
 
             CarregarModelosPapel();
 
+            dgvProdutos.CellEndEdit += dgvProdutos_CellEndEdit;
+
         }
 
 
@@ -706,6 +708,49 @@ namespace EtiquetaFORNew
 
             }
 
+        }
+
+        private void dgvProdutos_CellEndEdit(object sender, DataGridViewCellEventArgs e)
+        {
+            // 1. Verificar se a edição ocorreu na coluna de Quantidade
+            if (dgvProdutos.Columns[e.ColumnIndex].Name == "Qtde") // Assumindo que o nome da sua coluna é "colQuantidade"
+            {
+                // 2. Tentar obter o novo valor da célula
+                object cellValue = dgvProdutos.Rows[e.RowIndex].Cells[e.ColumnIndex].Value;
+
+                if (cellValue != null && int.TryParse(cellValue.ToString(), out int novaQuantidade))
+                {
+                    // 3. Validar a nova quantidade
+                    if (novaQuantidade > 0)
+                    {
+                        // 4. Atualizar a lista subjacente
+                        if (e.RowIndex < produtos.Count)
+                        {
+                            produtos[e.RowIndex].Quantidade = novaQuantidade;
+
+                            // 5. (OPCIONAL) Recalcular totais e atualizar a tela, se necessário.
+                            // Ex: AtualizarTotalDaLista(); 
+                        }
+                    }
+                    else
+                    {
+                        // Se a quantidade for zero ou negativa, você pode removê-lo ou reverter
+                        // Neste exemplo, vamos reverter para o valor anterior e remover se for zero:
+                        if (novaQuantidade <= 0)
+                        {
+                            produtos.RemoveAt(e.RowIndex);
+                            dgvProdutos.Rows.RemoveAt(e.RowIndex);
+                            MessageBox.Show("Produto removido, pois a quantidade foi definida para zero.", "Aviso", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        }
+                    }
+                }
+                else
+                {
+                    // Reverte para o valor antigo se a entrada não for numérica
+                    MessageBox.Show("Por favor, insira um número inteiro válido para a quantidade.", "Erro de Entrada", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    // Você pode forçar a célula a reverter o valor aqui se necessário.
+                }
+            }
         }
 
 

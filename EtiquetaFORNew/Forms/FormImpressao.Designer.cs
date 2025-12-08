@@ -24,6 +24,7 @@
 
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FormImpressao));
             this.panelTopo = new System.Windows.Forms.Panel();
             this.lblInfo = new System.Windows.Forms.Label();
             this.lblTitulo = new System.Windows.Forms.Label();
@@ -39,7 +40,8 @@
             // 
             // panelTopo
             // 
-            this.panelTopo.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(52)))), ((int)(((byte)(73)))), ((int)(((byte)(94)))));
+            this.panelTopo.BackColor = System.Drawing.Color.White;
+            this.panelTopo.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.panelTopo.Controls.Add(this.lblInfo);
             this.panelTopo.Controls.Add(this.lblTitulo);
             this.panelTopo.Dock = System.Windows.Forms.DockStyle.Top;
@@ -48,33 +50,33 @@
             this.panelTopo.Size = new System.Drawing.Size(900, 60);
             this.panelTopo.TabIndex = 0;
             // 
-            // lblTitulo
-            // 
-            this.lblTitulo.AutoSize = true;
-            this.lblTitulo.Font = new System.Drawing.Font("Segoe UI", 14F, System.Drawing.FontStyle.Bold);
-            this.lblTitulo.ForeColor = System.Drawing.Color.White;
-            this.lblTitulo.Location = new System.Drawing.Point(20, 15);
-            this.lblTitulo.Name = "lblTitulo";
-            this.lblTitulo.Size = new System.Drawing.Size(312, 25);
-            this.lblTitulo.TabIndex = 0;
-            this.lblTitulo.Text = "VISUALIZAÇÃO DAS ETIQUETAS";
-            // 
             // lblInfo
             // 
             this.lblInfo.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.lblInfo.AutoSize = true;
             this.lblInfo.Font = new System.Drawing.Font("Segoe UI", 10F);
-            this.lblInfo.ForeColor = System.Drawing.Color.White;
-            this.lblInfo.Location = new System.Drawing.Point(750, 20);
+            this.lblInfo.ForeColor = System.Drawing.Color.Black;
+            this.lblInfo.Location = new System.Drawing.Point(748, 20);
             this.lblInfo.Name = "lblInfo";
-            this.lblInfo.Size = new System.Drawing.Size(84, 19);
+            this.lblInfo.Size = new System.Drawing.Size(93, 19);
             this.lblInfo.TabIndex = 1;
             this.lblInfo.Text = "Página 1 de 1";
+            // 
+            // lblTitulo
+            // 
+            this.lblTitulo.AutoSize = true;
+            this.lblTitulo.Font = new System.Drawing.Font("Segoe UI", 14F, System.Drawing.FontStyle.Bold);
+            this.lblTitulo.ForeColor = System.Drawing.Color.Black;
+            this.lblTitulo.Location = new System.Drawing.Point(20, 15);
+            this.lblTitulo.Name = "lblTitulo";
+            this.lblTitulo.Size = new System.Drawing.Size(296, 25);
+            this.lblTitulo.TabIndex = 0;
+            this.lblTitulo.Text = "VISUALIZAÇÃO DAS ETIQUETAS";
             // 
             // panelVisualizacao
             // 
             this.panelVisualizacao.AutoScroll = true;
-            this.panelVisualizacao.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(236)))), ((int)(((byte)(240)))), ((int)(((byte)(241)))));
+            this.panelVisualizacao.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(240)))), ((int)(((byte)(235)))), ((int)(((byte)(255)))));
             this.panelVisualizacao.Dock = System.Windows.Forms.DockStyle.Fill;
             this.panelVisualizacao.Location = new System.Drawing.Point(0, 60);
             this.panelVisualizacao.Name = "panelVisualizacao";
@@ -84,7 +86,8 @@
             // 
             // panelBotoes
             // 
-            this.panelBotoes.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(44)))), ((int)(((byte)(62)))), ((int)(((byte)(80)))));
+            this.panelBotoes.BackColor = System.Drawing.Color.White;
+            this.panelBotoes.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.panelBotoes.Controls.Add(this.btnFechar);
             this.panelBotoes.Controls.Add(this.btnImprimir);
             this.panelBotoes.Controls.Add(this.btnProxima);
@@ -95,34 +98,20 @@
             this.panelBotoes.Size = new System.Drawing.Size(900, 70);
             this.panelBotoes.TabIndex = 2;
             // 
-            // btnAnterior
+            // btnFechar
             // 
-            this.btnAnterior.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(149)))), ((int)(((byte)(165)))), ((int)(((byte)(166)))));
-            this.btnAnterior.Enabled = false;
-            this.btnAnterior.FlatAppearance.BorderSize = 0;
-            this.btnAnterior.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnAnterior.ForeColor = System.Drawing.Color.White;
-            this.btnAnterior.Location = new System.Drawing.Point(20, 20);
-            this.btnAnterior.Name = "btnAnterior";
-            this.btnAnterior.Size = new System.Drawing.Size(120, 35);
-            this.btnAnterior.TabIndex = 0;
-            this.btnAnterior.Text = "← Anterior";
-            this.btnAnterior.UseVisualStyleBackColor = false;
-            this.btnAnterior.Click += new System.EventHandler(this.btnAnterior_Click);
-            // 
-            // btnProxima
-            // 
-            this.btnProxima.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(149)))), ((int)(((byte)(165)))), ((int)(((byte)(166)))));
-            this.btnProxima.FlatAppearance.BorderSize = 0;
-            this.btnProxima.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnProxima.ForeColor = System.Drawing.Color.White;
-            this.btnProxima.Location = new System.Drawing.Point(150, 20);
-            this.btnProxima.Name = "btnProxima";
-            this.btnProxima.Size = new System.Drawing.Size(120, 35);
-            this.btnProxima.TabIndex = 1;
-            this.btnProxima.Text = "Próxima →";
-            this.btnProxima.UseVisualStyleBackColor = false;
-            this.btnProxima.Click += new System.EventHandler(this.btnProxima_Click);
+            this.btnFechar.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnFechar.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(231)))), ((int)(((byte)(76)))), ((int)(((byte)(60)))));
+            this.btnFechar.FlatAppearance.BorderSize = 0;
+            this.btnFechar.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnFechar.ForeColor = System.Drawing.Color.Black;
+            this.btnFechar.Location = new System.Drawing.Point(758, 18);
+            this.btnFechar.Name = "btnFechar";
+            this.btnFechar.Size = new System.Drawing.Size(120, 35);
+            this.btnFechar.TabIndex = 3;
+            this.btnFechar.Text = "Fechar";
+            this.btnFechar.UseVisualStyleBackColor = false;
+            this.btnFechar.Click += new System.EventHandler(this.btnFechar_Click);
             // 
             // btnImprimir
             // 
@@ -131,8 +120,8 @@
             this.btnImprimir.FlatAppearance.BorderSize = 0;
             this.btnImprimir.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnImprimir.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
-            this.btnImprimir.ForeColor = System.Drawing.Color.White;
-            this.btnImprimir.Location = new System.Drawing.Point(620, 20);
+            this.btnImprimir.ForeColor = System.Drawing.Color.Black;
+            this.btnImprimir.Location = new System.Drawing.Point(618, 18);
             this.btnImprimir.Name = "btnImprimir";
             this.btnImprimir.Size = new System.Drawing.Size(130, 35);
             this.btnImprimir.TabIndex = 2;
@@ -140,20 +129,34 @@
             this.btnImprimir.UseVisualStyleBackColor = false;
             this.btnImprimir.Click += new System.EventHandler(this.btnImprimir_Click);
             // 
-            // btnFechar
+            // btnProxima
             // 
-            this.btnFechar.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnFechar.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(231)))), ((int)(((byte)(76)))), ((int)(((byte)(60)))));
-            this.btnFechar.FlatAppearance.BorderSize = 0;
-            this.btnFechar.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnFechar.ForeColor = System.Drawing.Color.White;
-            this.btnFechar.Location = new System.Drawing.Point(760, 20);
-            this.btnFechar.Name = "btnFechar";
-            this.btnFechar.Size = new System.Drawing.Size(120, 35);
-            this.btnFechar.TabIndex = 3;
-            this.btnFechar.Text = "Fechar";
-            this.btnFechar.UseVisualStyleBackColor = false;
-            this.btnFechar.Click += new System.EventHandler(this.btnFechar_Click);
+            this.btnProxima.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(149)))), ((int)(((byte)(165)))), ((int)(((byte)(166)))));
+            this.btnProxima.FlatAppearance.BorderSize = 0;
+            this.btnProxima.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnProxima.ForeColor = System.Drawing.Color.Black;
+            this.btnProxima.Location = new System.Drawing.Point(150, 20);
+            this.btnProxima.Name = "btnProxima";
+            this.btnProxima.Size = new System.Drawing.Size(120, 35);
+            this.btnProxima.TabIndex = 1;
+            this.btnProxima.Text = "Próxima →";
+            this.btnProxima.UseVisualStyleBackColor = false;
+            this.btnProxima.Click += new System.EventHandler(this.btnProxima_Click);
+            // 
+            // btnAnterior
+            // 
+            this.btnAnterior.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(149)))), ((int)(((byte)(165)))), ((int)(((byte)(166)))));
+            this.btnAnterior.Enabled = false;
+            this.btnAnterior.FlatAppearance.BorderSize = 0;
+            this.btnAnterior.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnAnterior.ForeColor = System.Drawing.Color.Black;
+            this.btnAnterior.Location = new System.Drawing.Point(20, 20);
+            this.btnAnterior.Name = "btnAnterior";
+            this.btnAnterior.Size = new System.Drawing.Size(120, 35);
+            this.btnAnterior.TabIndex = 0;
+            this.btnAnterior.Text = "← Anterior";
+            this.btnAnterior.UseVisualStyleBackColor = false;
+            this.btnAnterior.Click += new System.EventHandler(this.btnAnterior_Click);
             // 
             // FormImpressao
             // 
@@ -164,6 +167,7 @@
             this.Controls.Add(this.panelBotoes);
             this.Controls.Add(this.panelTopo);
             this.Font = new System.Drawing.Font("Segoe UI", 9F);
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "FormImpressao";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Visualização de Impressão";
@@ -171,6 +175,7 @@
             this.panelTopo.PerformLayout();
             this.panelBotoes.ResumeLayout(false);
             this.ResumeLayout(false);
+
         }
     }
 }
