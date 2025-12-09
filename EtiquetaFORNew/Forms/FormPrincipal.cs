@@ -92,6 +92,7 @@ namespace EtiquetaFORNew
             this.DoubleBuffered = true;
 
             this.Load += FormPrincipal_Load;
+            this.FormClosing += FormPrincipal_FormClosing;
 
             ConfigurarBuscaMercadoria();
 
@@ -2115,6 +2116,14 @@ namespace EtiquetaFORNew
             }
         }
 
+        private void FormPrincipal_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            // Finalizar completamente a aplicação
+            Application.Exit();
+
+            // Garantir que o processo seja encerrado
+            Environment.Exit(0);
+        }
         private void groupProduto_Enter(object sender, EventArgs e)
         {
 

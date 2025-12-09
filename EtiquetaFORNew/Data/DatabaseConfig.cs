@@ -6,12 +6,12 @@ using System.IO;
 namespace EtiquetaFORNew.Data
 {
     public class DatabaseConfig
-   
+
     {
         private static readonly string ConfigFilePath = Path.Combine(
             AppDomain.CurrentDomain.BaseDirectory,
             "config.json");
-        
+
 
         public class ConfigData
         {
@@ -21,6 +21,7 @@ namespace EtiquetaFORNew.Data
             public string Usuario { get; set; }
             public string Senha { get; set; }
             public string Timeout { get; set; }
+            public string Loja { get; set; }
         }
 
         public static bool IsConfigured()
@@ -50,7 +51,7 @@ namespace EtiquetaFORNew.Data
 
                 string servidor = config.Servidor;
 
-                // Adicionar porta se informada e diferente da padrão
+                // Adicionar porta se informada e diferente da padrÃ£o
                 if (!string.IsNullOrEmpty(config.Porta) && config.Porta != "1433")
                 {
                     servidor = $"{servidor},{config.Porta}";
@@ -84,12 +85,12 @@ namespace EtiquetaFORNew.Data
 
         public static void SaveConnectionString(string connectionString)
         {
-            // Este método é mantido para compatibilidade, mas não faz nada
-            // Use SaveConfiguration ao invés
+            // Este mÃ©todo Ã© mantido para compatibilidade, mas nÃ£o faz nada
+            // Use SaveConfiguration ao invÃ©s
         }
 
         public static void SaveConfiguration(string servidor, string porta, string bancoDados,
-            string usuario, string senha, string timeout)
+            string usuario, string senha, string timeout, string loja = "")
         {
             try
             {
@@ -100,7 +101,8 @@ namespace EtiquetaFORNew.Data
                     Banco = bancoDados,
                     Usuario = usuario,
                     Senha = senha,
-                    Timeout = timeout
+                    Timeout = timeout,
+                    Loja = loja
                 };
 
                 string json = JsonConvert.SerializeObject(config, Newtonsoft.Json.Formatting.Indented);

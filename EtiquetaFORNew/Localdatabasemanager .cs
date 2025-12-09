@@ -39,7 +39,7 @@ namespace EtiquetaFORNew.Data
                     // ⭐ CORRIGIDO: Índices agora são criados separadamente
                     string createTable = @"
                         CREATE TABLE IF NOT EXISTS Mercadorias (
-                            CodigoMercadoria INTEGER PRIMARY KEY,
+                            CodigoMercadoria INTEGER,
                             CodFabricante TEXT,
                             CodBarras TEXT,
                             Mercadoria TEXT NOT NULL,
@@ -102,6 +102,7 @@ namespace EtiquetaFORNew.Data
             try
             {
                 string sqlServerConnStr = DatabaseConfig.GetConnectionString();
+                DatabaseConfig.ConfigData config = DatabaseConfig.LoadConfiguration();
 
                 if (string.IsNullOrEmpty(sqlServerConnStr))
                 {
@@ -130,10 +131,11 @@ namespace EtiquetaFORNew.Data
                             [Grupo] as Grupo,
                             [Prateleira] as Prateleira
                         FROM [memoria_MercadoriasLojas]
-                        " + (string.IsNullOrEmpty(filtro) ? "" : "WHERE " + filtro) + @"
+                        WHERE [Loja] = '" + config.Loja + @"'
+                        " + (string.IsNullOrEmpty(filtro) ? "" : "AND " + filtro) + @"
                         ORDER BY [Código da Mercadoria]
                     ";
-
+            
                     using (var sqlCmd = new SqlCommand(query, sqlConn))
                     using (var reader = sqlCmd.ExecuteReader())
                     {

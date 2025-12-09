@@ -48,8 +48,11 @@ namespace EtiquetaFORNew
             this.btnSalvar = new System.Windows.Forms.Button();
             this.btnCancelar = new System.Windows.Forms.Button();
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
+            this.groupBox2 = new System.Windows.Forms.GroupBox();
+            this.cmbLoja = new System.Windows.Forms.ComboBox();
             this.groupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
+            this.groupBox2.SuspendLayout();
             this.SuspendLayout();
             // 
             // lblTitulo
@@ -82,10 +85,10 @@ namespace EtiquetaFORNew
             this.groupBox1.Controls.Add(this.btnTestar);
             this.groupBox1.Location = new System.Drawing.Point(12, 32);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(570, 246);
+            this.groupBox1.Size = new System.Drawing.Size(570, 230);
             this.groupBox1.TabIndex = 7;
             this.groupBox1.TabStop = false;
-            this.groupBox1.Text = "Configurações de Conexão";
+            this.groupBox1.Text = "1 - Configurações de Conexão";
             // 
             // chkMostrarSenha
             // 
@@ -169,9 +172,9 @@ namespace EtiquetaFORNew
             // 
             this.btnListarBancos.Location = new System.Drawing.Point(16, 189);
             this.btnListarBancos.Name = "btnListarBancos";
-            this.btnListarBancos.Size = new System.Drawing.Size(140, 23);
+            this.btnListarBancos.Size = new System.Drawing.Size(98, 23);
             this.btnListarBancos.TabIndex = 14;
-            this.btnListarBancos.Text = "🔄 Listar Bancos";
+            this.btnListarBancos.Text = "Listar Bancos";
             this.btnListarBancos.UseVisualStyleBackColor = true;
             this.btnListarBancos.Click += new System.EventHandler(this.btnListarBancos_Click);
             // 
@@ -210,7 +213,7 @@ namespace EtiquetaFORNew
             // 
             // btnTestar
             // 
-            this.btnTestar.Location = new System.Drawing.Point(404, 210);
+            this.btnTestar.Location = new System.Drawing.Point(404, 189);
             this.btnTestar.Name = "btnTestar";
             this.btnTestar.Size = new System.Drawing.Size(150, 30);
             this.btnTestar.TabIndex = 3;
@@ -220,7 +223,7 @@ namespace EtiquetaFORNew
             // 
             // btnSalvar
             // 
-            this.btnSalvar.Location = new System.Drawing.Point(376, 284);
+            this.btnSalvar.Location = new System.Drawing.Point(376, 334);
             this.btnSalvar.Name = "btnSalvar";
             this.btnSalvar.Size = new System.Drawing.Size(100, 30);
             this.btnSalvar.TabIndex = 4;
@@ -230,7 +233,7 @@ namespace EtiquetaFORNew
             // 
             // btnCancelar
             // 
-            this.btnCancelar.Location = new System.Drawing.Point(482, 284);
+            this.btnCancelar.Location = new System.Drawing.Point(482, 334);
             this.btnCancelar.Name = "btnCancelar";
             this.btnCancelar.Size = new System.Drawing.Size(100, 30);
             this.btnCancelar.TabIndex = 5;
@@ -248,11 +251,33 @@ namespace EtiquetaFORNew
             this.pictureBox1.TabIndex = 8;
             this.pictureBox1.TabStop = false;
             // 
+            // groupBox2
+            // 
+            this.groupBox2.BackColor = System.Drawing.SystemColors.ScrollBar;
+            this.groupBox2.Controls.Add(this.cmbLoja);
+            this.groupBox2.Location = new System.Drawing.Point(12, 272);
+            this.groupBox2.Name = "groupBox2";
+            this.groupBox2.Size = new System.Drawing.Size(570, 53);
+            this.groupBox2.TabIndex = 17;
+            this.groupBox2.TabStop = false;
+            this.groupBox2.Text = "2 - Selecione a Empresa:";
+            // 
+            // cmbLoja
+            // 
+            this.cmbLoja.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cmbLoja.Enabled = false;
+            this.cmbLoja.FormattingEnabled = true;
+            this.cmbLoja.Location = new System.Drawing.Point(16, 19);
+            this.cmbLoja.Name = "cmbLoja";
+            this.cmbLoja.Size = new System.Drawing.Size(246, 21);
+            this.cmbLoja.TabIndex = 16;
+            // 
             // ConfigForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(594, 320);
+            this.ClientSize = new System.Drawing.Size(594, 376);
+            this.Controls.Add(this.groupBox2);
             this.Controls.Add(this.groupBox1);
             this.Controls.Add(this.btnCancelar);
             this.Controls.Add(this.btnSalvar);
@@ -267,6 +292,7 @@ namespace EtiquetaFORNew
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
+            this.groupBox2.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -294,5 +320,7 @@ namespace EtiquetaFORNew
         private System.Windows.Forms.Label lblTimeout;
         private System.Windows.Forms.CheckBox chkMostrarSenha;
         private System.Windows.Forms.PictureBox pictureBox1;
+        private System.Windows.Forms.GroupBox groupBox2;
+        private System.Windows.Forms.ComboBox cmbLoja;
     }
 }
