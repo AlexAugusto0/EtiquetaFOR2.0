@@ -422,69 +422,6 @@ namespace EtiquetaFORNew
         }
 
 
-
-        // ========================================
-
-        // ⭐ BUSCAR MERCADORIA
-
-        // ========================================
-
-        private void btnBuscarMercadoria_Click(object sender, EventArgs e)
-
-        {
-
-            try
-
-            {
-
-                var formBusca = new FormBuscaMercadoria();
-
-
-
-                if (formBusca.ShowDialog() == DialogResult.OK)
-
-                {
-
-                    // Preencher os campos com a mercadoria selecionada
-
-                    txtNome.Text = formBusca.NomeSelecionado;
-
-                    txtCodigo.Text = formBusca.CodigoFabricanteSelecionado;
-
-                    txtPreco.Text = formBusca.PrecoSelecionado.ToString("F2");
-
-
-
-                    // Focar na quantidade para o usuário só digitar e adicionar
-
-                    numQtd.Focus();
-
-                    numQtd.Select(0, numQtd.Text.Length);
-
-                }
-
-            }
-
-            catch (Exception ex)
-
-            {
-
-                MessageBox.Show(
-
-                    $"Erro ao buscar mercadoria:\n{ex.Message}",
-
-                    "Erro",
-
-                    MessageBoxButtons.OK,
-
-                    MessageBoxIcon.Error);
-
-            }
-
-        }
-
-
-
         private void btnDesigner_Click(object sender, EventArgs e)
         {
 
@@ -1254,7 +1191,7 @@ namespace EtiquetaFORNew
                     cmbBuscaCodigo.Items.Clear();
                     cmbBuscaCodigo.Items.AddRange(listaCodigo.Distinct().OrderBy(s => s).ToArray());
                 }
-
+            
 
                 // ⭐ Marca como carregado com sucesso
                 mercadoriasCarregadas = true;

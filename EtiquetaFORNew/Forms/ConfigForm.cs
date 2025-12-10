@@ -42,6 +42,13 @@ namespace EtiquetaFORNew
                         {
                             cmbLoja.SelectedIndex = index;
                         }
+
+                        // Carregar ModuloApp se houver
+                        if (!string.IsNullOrEmpty(config.ModuloApp))
+                        {
+                            txtModuloApp.Text = config.ModuloApp;
+                            txtModuloApp.Enabled = true;
+                        }
                     }
                     catch
                     {
@@ -52,7 +59,7 @@ namespace EtiquetaFORNew
             }
             else
             {
-                // Valores padrÃ£o
+                // Valores padrão
                 txtServidor.Text = "localhost\\SQLEXPRESS";
                 txtPorta.Text = "5433";
                 txtTimeout.Text = "120";
@@ -79,7 +86,7 @@ namespace EtiquetaFORNew
                         {
                             case "server":
                             case "data source":
-                                // Separar servidor e porta se houver vÃ­rgula
+                                // Separar servidor e porta se houver vírgula
                                 if (value.Contains(","))
                                 {
                                     string[] serverPort = value.Split(',');
@@ -107,7 +114,7 @@ namespace EtiquetaFORNew
                                 txtTimeout.Text = value;
                                 break;
                             case "integrated security":
-                                // Se usar autenticação Windows, limpar usuÃ¡rio e senha
+                                // Se usar autenticação Windows, limpar usuário e senha
                                 if (value.ToLower() == "true" || value.ToLower() == "sspi")
                                 {
                                     txtUsuario.Text = "";
@@ -120,7 +127,7 @@ namespace EtiquetaFORNew
             }
             catch
             {
-                // Se nÃ£o conseguir parsear, deixa os campos vazios
+                // Se não conseguir parsear, deixa os campos vazios
             }
         }
 
@@ -128,7 +135,7 @@ namespace EtiquetaFORNew
         {
             if (string.IsNullOrWhiteSpace(txtServidor.Text))
             {
-                MessageBox.Show("Informe o servidor/instÃ¢ncia primeiro!", "Atenção",
+                MessageBox.Show("Informe o servidor/instância primeiro!", "Atenção",
                     MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 txtServidor.Focus();
                 return;
@@ -140,7 +147,7 @@ namespace EtiquetaFORNew
                 btnListarBancos.Enabled = false;
                 btnListarBancos.Text = "Carregando...";
 
-                // Construir connection string temporÃ¡ria para listar bancos
+                // Construir connection string temporária para listar bancos
                 string servidor = txtServidor.Text.Trim();
                 string porta = txtPorta.Text.Trim();
                 string usuario = txtUsuario.Text.Trim();
@@ -243,7 +250,7 @@ namespace EtiquetaFORNew
             string senha = txtSenha.Text;
             string timeout = txtTimeout.Text.Trim();
 
-            // Adicionar porta ao servidor se informada e diferente da padrÃ£o
+            // Adicionar porta ao servidor se informada e diferente da padrão
             if (!string.IsNullOrEmpty(porta) && porta != "1433")
             {
                 servidor = $"{servidor},{porta}";
@@ -251,18 +258,18 @@ namespace EtiquetaFORNew
 
             string connStr = $"Server={servidor};Database={banco};";
 
-            // Se usuÃ¡rio foi informado, usar autenticação SQL
+            // Se usuário foi informado, usar autenticação SQL
             if (!string.IsNullOrEmpty(usuario))
             {
                 connStr += $"User Id={usuario};Password={senha};";
             }
             else
             {
-                // Caso contrÃ¡rio, usar autenticação Windows
+                // Caso contrário, usar autenticação Windows
                 connStr += "Integrated Security=true;";
             }
 
-            // Adicionar timeout se diferente do padrÃ£o
+            // Adicionar timeout se diferente do padrão
             if (!string.IsNullOrEmpty(timeout) && timeout != "15")
             {
                 connStr += $"Connection Timeout={timeout};";
@@ -346,13 +353,14 @@ namespace EtiquetaFORNew
                     txtUsuario.Text.Trim(),
                     txtSenha.Text,
                     txtTimeout.Text.Trim(),
-                    cmbLoja.SelectedItem?.ToString() ?? ""
+                    cmbLoja.SelectedItem?.ToString() ?? "",
+                    txtModuloApp.Text.Trim()
                 );
 
                 MessageBox.Show("Configuração salva com sucesso!", "Sucesso",
                     MessageBoxButtons.OK, MessageBoxIcon.Information);
 
-                // ðŸ” Atualiza o MainForm sem reiniciar o app
+                // Atualiza o MainForm sem reiniciar o app
                 var mainForm = Application.OpenForms["Main"] as Main;
                 if (mainForm != null)
                 {
@@ -418,6 +426,9 @@ namespace EtiquetaFORNew
                         cmbLoja.SelectedIndex = 0;
                     }
                 }
+
+                // Carregar ModuloApp após carregar as lojas
+                CarregarModuloApp(connectionString);
             }
             catch (Exception ex)
             {
@@ -426,9 +437,38 @@ namespace EtiquetaFORNew
             }
         }
 
-        private void btnSincronizar_Click(object sender, EventArgs e)
+        private void CarregarModuloApp(string connectionString)
         {
+            try
+            {
+                txtModuloApp.Clear();
+                txtModuloApp.Enabled = false;
 
+                using (System.Data.SqlClient.SqlConnection conn = new System.Data.SqlClient.SqlConnection(connectionString))
+                {
+                    conn.Open();
+
+                    string query = @"
+                        SELECT TOP 1 moduloapp 
+                        FROM Empresa";
+
+                    using (System.Data.SqlClient.SqlCommand cmd = new System.Data.SqlClient.SqlCommand(query, conn))
+                    {
+                        object result = cmd.ExecuteScalar();
+                        if (result != null && result != DBNull.Value)
+                        {
+                            txtModuloApp.Text = result.ToString();
+                            txtModuloApp.Enabled = true;
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Erro ao carregar módulo app: " + ex.Message, "Erro",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
+
     }
 }

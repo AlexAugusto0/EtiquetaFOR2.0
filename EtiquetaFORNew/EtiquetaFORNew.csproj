@@ -231,18 +231,6 @@
     <Compile Include="Data\DatabaseConfig.cs" />
     <Compile Include="Data\NFCeRepository.cs" />
     <Compile Include="Driverinstaller.cs" />
-    <Compile Include="Forms\configuracoes.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Forms\configuracoes.Designer.cs">
-      <DependentUpon>configuracoes.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Forms\Formbuscamercadoria.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Forms\Formbuscamercadoria.Designer.cs">
-      <DependentUpon>Formbuscamercadoria.cs</DependentUpon>
-    </Compile>
     <Compile Include="Forms\Formconfigetiqueta.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -328,12 +316,6 @@
     <Compile Include="TemplatesPreDefinidos.cs" />
     <EmbeddedResource Include="Forms\ConfigForm.resx">
       <DependentUpon>ConfigForm.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\configuracoes.resx">
-      <DependentUpon>configuracoes.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\Formbuscamercadoria.resx">
-      <DependentUpon>Formbuscamercadoria.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\FormDesign.resx">
       <DependentUpon>FormDesign.cs</DependentUpon>

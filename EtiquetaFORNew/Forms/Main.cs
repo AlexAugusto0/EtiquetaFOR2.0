@@ -36,11 +36,6 @@ namespace EtiquetaFORNew
             panel1.Resize += (s, ev) => ArredondarPainel(panel1, 30);
         }
 
-        private void pictureBox2_Click(object sender, EventArgs e)
-        {
-            configuracoes tela = new configuracoes();
-            tela.ShowDialog();
-        }
 
         private void senhaBox_KeyDown(object sender, KeyEventArgs e)
         {

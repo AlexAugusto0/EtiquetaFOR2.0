@@ -30,6 +30,8 @@ namespace EtiquetaFORNew
         {
             this.lblTitulo = new System.Windows.Forms.Label();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.txtModuloApp = new System.Windows.Forms.TextBox();
+            this.lblModuloApp = new System.Windows.Forms.Label();
             this.chkMostrarSenha = new System.Windows.Forms.CheckBox();
             this.txtTimeout = new System.Windows.Forms.TextBox();
             this.lblTimeout = new System.Windows.Forms.Label();
@@ -68,6 +70,8 @@ namespace EtiquetaFORNew
             // groupBox1
             // 
             this.groupBox1.BackColor = System.Drawing.SystemColors.ScrollBar;
+            this.groupBox1.Controls.Add(this.txtModuloApp);
+            this.groupBox1.Controls.Add(this.lblModuloApp);
             this.groupBox1.Controls.Add(this.chkMostrarSenha);
             this.groupBox1.Controls.Add(this.txtTimeout);
             this.groupBox1.Controls.Add(this.lblTimeout);
@@ -85,10 +89,28 @@ namespace EtiquetaFORNew
             this.groupBox1.Controls.Add(this.btnTestar);
             this.groupBox1.Location = new System.Drawing.Point(12, 32);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(570, 230);
+            this.groupBox1.Size = new System.Drawing.Size(570, 246);
             this.groupBox1.TabIndex = 7;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "1 - Configurações de Conexão";
+            // 
+            // txtModuloApp
+            // 
+            this.txtModuloApp.Enabled = false;
+            this.txtModuloApp.Location = new System.Drawing.Point(421, 212);
+            this.txtModuloApp.Name = "txtModuloApp";
+            this.txtModuloApp.ReadOnly = true;
+            this.txtModuloApp.Size = new System.Drawing.Size(140, 20);
+            this.txtModuloApp.TabIndex = 19;
+            // 
+            // lblModuloApp
+            // 
+            this.lblModuloApp.AutoSize = true;
+            this.lblModuloApp.Location = new System.Drawing.Point(421, 196);
+            this.lblModuloApp.Name = "lblModuloApp";
+            this.lblModuloApp.Size = new System.Drawing.Size(67, 13);
+            this.lblModuloApp.TabIndex = 20;
+            this.lblModuloApp.Text = "Módulo App:";
             // 
             // chkMostrarSenha
             // 
@@ -172,7 +194,7 @@ namespace EtiquetaFORNew
             // 
             this.btnListarBancos.Location = new System.Drawing.Point(16, 189);
             this.btnListarBancos.Name = "btnListarBancos";
-            this.btnListarBancos.Size = new System.Drawing.Size(98, 23);
+            this.btnListarBancos.Size = new System.Drawing.Size(98, 21);
             this.btnListarBancos.TabIndex = 14;
             this.btnListarBancos.Text = "Listar Bancos";
             this.btnListarBancos.UseVisualStyleBackColor = true;
@@ -213,9 +235,9 @@ namespace EtiquetaFORNew
             // 
             // btnTestar
             // 
-            this.btnTestar.Location = new System.Drawing.Point(404, 189);
+            this.btnTestar.Location = new System.Drawing.Point(268, 202);
             this.btnTestar.Name = "btnTestar";
-            this.btnTestar.Size = new System.Drawing.Size(150, 30);
+            this.btnTestar.Size = new System.Drawing.Size(143, 30);
             this.btnTestar.TabIndex = 3;
             this.btnTestar.Text = "Testar Conexão";
             this.btnTestar.UseVisualStyleBackColor = true;
@@ -223,7 +245,7 @@ namespace EtiquetaFORNew
             // 
             // btnSalvar
             // 
-            this.btnSalvar.Location = new System.Drawing.Point(376, 334);
+            this.btnSalvar.Location = new System.Drawing.Point(375, 343);
             this.btnSalvar.Name = "btnSalvar";
             this.btnSalvar.Size = new System.Drawing.Size(100, 30);
             this.btnSalvar.TabIndex = 4;
@@ -233,7 +255,7 @@ namespace EtiquetaFORNew
             // 
             // btnCancelar
             // 
-            this.btnCancelar.Location = new System.Drawing.Point(482, 334);
+            this.btnCancelar.Location = new System.Drawing.Point(482, 343);
             this.btnCancelar.Name = "btnCancelar";
             this.btnCancelar.Size = new System.Drawing.Size(100, 30);
             this.btnCancelar.TabIndex = 5;
@@ -255,28 +277,28 @@ namespace EtiquetaFORNew
             // 
             this.groupBox2.BackColor = System.Drawing.SystemColors.ScrollBar;
             this.groupBox2.Controls.Add(this.cmbLoja);
-            this.groupBox2.Location = new System.Drawing.Point(12, 272);
+            this.groupBox2.Location = new System.Drawing.Point(12, 295);
             this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(570, 53);
-            this.groupBox2.TabIndex = 17;
+            this.groupBox2.Size = new System.Drawing.Size(570, 42);
+            this.groupBox2.TabIndex = 19;
             this.groupBox2.TabStop = false;
-            this.groupBox2.Text = "2 - Selecione a Empresa:";
+            this.groupBox2.Text = "2 -Seleciona a Empresa.";
             // 
             // cmbLoja
             // 
             this.cmbLoja.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.cmbLoja.Enabled = false;
             this.cmbLoja.FormattingEnabled = true;
-            this.cmbLoja.Location = new System.Drawing.Point(16, 19);
+            this.cmbLoja.Location = new System.Drawing.Point(6, 19);
             this.cmbLoja.Name = "cmbLoja";
             this.cmbLoja.Size = new System.Drawing.Size(246, 21);
-            this.cmbLoja.TabIndex = 16;
+            this.cmbLoja.TabIndex = 19;
             // 
             // ConfigForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(594, 376);
+            this.ClientSize = new System.Drawing.Size(594, 377);
             this.Controls.Add(this.groupBox2);
             this.Controls.Add(this.groupBox1);
             this.Controls.Add(this.btnCancelar);
@@ -320,6 +342,8 @@ namespace EtiquetaFORNew
         private System.Windows.Forms.Label lblTimeout;
         private System.Windows.Forms.CheckBox chkMostrarSenha;
         private System.Windows.Forms.PictureBox pictureBox1;
+        private System.Windows.Forms.TextBox txtModuloApp;
+        private System.Windows.Forms.Label lblModuloApp;
         private System.Windows.Forms.GroupBox groupBox2;
         private System.Windows.Forms.ComboBox cmbLoja;
     }

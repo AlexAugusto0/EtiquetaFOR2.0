@@ -22,6 +22,7 @@ namespace EtiquetaFORNew.Data
             public string Senha { get; set; }
             public string Timeout { get; set; }
             public string Loja { get; set; }
+            public string ModuloApp { get; set; }
         }
 
         public static bool IsConfigured()
@@ -90,7 +91,7 @@ namespace EtiquetaFORNew.Data
         }
 
         public static void SaveConfiguration(string servidor, string porta, string bancoDados,
-            string usuario, string senha, string timeout, string loja = "")
+            string usuario, string senha, string timeout, string loja = "", string moduloApp = "")
         {
             try
             {
@@ -102,7 +103,8 @@ namespace EtiquetaFORNew.Data
                     Usuario = usuario,
                     Senha = senha,
                     Timeout = timeout,
-                    Loja = loja
+                    Loja = loja,
+                    ModuloApp = moduloApp
                 };
 
                 string json = JsonConvert.SerializeObject(config, Newtonsoft.Json.Formatting.Indented);
