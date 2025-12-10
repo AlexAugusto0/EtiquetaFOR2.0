@@ -597,7 +597,9 @@ namespace EtiquetaFORNew.Forms
                 "Fornecedor",
                 "Fabricante",
                 "Grupo",
-                "Prateleira"
+                "Prateleira",
+                "Tam",
+                "Cores"
             });
             cmbCampos.SelectedIndexChanged += (s, e) => {
                 if (cmbCampos.SelectedItem != null)
@@ -1323,6 +1325,8 @@ namespace EtiquetaFORNew.Forms
                 case "Fabricante": return produto.Nome ?? "";
                 case "Grupo": return "";
                 case "Prateleira": return "";
+                case "Tam": return "";
+                case "Cores": return "";
                 default: return "";
             }
         }

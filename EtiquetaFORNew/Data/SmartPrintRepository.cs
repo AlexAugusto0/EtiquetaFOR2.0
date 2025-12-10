@@ -14,7 +14,7 @@ namespace EtiquetaFORNew.Data
         {
             _connectionString = connectionString;
         }
-
+        
         public bool TestConnection()
         {
             try

@@ -1356,6 +1356,8 @@ namespace EtiquetaFORNew
                     string fabricante = row["Fabricante"]?.ToString();
                     string grupo = row["Grupo"]?.ToString();
                     string prateleira = row["Prateleira"]?.ToString();
+                    string tam = row["Tam"]?.ToString();
+                    string cores = row["Cores"]?.ToString();
 
                     // Sincronizar os ComboBoxes
                     cmbBuscaNome.Text = nome;
@@ -1521,6 +1523,8 @@ namespace EtiquetaFORNew
                     produto.Fabricante = produtoAtualCompleto["Fabricante"]?.ToString();
                     produto.Grupo = produtoAtualCompleto["Grupo"]?.ToString();
                     produto.Prateleira = produtoAtualCompleto["Prateleira"]?.ToString();
+                    produto.Tam = produtoAtualCompleto["Tam"]?.ToString();
+                    produto.Cores = produtoAtualCompleto["Cores"]?.ToString();
                 }
                 catch
                 {
@@ -1558,6 +1562,8 @@ namespace EtiquetaFORNew
                         produto.Fabricante = row["Fabricante"]?.ToString();
                         produto.Grupo = row["Grupo"]?.ToString();
                         produto.Prateleira = row["Prateleira"]?.ToString();
+                        produto.Tam = row["Tam"]?.ToString();
+                        produto.Cores = row["Cores"]?.ToString();
                     }
                 }
                 catch

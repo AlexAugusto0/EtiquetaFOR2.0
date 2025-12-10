@@ -335,7 +335,10 @@
             "Fornecedor",
             "Fabricante",
             "Grupo",
-            "Prateleira"});
+            "Prateleira",
+            "Tam",
+            "Cores"
+            });
             this.cmbCampos.Location = new System.Drawing.Point(10, 110);
             this.cmbCampos.Name = "cmbCampos";
             this.cmbCampos.Size = new System.Drawing.Size(220, 23);

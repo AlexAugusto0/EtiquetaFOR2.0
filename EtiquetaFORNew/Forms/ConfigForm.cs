@@ -207,7 +207,7 @@ namespace EtiquetaFORNew
             {
                 Cursor = Cursors.Default;
                 btnListarBancos.Enabled = true;
-                btnListarBancos.Text = "ðŸ”„ Listar Bancos";
+                btnListarBancos.Text = "Listar Bancos";
             }
         }
 

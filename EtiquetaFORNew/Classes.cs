@@ -21,6 +21,8 @@ namespace EtiquetaFORNew
         public string Fabricante { get; set; }
         public string Grupo { get; set; }
         public string Prateleira { get; set; }
+        public string Tam { get; set; }
+        public string Cores { get; set; }
 
     }
 

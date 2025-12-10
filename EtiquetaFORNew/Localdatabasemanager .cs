@@ -51,6 +51,8 @@ namespace EtiquetaFORNew.Data
                             Fabricante TEXT,
                             Grupo TEXT,
                             Prateleira TEXT,
+                            Tam TEXT,
+                            Cores TEXT,
                             Registro INTEGER,
                             UltimaAtualizacao DATETIME DEFAULT CURRENT_TIMESTAMP
                         );
@@ -129,7 +131,9 @@ namespace EtiquetaFORNew.Data
                             [Fornecedor] as Fornecedor,
                             [Fabricante] as Fabricante,
                             [Grupo] as Grupo,
-                            [Prateleira] as Prateleira
+                            [Prateleira] as Prateleira,
+                            [Tam] as Tam,
+                            [Cores] as Cores
                         FROM [memoria_MercadoriasLojas]
                         WHERE [Loja] = '" + config.Loja + @"'
                         " + (string.IsNullOrEmpty(filtro) ? "" : "AND " + filtro) + @"
@@ -155,8 +159,8 @@ namespace EtiquetaFORNew.Data
                             {
                                 string insertQuery = @"
                                     INSERT INTO Mercadorias 
-                                    (CodigoMercadoria, CodFabricante, CodBarras, Mercadoria, PrecoVenda, VendaA, VendaB, VendaC, Fornecedor, Fabricante, Grupo, Prateleira)
-                                    VALUES (@cod, @fabr, @barras, @merc, @preco, @vendaA, @vendaB, @vendaC, @fornecedor, @fabricante, @grupo, @prateleira)
+                                    (CodigoMercadoria, CodFabricante, CodBarras, Mercadoria, PrecoVenda, VendaA, VendaB, VendaC, Fornecedor, Fabricante, Grupo, Prateleira, Tam, Cores)
+                                    VALUES (@cod, @fabr, @barras, @merc, @preco, @vendaA, @vendaB, @vendaC, @fornecedor, @fabricante, @grupo, @prateleira,@tam ,@cores)
                                 ";
 
                                 using (var insertCmd = new SQLiteCommand(insertQuery, localConn))
@@ -176,6 +180,8 @@ namespace EtiquetaFORNew.Data
                                         insertCmd.Parameters.AddWithValue("@fabricante", reader["Fabricante"] ?? DBNull.Value);
                                         insertCmd.Parameters.AddWithValue("@grupo", reader["Grupo"] ?? DBNull.Value);
                                         insertCmd.Parameters.AddWithValue("@prateleira", reader["Prateleira"] ?? DBNull.Value);
+                                        insertCmd.Parameters.AddWithValue("@tam", reader["Tam"] ?? DBNull.Value);
+                                        insertCmd.Parameters.AddWithValue("@cores", reader["Cores"] ?? DBNull.Value);
                                         //insertCmd.Parameters.AddWithValue("@reg", reader["Registro"] ?? DBNull.Value);
 
                                         insertCmd.ExecuteNonQuery();
@@ -233,6 +239,8 @@ namespace EtiquetaFORNew.Data
                             Fabricante,
                             Grupo,
                             Prateleira,
+                            Tam,
+                            Cores,
                             Registro
                         FROM Mercadorias
                     ";
@@ -316,6 +324,8 @@ namespace EtiquetaFORNew.Data
                             Fabricante,
                             Grupo,
                             Prateleira,
+                            Tam,
+                            Cores,
                             Registro
                         FROM Mercadorias
                         WHERE {nomeCampo} LIKE @termo
