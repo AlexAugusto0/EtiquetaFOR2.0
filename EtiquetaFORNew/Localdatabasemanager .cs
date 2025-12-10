@@ -13,12 +13,13 @@ namespace EtiquetaFORNew.Data
     /// </summary>
     public class LocalDatabaseManager
     {
+        public static bool isConfeccao = false;
         private static readonly string DbPath = Path.Combine(
             AppDomain.CurrentDomain.BaseDirectory,
             "LocalData.db");
-
+        
         private static readonly string ConnectionString = $"Data Source={DbPath};Version=3;";
-
+  
         /// <summary>
         /// Inicializa o banco local e cria as tabelas se não existirem
         /// </summary>
@@ -53,6 +54,7 @@ namespace EtiquetaFORNew.Data
                             Prateleira TEXT,
                             Tam TEXT,
                             Cores TEXT,
+                            CodBarras_Grade TEXT,
                             Registro INTEGER,
                             UltimaAtualizacao DATETIME DEFAULT CURRENT_TIMESTAMP
                         );
@@ -133,7 +135,8 @@ namespace EtiquetaFORNew.Data
                             [Grupo] as Grupo,
                             [Prateleira] as Prateleira,
                             [Tam] as Tam,
-                            [Cores] as Cores
+                            [Cores] as Cores,
+                            [CodBarras] as CodBarras_Grade
                         FROM [memoria_MercadoriasLojas]
                         WHERE [Loja] = '" + config.Loja + @"'
                         " + (string.IsNullOrEmpty(filtro) ? "" : "AND " + filtro) + @"
@@ -159,8 +162,8 @@ namespace EtiquetaFORNew.Data
                             {
                                 string insertQuery = @"
                                     INSERT INTO Mercadorias 
-                                    (CodigoMercadoria, CodFabricante, CodBarras, Mercadoria, PrecoVenda, VendaA, VendaB, VendaC, Fornecedor, Fabricante, Grupo, Prateleira, Tam, Cores)
-                                    VALUES (@cod, @fabr, @barras, @merc, @preco, @vendaA, @vendaB, @vendaC, @fornecedor, @fabricante, @grupo, @prateleira,@tam ,@cores)
+                                    (CodigoMercadoria, CodFabricante, CodBarras, Mercadoria, PrecoVenda, VendaA, VendaB, VendaC, Fornecedor, Fabricante, Grupo, Prateleira, Tam, Cores,CodBarras_Grade)
+                                    VALUES (@cod, @fabr, @barras, @merc, @preco, @vendaA, @vendaB, @vendaC, @fornecedor, @fabricante, @grupo, @prateleira,@tam ,@cores, @codbarras_grade)
                                 ";
 
                                 using (var insertCmd = new SQLiteCommand(insertQuery, localConn))
@@ -182,6 +185,7 @@ namespace EtiquetaFORNew.Data
                                         insertCmd.Parameters.AddWithValue("@prateleira", reader["Prateleira"] ?? DBNull.Value);
                                         insertCmd.Parameters.AddWithValue("@tam", reader["Tam"] ?? DBNull.Value);
                                         insertCmd.Parameters.AddWithValue("@cores", reader["Cores"] ?? DBNull.Value);
+                                        insertCmd.Parameters.AddWithValue("@codbarras_grade", reader["CodBarras_Grade"] ?? DBNull.Value);
                                         //insertCmd.Parameters.AddWithValue("@reg", reader["Registro"] ?? DBNull.Value);
 
                                         insertCmd.ExecuteNonQuery();
@@ -241,6 +245,7 @@ namespace EtiquetaFORNew.Data
                             Prateleira,
                             Tam,
                             Cores,
+                            CodBarras_Grade,
                             Registro
                         FROM Mercadorias
                     ";
@@ -326,6 +331,7 @@ namespace EtiquetaFORNew.Data
                             Prateleira,
                             Tam,
                             Cores,
+                            CodBarras_Grade,
                             Registro
                         FROM Mercadorias
                         WHERE {nomeCampo} LIKE @termo
@@ -575,19 +581,25 @@ namespace EtiquetaFORNew.Data
         {
             var tamanhos = new List<string>();
             var cores = new List<string>();
+            
 
             try
             {
                 using (var conn = new SQLiteConnection(ConnectionString))
+
                 {
                     conn.Open();
 
-                    string query = @"
+                    string query;
+                    
+
+                        query = @"
                         SELECT DISTINCT Tam, Cores
                         FROM Mercadorias
                         WHERE CodigoMercadoria = @codigo
                         AND (Tam IS NOT NULL OR Cores IS NOT NULL)
                     ";
+
 
                     using (var cmd = new SQLiteCommand(query, conn))
                     {

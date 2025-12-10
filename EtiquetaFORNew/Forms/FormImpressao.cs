@@ -425,6 +425,8 @@ namespace EtiquetaFORNew
                     return produto.CodFabricante ?? "";
                 case "CodBarras":
                     return produto.CodBarras ?? "";
+                case "CodBarras_Grade":
+                    return produto.CodBarras_Grade ?? "";
                 default:
                     return produto.Codigo ?? "";
             }
@@ -476,6 +478,8 @@ namespace EtiquetaFORNew
                     return produto.Tam ?? "";
                 case "Cores":
                     return produto.Cores ?? "";
+                case "CodBarras_Grade":
+                    return produto.CodBarras_Grade ?? "";
 
 
                 default:

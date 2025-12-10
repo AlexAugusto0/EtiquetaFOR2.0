@@ -599,7 +599,8 @@ namespace EtiquetaFORNew.Forms
                 "Grupo",
                 "Prateleira",
                 "Tam",
-                "Cores"
+                "Cores",
+                "CodBarras_Grade"
             });
             cmbCampos.SelectedIndexChanged += (s, e) => {
                 if (cmbCampos.SelectedItem != null)
@@ -634,7 +635,8 @@ namespace EtiquetaFORNew.Forms
             cmbCodigoBarras.Items.AddRange(new object[] {
                 "CodigoMercadoria",
                 "CodFabricante",
-                "CodBarras"
+                "CodBarras",
+                "CodBarras_Grade"
             });
             cmbCodigoBarras.SelectedIndexChanged += (s, e) => {
                 if (cmbCodigoBarras.SelectedItem != null)
@@ -1327,6 +1329,7 @@ namespace EtiquetaFORNew.Forms
                 case "Prateleira": return "";
                 case "Tam": return "";
                 case "Cores": return "";
+                case "CodBarras_Grade": return produto.CodBarras_Grade ?? "";
                 default: return "";
             }
         }

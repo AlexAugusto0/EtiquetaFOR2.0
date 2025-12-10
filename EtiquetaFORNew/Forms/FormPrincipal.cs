@@ -46,6 +46,7 @@ namespace EtiquetaFORNew
 
         // ⭐ Flag para controlar carregamento único de mercadorias
         private bool mercadoriasCarregadas = false;
+        public bool PesquisaCodigo = false;
 
 
 
@@ -62,8 +63,8 @@ namespace EtiquetaFORNew
         private DataRow produtoAtualCompleto = null;
 
         // ⭐ NOVO CONFECÇÃO: Módulo da aplicação e flag de confecção
-        private string moduloApp = "";
-        private bool isConfeccao = false;
+        public string moduloApp = "";
+        public bool isConfeccao = false;
 
 
 
@@ -133,6 +134,7 @@ namespace EtiquetaFORNew
                 isConfeccao = moduloApp.Equals("CONFECCAO", StringComparison.OrdinalIgnoreCase);
 
                 // Configura visibilidade dos controles de confecção
+                
                 ConfigurarControlesConfeccao();
             }
             catch (Exception ex)
@@ -1173,7 +1175,16 @@ namespace EtiquetaFORNew
                 {
                     string nome = row["Mercadoria"]?.ToString();
                     string referencia = row["CodFabricante"]?.ToString();
-                    string codigo = row["CodigoMercadoria"]?.ToString();
+                    string codigo;
+                    if (isConfeccao)
+                    {
+                        codigo = row["CodBarras_Grade"]?.ToString();
+                    }
+                    else
+                    {
+                        codigo = row["CodigoMercadoria"]?.ToString();
+                    }
+                    
 
                     if (!string.IsNullOrEmpty(nome))
                     {
@@ -1253,7 +1264,7 @@ namespace EtiquetaFORNew
         {
 
             if (cmbBuscaNome.SelectedIndex != -1)
-
+                PesquisaCodigo = false;
             {
 
                 string termoSelecionado = cmbBuscaNome.SelectedItem.ToString();
@@ -1271,7 +1282,7 @@ namespace EtiquetaFORNew
         {
 
             if (cmbBuscaReferencia.SelectedIndex != -1)
-
+                PesquisaCodigo = false;
             {
 
                 string termoSelecionado = cmbBuscaReferencia.SelectedItem.ToString();
@@ -1289,16 +1300,24 @@ namespace EtiquetaFORNew
         {
 
             if (cmbBuscaCodigo.SelectedIndex != -1)
-
+                PesquisaCodigo = true;
             {
 
                 string termoSelecionado = cmbBuscaCodigo.SelectedItem.ToString();
 
                 // ⭐ PASSANDO O COMBOBOX DE ORIGEM
+                if (isConfeccao)
+                {
+                    AdicionarProdutoSelecionado(termoSelecionado, "CodBarras_Grade", cmbBuscaCodigo);
+                }
+                else
+                {
+                    AdicionarProdutoSelecionado(termoSelecionado, "CodigoMercadoria", cmbBuscaCodigo);
+                }
 
-                AdicionarProdutoSelecionado(termoSelecionado, "CodigoMercadoria", cmbBuscaCodigo);
 
-            }
+
+                }
 
         }
 
@@ -1316,11 +1335,13 @@ namespace EtiquetaFORNew
             try
             {
                 string termoFiltrado = termo.Replace("'", "''");
+                LocalDatabaseManager.isConfeccao = isConfeccao;
+
 
                 // ⭐ CORREÇÃO 1: Busca primeiro na memória (rápido)
                 DataRow[] resultados = mercadorias.Select($"{nomeCampo} = '{termoFiltrado}'");
                 DataRow row = null;
-
+                
                 if (resultados.Length > 0)
                 {
                     row = resultados[0];
@@ -1366,6 +1387,7 @@ namespace EtiquetaFORNew
                     string nome = row["Mercadoria"]?.ToString();
                     string referencia = row["CodFabricante"]?.ToString();
                     string codBarras = row["CodBarras"]?.ToString();
+                    string codBarras_grade = row["CodBarras_Grade"]?.ToString();
                     decimal preco = row["PrecoVenda"] != DBNull.Value ? Convert.ToDecimal(row["PrecoVenda"]) : 0m;
 
                     // Campos de preços alternativos
@@ -1380,22 +1402,43 @@ namespace EtiquetaFORNew
                     string prateleira = row["Prateleira"]?.ToString();
                     string tam = row["Tam"]?.ToString();
                     string cores = row["Cores"]?.ToString();
+                   
 
                     // Sincronizar os ComboBoxes
                     cmbBuscaNome.Text = nome;
                     cmbBuscaReferencia.Text = referencia;
-                    cmbBuscaCodigo.Text = codigo;
+                    
+                    if (isConfeccao)
+                    {
+                        cmbBuscaCodigo.Text = codBarras_grade;
+                        cmbTamanho.Text = tam;
+                        cmbCor.Text = cores;
+
+                    }
+                    else
+                    {
+                        cmbBuscaCodigo.Text = codigo;
+                    }
+                    
 
                     // Preencher campos de cadastro
                     txtNome.Text = nome;
                     txtCodigo.Text = codigo;
                     txtPreco.Text = preco.ToString("F2");
+                    
                     numQtd.Value = 1;
 
                     // ⭐ CONFECÇÃO: Carregar tamanhos e cores do produto
                     if (isConfeccao && !string.IsNullOrEmpty(codigo))
                     {
-                        CarregarTamanhosECores(codigo);
+                        if (PesquisaCodigo != true)
+                        {
+                            CarregarTamanhosECores(codigo);
+                            
+                        }
+                        ;
+
+                       
                     }
                 }
                 else
@@ -1535,6 +1578,7 @@ namespace EtiquetaFORNew
                     // Popula todos os campos adicionais do DataRow já carregado
                     produto.CodFabricante = produtoAtualCompleto["CodFabricante"]?.ToString();
                     produto.CodBarras = produtoAtualCompleto["CodBarras"]?.ToString();
+                    produto.CodBarras_Grade = produtoAtualCompleto["CodBarras_Grade"]?.ToString();
                     produto.PrecoVenda = produtoAtualCompleto["PrecoVenda"] != DBNull.Value
                         ? Convert.ToDecimal(produtoAtualCompleto["PrecoVenda"])
                         : precoDecimal;
@@ -1571,8 +1615,17 @@ namespace EtiquetaFORNew
                 // ⭐ FALLBACK: Se não houver DataRow armazenado, tenta buscar (produto digitado manualmente)
                 try
                 {
+                    DataRow[] resultados;
                     string codigoFiltrado = txtCodigo.Text.Replace("'", "''");
-                    DataRow[] resultados = mercadorias.Select($"CodigoMercadoria = '{codigoFiltrado}'");
+                    if (isConfeccao)
+                    {
+                         resultados = mercadorias.Select($"CodBarras_Grade = '{codigoFiltrado}'");
+                    }
+                    else
+                    {
+                        resultados = mercadorias.Select($"CodigoMercadoria = '{codigoFiltrado}'");
+                    }
+                    
 
                     if (resultados.Length > 0)
                     {
@@ -1581,6 +1634,7 @@ namespace EtiquetaFORNew
                         // Popula todos os campos adicionais do banco
                         produto.CodFabricante = row["CodFabricante"]?.ToString();
                         produto.CodBarras = row["CodBarras"]?.ToString();
+                        produto.CodBarras_Grade = row["CodBarras_Grade"]?.ToString();
                         produto.PrecoVenda = row["PrecoVenda"] != DBNull.Value
                             ? Convert.ToDecimal(row["PrecoVenda"])
                             : precoDecimal;
@@ -1620,7 +1674,7 @@ namespace EtiquetaFORNew
             // ⭐ CONFECÇÃO: Inclui colunas Tam e Cor se o módulo for CONFECÇÃO
             if (isConfeccao && dgvProdutos.Columns.Contains("colTam") && dgvProdutos.Columns.Contains("colCor"))
             {
-                dgvProdutos.Rows.Add(false, produto.Nome, produto.Codigo, produto.Preco.ToString("C2"),
+                dgvProdutos.Rows.Add(false, produto.Nome, produto.CodBarras_Grade, produto.Preco.ToString("C2"),
                     produto.Quantidade, produto.Tam ?? "", produto.Cores ?? "");
             }
             else
@@ -1800,7 +1854,15 @@ namespace EtiquetaFORNew
 
             if (cmb == cmbBuscaReferencia) return "CodFabricante";
 
-            if (cmb == cmbBuscaCodigo) return "CodigoMercadoria";
+            if (isConfeccao)
+            {
+                if (cmb == cmbBuscaCodigo) return "CodBarras_Grade";
+            }
+            else
+            {
+                if (cmb == cmbBuscaCodigo) return "CodigoMercadoria";
+            }
+            
 
             return null;
 
@@ -2156,6 +2218,13 @@ namespace EtiquetaFORNew
         private void ConfigurarControlesConfeccao()
         {
             // Mostra/oculta os controles de Tamanho e Cor baseado no módulo
+            if (isConfeccao)
+            {
+                txtNome.Size = new System.Drawing.Size(220, 23);
+                cmbBuscaNome.Size = new System.Drawing.Size(500, 23);
+                colNome.Width = 500;
+            }
+            
             if (cmbTamanho != null) cmbTamanho.Visible = isConfeccao;
             if (lblTamanho != null) lblTamanho.Visible = isConfeccao;
             if (cmbCor != null) cmbCor.Visible = isConfeccao;
@@ -2237,6 +2306,11 @@ namespace EtiquetaFORNew
         }
 
         private void lblQtd_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void cmbTamanho_SelectedIndexChanged(object sender, EventArgs e)
         {
 
         }

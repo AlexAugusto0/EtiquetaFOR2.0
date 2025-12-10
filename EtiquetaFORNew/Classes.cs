@@ -23,6 +23,7 @@ namespace EtiquetaFORNew
         public string Prateleira { get; set; }
         public string Tam { get; set; }
         public string Cores { get; set; }
+        public string CodBarras_Grade { get; set; }
 
     }
 

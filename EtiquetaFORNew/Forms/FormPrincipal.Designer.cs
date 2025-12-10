@@ -142,6 +142,7 @@
             this.cmbTamanho.Name = "cmbTamanho";
             this.cmbTamanho.Size = new System.Drawing.Size(74, 23);
             this.cmbTamanho.TabIndex = 16;
+            this.cmbTamanho.SelectedIndexChanged += new System.EventHandler(this.cmbTamanho_SelectedIndexChanged);
             // 
             // lblTamanho
             // 
@@ -190,7 +191,7 @@
             this.cmbBuscaNome.FormattingEnabled = true;
             this.cmbBuscaNome.Location = new System.Drawing.Point(168, 24);
             this.cmbBuscaNome.Name = "cmbBuscaNome";
-            this.cmbBuscaNome.Size = new System.Drawing.Size(500, 23);
+            this.cmbBuscaNome.Size = new System.Drawing.Size(670, 23);
             this.cmbBuscaNome.TabIndex = 12;
             this.cmbBuscaNome.SelectedIndexChanged += new System.EventHandler(this.cmbBuscaNome_SelectedIndexChanged);
             // 
@@ -206,6 +207,7 @@
             // 
             // cmbBuscaCodigo
             // 
+            this.cmbBuscaCodigo.DropDownWidth = 150;
             this.cmbBuscaCodigo.FormattingEnabled = true;
             this.cmbBuscaCodigo.Location = new System.Drawing.Point(3, 24);
             this.cmbBuscaCodigo.Name = "cmbBuscaCodigo";
@@ -344,7 +346,7 @@
             // 
             this.colNome.HeaderText = "Nome";
             this.colNome.Name = "colNome";
-            this.colNome.Width = 494;
+            this.colNome.Width = 640;
             // 
             // colCodigo
             // 
