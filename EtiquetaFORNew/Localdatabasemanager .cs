@@ -640,5 +640,84 @@ namespace EtiquetaFORNew.Data
 
             return (tamanhos, cores);
         }
+        /// <summary>
+        /// ⭐ CONFECÇÃO: Busca o código de barras específico baseado em Código + Tamanho + Cor
+        /// </summary>
+        public static string BuscarCodigoBarrasPorCodTamCor(string codigo, string tamanho, string cor)
+        {
+            try
+            {
+                using (var conn = new SQLiteConnection(ConnectionString))
+                {
+                    conn.Open();
+
+                    string query = @"
+                        SELECT CodBarras_Grade
+                        FROM Mercadorias
+                        WHERE CodigoMercadoria = @codigo
+                        AND Tam = @tamanho
+                        AND Cores = @cor
+                        LIMIT 1
+                    ";
+
+                    using (var cmd = new SQLiteCommand(query, conn))
+                    {
+                        cmd.Parameters.AddWithValue("@codigo", codigo);
+                        cmd.Parameters.AddWithValue("@tamanho", tamanho);
+                        cmd.Parameters.AddWithValue("@cor", cor);
+
+                        object result = cmd.ExecuteScalar();
+                        return result?.ToString() ?? string.Empty;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Erro ao buscar código de barras: {ex.Message}");
+                return string.Empty;
+            }
+        }
+
+        /// <summary>
+        /// ⭐ CONFECÇÃO: Busca o registro completo da mercadoria por Código + Tamanho + Cor
+        /// </summary>
+        public static DataTable BuscarMercadoriaPorCodTamCor(string codigo, string tamanho, string cor)
+        {
+            try
+            {
+                using (var conn = new SQLiteConnection(ConnectionString))
+                {
+                    conn.Open();
+
+                    string query = @"
+                        SELECT *
+                        FROM Mercadorias
+                        WHERE CodigoMercadoria = @codigo
+                        AND Tam = @tamanho
+                        AND Cores = @cor
+                        LIMIT 1
+                    ";
+
+                    using (var cmd = new SQLiteCommand(query, conn))
+                    {
+                        cmd.Parameters.AddWithValue("@codigo", codigo);
+                        cmd.Parameters.AddWithValue("@tamanho", tamanho);
+                        cmd.Parameters.AddWithValue("@cor", cor);
+
+                        DataTable dt = new DataTable();
+                        using (var adapter = new SQLiteDataAdapter(cmd))
+                        {
+                            adapter.Fill(dt);
+                        }
+                        return dt;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Erro ao buscar mercadoria: {ex.Message}");
+                return null;
+            }
+        }
     }
 }

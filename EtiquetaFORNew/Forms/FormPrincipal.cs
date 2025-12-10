@@ -118,6 +118,9 @@ namespace EtiquetaFORNew
 
             dgvProdutos.CellEndEdit += dgvProdutos_CellEndEdit;
 
+            if (cmbTamanho != null) cmbTamanho.SelectedIndexChanged += CmbTamanho_SelectedIndexChanged;
+            if (cmbCor != null) cmbCor.SelectedIndexChanged += CmbCor_SelectedIndexChanged;
+
         }
 
 
@@ -2308,6 +2311,90 @@ namespace EtiquetaFORNew
         private void lblQtd_Click(object sender, EventArgs e)
         {
 
+        }
+
+        /// <summary>
+        /// ⭐ CONFECÇÃO: Atualiza o código de barras quando o tamanho é alterado
+        /// </summary>
+        private void CmbTamanho_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            AtualizarCodigoBarrasPorTamanhoECor();
+        }
+
+        /// <summary>
+        /// ⭐ CONFECÇÃO: Atualiza o código de barras quando a cor é alterada
+        /// </summary>
+        private void CmbCor_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            AtualizarCodigoBarrasPorTamanhoECor();
+        }
+
+        /// <summary>
+        /// ⭐ CONFECÇÃO: Busca e atualiza o código de barras baseado em Código + Tamanho + Cor
+        /// </summary>
+        private void AtualizarCodigoBarrasPorTamanhoECor()
+        {
+            // Só executa no modo confecção
+            if (!isConfeccao) return;
+
+            // Verifica se temos todos os dados necessários
+            if (string.IsNullOrEmpty(txtCodigo.Text)) return;
+            if (cmbTamanho == null || cmbCor == null) return;
+            if (cmbTamanho.SelectedItem == null || cmbCor.SelectedItem == null) return;
+
+            try
+            {
+                string codigo = txtCodigo.Text;
+                string tamanho = cmbTamanho.SelectedItem.ToString();
+                string cor = cmbCor.SelectedItem.ToString();
+
+                // Busca o código de barras no banco local baseado em Código + Tam + Cor
+                string codBarrasEncontrado = LocalDatabaseManager.BuscarCodigoBarrasPorCodTamCor(
+                    codigo, tamanho, cor);
+
+                if (!string.IsNullOrEmpty(codBarrasEncontrado))
+                {
+                    // Remove o evento temporariamente para evitar loop
+                    if (cmbBuscaCodigo != null)
+                        cmbBuscaCodigo.SelectedIndexChanged -= cmbBuscaCodigo_SelectedIndexChanged;
+
+                    // Atualiza o campo de código de barras
+                    if (cmbBuscaCodigo != null)
+                        cmbBuscaCodigo.Text = codBarrasEncontrado;
+
+                    // Restaura o evento
+                    if (cmbBuscaCodigo != null)
+                        cmbBuscaCodigo.SelectedIndexChanged += cmbBuscaCodigo_SelectedIndexChanged;
+
+                    // Atualiza também o DataRow completo para quando adicionar o produto
+                    AtualizarProdutoAtualCompleto(codigo, tamanho, cor);
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Erro ao atualizar código de barras: {ex.Message}");
+            }
+        }
+
+        /// <summary>
+        /// ⭐ CONFECÇÃO: Atualiza o produtoAtualCompleto com os dados corretos de Tam e Cor
+        /// </summary>
+        private void AtualizarProdutoAtualCompleto(string codigo, string tamanho, string cor)
+        {
+            try
+            {
+                // Busca o registro completo no banco com Código + Tam + Cor
+                DataTable resultado = LocalDatabaseManager.BuscarMercadoriaPorCodTamCor(codigo, tamanho, cor);
+
+                if (resultado != null && resultado.Rows.Count > 0)
+                {
+                    produtoAtualCompleto = resultado.Rows[0];
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Erro ao atualizar produto completo: {ex.Message}");
+            }
         }
 
         private void cmbTamanho_SelectedIndexChanged(object sender, EventArgs e)
