@@ -44,6 +44,9 @@ namespace EtiquetaFORNew
 
         private ConfiguracaoEtiqueta configuracaoAtual;
 
+        // ⭐ Flag para controlar carregamento único de mercadorias
+        private bool mercadoriasCarregadas = false;
+
 
 
         // ⭐ NOVO: Campos transferidos de FormBuscaMercadoria
@@ -82,7 +85,7 @@ namespace EtiquetaFORNew
 
             InitializeComponent();
 
-          
+
             TemplatesPreDefinidos.InstalarSeNecessario();
 
             template = new TemplateEtiqueta();
@@ -194,7 +197,11 @@ namespace EtiquetaFORNew
 
             AtualizarListaConfiguracoes();
 
-            CarregarTodasMercadorias();
+            // ⭐ OTIMIZAÇÃO: Carregar apenas se não foi carregado por SincronizarMercadorias
+            if (!mercadoriasCarregadas)
+            {
+                CarregarTodasMercadorias();
+            }
 
 
 
@@ -316,13 +323,13 @@ namespace EtiquetaFORNew
 
             // Atualiza o status
 
-            
+
 
         }
 
 
 
-      
+
 
         // ========================================
 
@@ -349,6 +356,10 @@ namespace EtiquetaFORNew
 
 
                 // ⭐ CHAVE DA SOLUÇÃO: RECARREGA O DATATABLE 'mercadorias' E ATUALIZA OS COMBOBOXES
+
+
+                // ⭐ OTIMIZAÇÃO: Reseta flag para forçar recarregamento após sincronização
+                mercadoriasCarregadas = false;
 
                 CarregarTodasMercadorias();
 
@@ -1179,6 +1190,12 @@ namespace EtiquetaFORNew
 
         private void CarregarTodasMercadorias()
         {
+            // ⭐ OTIMIZAÇÃO: Evita carregamento duplicado
+            if (mercadoriasCarregadas)
+            {
+                return; // Já foi carregado, não precisa recarregar
+            }
+
             try
             {
                 // ⭐ Carrega TODOS os produtos (ou aumenta muito o limite)
@@ -1237,7 +1254,12 @@ namespace EtiquetaFORNew
                     cmbBuscaCodigo.Items.Clear();
                     cmbBuscaCodigo.Items.AddRange(listaCodigo.Distinct().OrderBy(s => s).ToArray());
                 }
+
+
+                // ⭐ Marca como carregado com sucesso
+                mercadoriasCarregadas = true;
             }
+
             catch (Exception ex)
             {
                 MessageBox.Show($"Erro ao carregar lista de mercadorias: {ex.Message}",
@@ -1827,6 +1849,10 @@ namespace EtiquetaFORNew
 
                 // ⭐ 2. RECARREGAR AS MERCADORIAS NA MEMÓRIA E ATUALIZAR OS COMBOBOXES
 
+
+                // ⭐ OTIMIZAÇÃO: Reseta flag para forçar recarregamento após sincronização manual
+                mercadoriasCarregadas = false;
+
                 CarregarTodasMercadorias();
 
 
@@ -1915,7 +1941,7 @@ namespace EtiquetaFORNew
 
         /// </summary>
 
-        
+
 
 
 
@@ -1925,7 +1951,7 @@ namespace EtiquetaFORNew
 
         /// </summary>
 
-        
+
 
         private ConfiguracaoEtiqueta CarregarConfiguracaoAtual()
 
@@ -2142,6 +2168,3 @@ namespace EtiquetaFORNew
 
 
 }
-
-
-       
