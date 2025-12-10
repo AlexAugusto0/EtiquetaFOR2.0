@@ -13,12 +13,6 @@
         private System.Windows.Forms.Label lblQtd;
         private System.Windows.Forms.NumericUpDown numQtd;
         private System.Windows.Forms.DataGridView dgvProdutos;
-        private System.Windows.Forms.DataGridViewCheckBoxColumn colSelecionar;
-        private System.Windows.Forms.DataGridViewTextBoxColumn colNome;
-        private System.Windows.Forms.DataGridViewTextBoxColumn colCodigo;
-        private System.Windows.Forms.DataGridViewTextBoxColumn colPreco;
-        private System.Windows.Forms.DataGridViewTextBoxColumn colQuantidade;
-        private System.Windows.Forms.DataGridViewButtonColumn colRemover;
 
         // ⭐ NOVOS CONTROLES PARA GERENCIAMENTO DE PRODUTOS
         private System.Windows.Forms.CheckBox chkSelecionarTodos;
@@ -38,6 +32,10 @@
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FormPrincipal));
             this.groupProduto = new System.Windows.Forms.GroupBox();
             this.panel1 = new System.Windows.Forms.Panel();
+            this.cmbCor = new System.Windows.Forms.ComboBox();
+            this.lblCor = new System.Windows.Forms.Label();
+            this.cmbTamanho = new System.Windows.Forms.ComboBox();
+            this.lblTamanho = new System.Windows.Forms.Label();
             this.BtnAdicionar2 = new System.Windows.Forms.Button();
             this.cmbBuscaReferencia = new System.Windows.Forms.ComboBox();
             this.label3 = new System.Windows.Forms.Label();
@@ -59,6 +57,8 @@
             this.colCodigo = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.colPreco = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.colQuantidade = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.colTam = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.colCor = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.colRemover = new System.Windows.Forms.DataGridViewButtonColumn();
             this.lblTitulo = new System.Windows.Forms.Label();
             this.btnDesigner = new System.Windows.Forms.Button();
@@ -86,7 +86,7 @@
             this.groupProduto.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
             this.groupProduto.Location = new System.Drawing.Point(7, 3);
             this.groupProduto.Name = "groupProduto";
-            this.groupProduto.Size = new System.Drawing.Size(851, 85);
+            this.groupProduto.Size = new System.Drawing.Size(996, 85);
             this.groupProduto.TabIndex = 1;
             this.groupProduto.TabStop = false;
             this.groupProduto.Text = "Adicionar Produto";
@@ -94,6 +94,10 @@
             // 
             // panel1
             // 
+            this.panel1.Controls.Add(this.cmbCor);
+            this.panel1.Controls.Add(this.lblCor);
+            this.panel1.Controls.Add(this.cmbTamanho);
+            this.panel1.Controls.Add(this.lblTamanho);
             this.panel1.Controls.Add(this.BtnAdicionar2);
             this.panel1.Controls.Add(this.cmbBuscaReferencia);
             this.panel1.Controls.Add(this.label3);
@@ -111,8 +115,42 @@
             this.panel1.Controls.Add(this.lblNome);
             this.panel1.Location = new System.Drawing.Point(6, 18);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(838, 51);
+            this.panel1.Size = new System.Drawing.Size(984, 51);
             this.panel1.TabIndex = 0;
+            // 
+            // cmbCor
+            // 
+            this.cmbCor.FormattingEnabled = true;
+            this.cmbCor.Location = new System.Drawing.Point(756, 22);
+            this.cmbCor.Name = "cmbCor";
+            this.cmbCor.Size = new System.Drawing.Size(74, 23);
+            this.cmbCor.TabIndex = 18;
+            // 
+            // lblCor
+            // 
+            this.lblCor.AutoSize = true;
+            this.lblCor.Location = new System.Drawing.Point(753, 5);
+            this.lblCor.Name = "lblCor";
+            this.lblCor.Size = new System.Drawing.Size(29, 15);
+            this.lblCor.TabIndex = 17;
+            this.lblCor.Text = "Cor:";
+            // 
+            // cmbTamanho
+            // 
+            this.cmbTamanho.FormattingEnabled = true;
+            this.cmbTamanho.Location = new System.Drawing.Point(676, 23);
+            this.cmbTamanho.Name = "cmbTamanho";
+            this.cmbTamanho.Size = new System.Drawing.Size(74, 23);
+            this.cmbTamanho.TabIndex = 16;
+            // 
+            // lblTamanho
+            // 
+            this.lblTamanho.AutoSize = true;
+            this.lblTamanho.Location = new System.Drawing.Point(673, 6);
+            this.lblTamanho.Name = "lblTamanho";
+            this.lblTamanho.Size = new System.Drawing.Size(33, 15);
+            this.lblTamanho.TabIndex = 15;
+            this.lblTamanho.Text = "Tam:";
             // 
             // BtnAdicionar2
             // 
@@ -120,7 +158,7 @@
             this.BtnAdicionar2.FlatAppearance.BorderSize = 0;
             this.BtnAdicionar2.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.BtnAdicionar2.ForeColor = System.Drawing.Color.Black;
-            this.BtnAdicionar2.Location = new System.Drawing.Point(740, 22);
+            this.BtnAdicionar2.Location = new System.Drawing.Point(891, 22);
             this.BtnAdicionar2.Name = "BtnAdicionar2";
             this.BtnAdicionar2.Size = new System.Drawing.Size(90, 25);
             this.BtnAdicionar2.TabIndex = 14;
@@ -152,7 +190,7 @@
             this.cmbBuscaNome.FormattingEnabled = true;
             this.cmbBuscaNome.Location = new System.Drawing.Point(168, 24);
             this.cmbBuscaNome.Name = "cmbBuscaNome";
-            this.cmbBuscaNome.Size = new System.Drawing.Size(520, 23);
+            this.cmbBuscaNome.Size = new System.Drawing.Size(500, 23);
             this.cmbBuscaNome.TabIndex = 12;
             this.cmbBuscaNome.SelectedIndexChanged += new System.EventHandler(this.cmbBuscaNome_SelectedIndexChanged);
             // 
@@ -187,7 +225,7 @@
             // 
             // numQtd
             // 
-            this.numQtd.Location = new System.Drawing.Point(694, 24);
+            this.numQtd.Location = new System.Drawing.Point(845, 24);
             this.numQtd.Maximum = new decimal(new int[] {
             1000,
             0,
@@ -211,7 +249,7 @@
             // 
             this.lblQtd.AutoSize = true;
             this.lblQtd.Font = new System.Drawing.Font("Segoe UI", 9F);
-            this.lblQtd.Location = new System.Drawing.Point(691, 6);
+            this.lblQtd.Location = new System.Drawing.Point(842, 6);
             this.lblQtd.Name = "lblQtd";
             this.lblQtd.Size = new System.Drawing.Size(30, 15);
             this.lblQtd.TabIndex = 6;
@@ -286,11 +324,13 @@
             this.colCodigo,
             this.colPreco,
             this.colQuantidade,
+            this.colTam,
+            this.colCor,
             this.colRemover});
             this.dgvProdutos.Location = new System.Drawing.Point(12, 164);
             this.dgvProdutos.Name = "dgvProdutos";
             this.dgvProdutos.RowHeadersVisible = false;
-            this.dgvProdutos.Size = new System.Drawing.Size(859, 370);
+            this.dgvProdutos.Size = new System.Drawing.Size(1004, 370);
             this.dgvProdutos.TabIndex = 2;
             this.dgvProdutos.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgvProdutos_CellContentClick);
             // 
@@ -323,6 +363,20 @@
             this.colQuantidade.Name = "colQuantidade";
             this.colQuantidade.Width = 50;
             // 
+            // colTam
+            // 
+            this.colTam.HeaderText = "Tam";
+            this.colTam.Name = "colTam";
+            this.colTam.Visible = false;
+            this.colTam.Width = 60;
+            // 
+            // colCor
+            // 
+            this.colCor.HeaderText = "Cor";
+            this.colCor.Name = "colCor";
+            this.colCor.Visible = false;
+            this.colCor.Width = 80;
+            // 
             // colRemover
             // 
             this.colRemover.HeaderText = "Excluir";
@@ -350,7 +404,7 @@
             this.btnDesigner.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnDesigner.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
             this.btnDesigner.ForeColor = System.Drawing.Color.Black;
-            this.btnDesigner.Location = new System.Drawing.Point(638, 7);
+            this.btnDesigner.Location = new System.Drawing.Point(780, 7);
             this.btnDesigner.Name = "btnDesigner";
             this.btnDesigner.Size = new System.Drawing.Size(180, 30);
             this.btnDesigner.TabIndex = 1;
@@ -365,7 +419,7 @@
             this.btnImprimir.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnImprimir.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
             this.btnImprimir.ForeColor = System.Drawing.Color.Black;
-            this.btnImprimir.Location = new System.Drawing.Point(718, 540);
+            this.btnImprimir.Location = new System.Drawing.Point(861, 540);
             this.btnImprimir.Name = "btnImprimir";
             this.btnImprimir.Size = new System.Drawing.Size(150, 30);
             this.btnImprimir.TabIndex = 2;
@@ -383,14 +437,14 @@
             this.panelTop.Controls.Add(this.pictureBox1);
             this.panelTop.Location = new System.Drawing.Point(12, 12);
             this.panelTop.Name = "panelTop";
-            this.panelTop.Size = new System.Drawing.Size(860, 47);
+            this.panelTop.Size = new System.Drawing.Size(1004, 47);
             this.panelTop.TabIndex = 0;
             // 
             // pictureBox2
             // 
             this.pictureBox2.Cursor = System.Windows.Forms.Cursors.Hand;
             this.pictureBox2.Image = global::EtiquetaFORNew.Properties.Resources.Sincronizando;
-            this.pictureBox2.Location = new System.Drawing.Point(824, 9);
+            this.pictureBox2.Location = new System.Drawing.Point(966, 9);
             this.pictureBox2.Name = "pictureBox2";
             this.pictureBox2.Size = new System.Drawing.Size(31, 24);
             this.pictureBox2.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
@@ -415,7 +469,7 @@
             this.panel2.Controls.Add(this.groupProduto);
             this.panel2.Location = new System.Drawing.Point(12, 57);
             this.panel2.Name = "panel2";
-            this.panel2.Size = new System.Drawing.Size(859, 77);
+            this.panel2.Size = new System.Drawing.Size(1004, 77);
             this.panel2.TabIndex = 3;
             // 
             // chkSelecionarTodos
@@ -437,7 +491,7 @@
             this.btnLimparTodos.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnLimparTodos.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
             this.btnLimparTodos.ForeColor = System.Drawing.Color.White;
-            this.btnLimparTodos.Location = new System.Drawing.Point(766, 136);
+            this.btnLimparTodos.Location = new System.Drawing.Point(912, 136);
             this.btnLimparTodos.Name = "btnLimparTodos";
             this.btnLimparTodos.Size = new System.Drawing.Size(104, 25);
             this.btnLimparTodos.TabIndex = 6;
@@ -451,7 +505,7 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(240)))), ((int)(((byte)(235)))), ((int)(((byte)(255)))));
-            this.ClientSize = new System.Drawing.Size(887, 575);
+            this.ClientSize = new System.Drawing.Size(1023, 575);
             this.Controls.Add(this.btnImprimir);
             this.Controls.Add(this.dgvProdutos);
             this.Controls.Add(this.panelTop);
@@ -494,5 +548,17 @@
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Button BtnAdicionar2;
         private System.Windows.Forms.PictureBox pictureBox2;
+        private System.Windows.Forms.ComboBox cmbCor;
+        private System.Windows.Forms.Label lblCor;
+        private System.Windows.Forms.ComboBox cmbTamanho;
+        private System.Windows.Forms.Label lblTamanho;
+        private System.Windows.Forms.DataGridViewCheckBoxColumn colSelecionar;
+        private System.Windows.Forms.DataGridViewTextBoxColumn colNome;
+        private System.Windows.Forms.DataGridViewTextBoxColumn colCodigo;
+        private System.Windows.Forms.DataGridViewTextBoxColumn colPreco;
+        private System.Windows.Forms.DataGridViewTextBoxColumn colQuantidade;
+        private System.Windows.Forms.DataGridViewTextBoxColumn colTam;
+        private System.Windows.Forms.DataGridViewTextBoxColumn colCor;
+        private System.Windows.Forms.DataGridViewButtonColumn colRemover;
     }
 }

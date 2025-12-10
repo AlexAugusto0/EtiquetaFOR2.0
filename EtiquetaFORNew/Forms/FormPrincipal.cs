@@ -61,6 +61,10 @@ namespace EtiquetaFORNew
 
         private DataRow produtoAtualCompleto = null;
 
+        // ⭐ NOVO CONFECÇÃO: Módulo da aplicação e flag de confecção
+        private string moduloApp = "";
+        private bool isConfeccao = false;
+
 
 
         private static readonly string CAMINHO_CONFIGURACOES =
@@ -118,11 +122,29 @@ namespace EtiquetaFORNew
 
 
         private void FormPrincipal_Load(object sender, EventArgs e)
-
         {
+            // ========================================
+            // 🔹 VALIDAR MÓDULO DA APLICAÇÃO
+            // ========================================
+            try
+            {
+                var config = Data.DatabaseConfig.LoadConfiguration();
+                moduloApp = config.ModuloApp ?? "";
+                isConfeccao = moduloApp.Equals("CONFECCAO", StringComparison.OrdinalIgnoreCase);
+
+                // Configura visibilidade dos controles de confecção
+                ConfigurarControlesConfeccao();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(
+                    $"Erro ao carregar configuração do módulo:\n{ex.Message}",
+                    "Aviso",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Warning);
+            }
 
             // ========================================
-
             // 🔹 INICIALIZAR BANCO LOCAL SQLITE
 
             // ========================================
@@ -1191,7 +1213,7 @@ namespace EtiquetaFORNew
                     cmbBuscaCodigo.Items.Clear();
                     cmbBuscaCodigo.Items.AddRange(listaCodigo.Distinct().OrderBy(s => s).ToArray());
                 }
-            
+
 
                 // ⭐ Marca como carregado com sucesso
                 mercadoriasCarregadas = true;
@@ -1369,6 +1391,12 @@ namespace EtiquetaFORNew
                     txtCodigo.Text = codigo;
                     txtPreco.Text = preco.ToString("F2");
                     numQtd.Value = 1;
+
+                    // ⭐ CONFECÇÃO: Carregar tamanhos e cores do produto
+                    if (isConfeccao && !string.IsNullOrEmpty(codigo))
+                    {
+                        CarregarTamanhosECores(codigo);
+                    }
                 }
                 else
                 {
@@ -1525,6 +1553,13 @@ namespace EtiquetaFORNew
                     produto.Prateleira = produtoAtualCompleto["Prateleira"]?.ToString();
                     produto.Tam = produtoAtualCompleto["Tam"]?.ToString();
                     produto.Cores = produtoAtualCompleto["Cores"]?.ToString();
+
+                    // ⭐ CONFECÇÃO: Sobrescreve Tam e Cor com os valores selecionados nas combos
+                    if (isConfeccao && cmbTamanho != null && cmbCor != null)
+                    {
+                        produto.Tam = cmbTamanho.SelectedItem?.ToString() ?? produto.Tam ?? "";
+                        produto.Cores = cmbCor.SelectedItem?.ToString() ?? produto.Cores ?? "";
+                    }
                 }
                 catch
                 {
@@ -1564,6 +1599,13 @@ namespace EtiquetaFORNew
                         produto.Prateleira = row["Prateleira"]?.ToString();
                         produto.Tam = row["Tam"]?.ToString();
                         produto.Cores = row["Cores"]?.ToString();
+
+                        // ⭐ CONFECÇÃO: Sobrescreve Tam e Cor com os valores selecionados nas combos
+                        if (isConfeccao && cmbTamanho != null && cmbCor != null)
+                        {
+                            produto.Tam = cmbTamanho.SelectedItem?.ToString() ?? produto.Tam ?? "";
+                            produto.Cores = cmbCor.SelectedItem?.ToString() ?? produto.Cores ?? "";
+                        }
                     }
                 }
                 catch
@@ -1574,7 +1616,17 @@ namespace EtiquetaFORNew
 
             // Adiciona o produto à lista e ao DataGridView
             produtos.Add(produto);
-            dgvProdutos.Rows.Add(false, produto.Nome, produto.Codigo, produto.Preco.ToString("C2"), produto.Quantidade);
+
+            // ⭐ CONFECÇÃO: Inclui colunas Tam e Cor se o módulo for CONFECÇÃO
+            if (isConfeccao && dgvProdutos.Columns.Contains("colTam") && dgvProdutos.Columns.Contains("colCor"))
+            {
+                dgvProdutos.Rows.Add(false, produto.Nome, produto.Codigo, produto.Preco.ToString("C2"),
+                    produto.Quantidade, produto.Tam ?? "", produto.Cores ?? "");
+            }
+            else
+            {
+                dgvProdutos.Rows.Add(false, produto.Nome, produto.Codigo, produto.Preco.ToString("C2"), produto.Quantidade);
+            }
 
             // ⭐ Limpar DataRow armazenado após adicionar
             produtoAtualCompleto = null;
@@ -1587,6 +1639,7 @@ namespace EtiquetaFORNew
             txtCodigo.Clear();
 
             txtPreco.Clear();
+      
 
             numQtd.Value = 1;
 
@@ -1599,6 +1652,13 @@ namespace EtiquetaFORNew
             if (cmbBuscaReferencia != null) cmbBuscaReferencia.Text = "";
 
             if (cmbBuscaCodigo != null) cmbBuscaCodigo.Text = "";
+
+            // ⭐ CONFECÇÃO: Limpar combos de Tam e Cor
+            if (isConfeccao)
+            {
+                if (cmbTamanho != null) cmbTamanho.Text = "";
+                if (cmbCor != null) cmbCor.Text = "";
+            }
 
 
 
@@ -2082,6 +2142,84 @@ namespace EtiquetaFORNew
                     "Sucesso",
                     MessageBoxButtons.OK,
                     MessageBoxIcon.Information);
+            }
+        }
+
+
+        // ========================================
+        // 🔹 CONFIGURAÇÃO MÓDULO CONFECÇÃO
+        // ========================================
+
+        /// <summary>
+        /// Configura a visibilidade dos controles específicos do módulo CONFECÇÃO
+        /// </summary>
+        private void ConfigurarControlesConfeccao()
+        {
+            // Mostra/oculta os controles de Tamanho e Cor baseado no módulo
+            if (cmbTamanho != null) cmbTamanho.Visible = isConfeccao;
+            if (lblTamanho != null) lblTamanho.Visible = isConfeccao;
+            if (cmbCor != null) cmbCor.Visible = isConfeccao;
+            if (lblCor != null) lblCor.Visible = isConfeccao;
+
+            // Configura colunas do DataGridView
+            if (dgvProdutos.Columns.Contains("colTam"))
+                dgvProdutos.Columns["colTam"].Visible = isConfeccao;
+            if (dgvProdutos.Columns.Contains("colCor"))
+                dgvProdutos.Columns["colCor"].Visible = isConfeccao;
+        }
+
+        /// <summary>
+        /// Carrega os tamanhos e cores disponíveis para um produto específico
+        /// </summary>
+        private void CarregarTamanhosECores(string codigoMercadoria)
+        {
+            if (!isConfeccao || string.IsNullOrEmpty(codigoMercadoria))
+                return;
+
+            // Proteção: Se controles não existem, retorna silenciosamente
+            if (cmbTamanho == null || cmbCor == null)
+                return;
+
+            try
+            {
+                cmbTamanho.Items.Clear();
+                cmbCor.Items.Clear();
+
+                // Converter código para int
+                if (!int.TryParse(codigoMercadoria, out int codigo))
+                    return;
+
+                // ⭐ NOVO: Buscar TODOS os tamanhos e cores daquele produto
+                // Este método retorna listas distintas de TODOS os registros
+                var (tamanhos, cores) = LocalDatabaseManager.BuscarTamanhosECoresPorCodigo(codigo);
+
+                // Adicionar tamanhos encontrados
+                foreach (var tamanho in tamanhos)
+                {
+                    if (!string.IsNullOrEmpty(tamanho))
+                        cmbTamanho.Items.Add(tamanho);
+                }
+
+                // Adicionar cores encontradas
+                foreach (var cor in cores)
+                {
+                    if (!string.IsNullOrEmpty(cor))
+                        cmbCor.Items.Add(cor);
+                }
+
+                // Seleciona primeiro item se disponível
+                if (cmbTamanho.Items.Count > 0)
+                    cmbTamanho.SelectedIndex = 0;
+                if (cmbCor.Items.Count > 0)
+                    cmbCor.SelectedIndex = 0;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(
+                    $"Erro ao carregar tamanhos e cores: {ex.Message}",
+                    "Erro",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Error);
             }
         }
 

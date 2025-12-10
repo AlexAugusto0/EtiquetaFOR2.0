@@ -139,7 +139,7 @@ namespace EtiquetaFORNew.Data
                         " + (string.IsNullOrEmpty(filtro) ? "" : "AND " + filtro) + @"
                         ORDER BY [Código da Mercadoria]
                     ";
-            
+
                     using (var sqlCmd = new SqlCommand(query, sqlConn))
                     using (var reader = sqlCmd.ExecuteReader())
                     {
@@ -565,6 +565,68 @@ namespace EtiquetaFORNew.Data
             {
                 return 0;
             }
+        }
+
+        /// <summary>
+        /// Busca todos os tamanhos e cores disponíveis para um produto específico
+        /// Retorna listas distintas de TODOS os registros daquele produto
+        /// </summary>
+        public static (List<string> tamanhos, List<string> cores) BuscarTamanhosECoresPorCodigo(int codigo)
+        {
+            var tamanhos = new List<string>();
+            var cores = new List<string>();
+
+            try
+            {
+                using (var conn = new SQLiteConnection(ConnectionString))
+                {
+                    conn.Open();
+
+                    string query = @"
+                        SELECT DISTINCT Tam, Cores
+                        FROM Mercadorias
+                        WHERE CodigoMercadoria = @codigo
+                        AND (Tam IS NOT NULL OR Cores IS NOT NULL)
+                    ";
+
+                    using (var cmd = new SQLiteCommand(query, conn))
+                    {
+                        cmd.Parameters.AddWithValue("@codigo", codigo);
+
+                        using (var reader = cmd.ExecuteReader())
+                        {
+                            while (reader.Read())
+                            {
+                                // Processar Tamanhos
+                                string tam = reader["Tam"]?.ToString();
+                                if (!string.IsNullOrEmpty(tam))
+                                {
+                                    if (!tamanhos.Contains(tam))
+                                        tamanhos.Add(tam);
+                                }
+
+                                // Processar Cores
+                                string cor = reader["Cores"]?.ToString();
+                                if (!string.IsNullOrEmpty(cor))
+                                {
+                                    if (!cores.Contains(cor))
+                                        cores.Add(cor);
+                                }
+                            }
+                        }
+                    }
+                }
+
+                // Ordenar para melhor apresentação
+                tamanhos.Sort();
+                cores.Sort();
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Erro ao buscar tamanhos e cores: {ex.Message}", ex);
+            }
+
+            return (tamanhos, cores);
         }
     }
 }
