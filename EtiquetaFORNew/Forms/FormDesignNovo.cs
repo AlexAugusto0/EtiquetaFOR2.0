@@ -1458,7 +1458,7 @@ namespace EtiquetaFORNew.Forms
                 }
             }
 
-            using (Font fonte = new Font("Arial", 7))
+            using (Font fonte = new Font("Arial", 7 * zoom))  // Aplicar zoom na fonte
             using (SolidBrush brush = new SolidBrush(Color.Black))
             {
                 StringFormat sf = new StringFormat
