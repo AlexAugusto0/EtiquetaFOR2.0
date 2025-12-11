@@ -137,7 +137,7 @@ namespace EtiquetaFORNew
                 isConfeccao = moduloApp.Equals("CONFECCAO", StringComparison.OrdinalIgnoreCase);
 
                 // Configura visibilidade dos controles de confecção
-                
+
                 ConfigurarControlesConfeccao();
             }
             catch (Exception ex)
@@ -1187,7 +1187,7 @@ namespace EtiquetaFORNew
                     {
                         codigo = row["CodigoMercadoria"]?.ToString();
                     }
-                    
+
 
                     if (!string.IsNullOrEmpty(nome))
                     {
@@ -1320,7 +1320,7 @@ namespace EtiquetaFORNew
 
 
 
-                }
+            }
 
         }
 
@@ -1344,7 +1344,7 @@ namespace EtiquetaFORNew
                 // ⭐ CORREÇÃO 1: Busca primeiro na memória (rápido)
                 DataRow[] resultados = mercadorias.Select($"{nomeCampo} = '{termoFiltrado}'");
                 DataRow row = null;
-                
+
                 if (resultados.Length > 0)
                 {
                     row = resultados[0];
@@ -1405,12 +1405,12 @@ namespace EtiquetaFORNew
                     string prateleira = row["Prateleira"]?.ToString();
                     string tam = row["Tam"]?.ToString();
                     string cores = row["Cores"]?.ToString();
-                   
+
 
                     // Sincronizar os ComboBoxes
                     cmbBuscaNome.Text = nome;
                     cmbBuscaReferencia.Text = referencia;
-                    
+
                     if (isConfeccao)
                     {
                         cmbBuscaCodigo.Text = codBarras_grade;
@@ -1422,13 +1422,13 @@ namespace EtiquetaFORNew
                     {
                         cmbBuscaCodigo.Text = codigo;
                     }
-                    
+
 
                     // Preencher campos de cadastro
                     txtNome.Text = nome;
                     txtCodigo.Text = codigo;
                     txtPreco.Text = preco.ToString("F2");
-                    
+
                     numQtd.Value = 1;
 
                     // ⭐ CONFECÇÃO: Carregar tamanhos e cores do produto
@@ -1437,11 +1437,11 @@ namespace EtiquetaFORNew
                         if (PesquisaCodigo != true)
                         {
                             CarregarTamanhosECores(codigo);
-                            
+
                         }
                         ;
 
-                       
+
                     }
                 }
                 else
@@ -1622,13 +1622,13 @@ namespace EtiquetaFORNew
                     string codigoFiltrado = txtCodigo.Text.Replace("'", "''");
                     if (isConfeccao)
                     {
-                         resultados = mercadorias.Select($"CodBarras_Grade = '{codigoFiltrado}'");
+                        resultados = mercadorias.Select($"CodBarras_Grade = '{codigoFiltrado}'");
                     }
                     else
                     {
                         resultados = mercadorias.Select($"CodigoMercadoria = '{codigoFiltrado}'");
                     }
-                    
+
 
                     if (resultados.Length > 0)
                     {
@@ -1696,7 +1696,7 @@ namespace EtiquetaFORNew
             txtCodigo.Clear();
 
             txtPreco.Clear();
-      
+
 
             numQtd.Value = 1;
 
@@ -1865,7 +1865,7 @@ namespace EtiquetaFORNew
             {
                 if (cmb == cmbBuscaCodigo) return "CodigoMercadoria";
             }
-            
+
 
             return null;
 
@@ -2227,7 +2227,7 @@ namespace EtiquetaFORNew
                 cmbBuscaNome.Size = new System.Drawing.Size(500, 23);
                 colNome.Width = 500;
             }
-            
+
             if (cmbTamanho != null) cmbTamanho.Visible = isConfeccao;
             if (lblTamanho != null) lblTamanho.Visible = isConfeccao;
             if (cmbCor != null) cmbCor.Visible = isConfeccao;
@@ -2401,6 +2401,132 @@ namespace EtiquetaFORNew
         {
 
         }
+
+        /// <summary>
+        /// ⭐ CARREGAMENTO: Abre o formulário de filtros para carregar produtos em massa
+        /// </summary>
+        private void btnCarregar_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                using (FormFiltrosCarregamento formFiltros = new FormFiltrosCarregamento())
+                {
+                    if (formFiltros.ShowDialog() == DialogResult.OK)
+                    {
+                        // Obter os filtros selecionados
+                        string grupo = formFiltros.GrupoSelecionado;
+                        string fabricante = formFiltros.FabricanteSelecionado;
+                        string fornecedor = formFiltros.FornecedorSelecionado;
+
+                        // Buscar mercadorias com os filtros
+                        DataTable mercadoriasFiltradas = LocalDatabaseManager.BuscarMercadoriasPorFiltros(
+                            grupo, fabricante, fornecedor);
+
+                        if (mercadoriasFiltradas != null && mercadoriasFiltradas.Rows.Count > 0)
+                        {
+                            // Confirmar com o usuário
+                            string mensagem = $"Foram encontrados {mercadoriasFiltradas.Rows.Count} produtos.\n\n" +
+                                            $"Deseja adicionar todos ao painel de impressão?";
+
+                            if (MessageBox.Show(mensagem, "Confirmar Carregamento",
+                                MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
+                            {
+                                // Adicionar cada produto ao painel
+                                int adicionados = 0;
+                                foreach (DataRow row in mercadoriasFiltradas.Rows)
+                                {
+                                    try
+                                    {
+                                        AdicionarProdutoAoPanel(row);
+                                        adicionados++;
+                                    }
+                                    catch (Exception exRow)
+                                    {
+                                        System.Diagnostics.Debug.WriteLine(
+                                            $"Erro ao adicionar produto {row["Mercadoria"]}: {exRow.Message}");
+                                    }
+                                }
+
+                                MessageBox.Show($"{adicionados} produtos foram adicionados ao painel!",
+                                    "Carregamento Concluído",
+                                    MessageBoxButtons.OK, MessageBoxIcon.Information);
+                            }
+                        }
+                        else
+                        {
+                            MessageBox.Show("Nenhum produto encontrado com os filtros selecionados.",
+                                "Aviso", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Erro ao carregar produtos: {ex.Message}",
+                    "Erro", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        /// <summary>
+        /// ⭐ CARREGAMENTO: Adiciona um produto ao painel a partir de um DataRow
+        /// </summary>
+        private void AdicionarProdutoAoPanel(DataRow row)
+        {
+            string codigoParaExibir = "";
+
+            // ⭐ CONFECÇÃO: Usar CodBarras_Grade específico de cada Tam+Cor
+            if (isConfeccao && row.Table.Columns.Contains("CodBarras_Grade") &&
+                !string.IsNullOrEmpty(row["CodBarras_Grade"]?.ToString()))
+            {
+                codigoParaExibir = row["CodBarras_Grade"].ToString();
+            }
+            // Fallback: Se não tiver CodBarras_Grade ou não for confecção
+            else
+            {
+                codigoParaExibir = row["CodFabricante"]?.ToString() ??
+                                   row["CodBarras"]?.ToString() ?? "";
+            }
+
+            // Criar um novo produto
+            Produto produto = new Produto
+            {
+                Nome = row["Mercadoria"].ToString(),
+                Codigo = codigoParaExibir,
+                Preco = Convert.ToDecimal(row["PrecoVenda"] ?? 0),
+                Quantidade = 1 // Quantidade padrão
+            };
+
+            // Adicionar campos de confecção se disponíveis
+            if (isConfeccao && row.Table.Columns.Contains("Tam") && row.Table.Columns.Contains("Cores"))
+            {
+                produto.Tam = row["Tam"]?.ToString() ?? "";
+                produto.Cores = row["Cores"]?.ToString() ?? "";
+            }
+
+            // Adicionar à lista de produtos
+            produtos.Add(produto);
+
+            // Adicionar à DataGridView
+            int rowIndex = dgvProdutos.Rows.Add();
+            DataGridViewRow dgvRow = dgvProdutos.Rows[rowIndex];
+
+            dgvRow.Cells["colNome"].Value = produto.Nome;
+            dgvRow.Cells["colCodigo"].Value = produto.Codigo;
+            dgvRow.Cells["colPreco"].Value = produto.Preco.ToString("N2");
+            dgvRow.Cells["colQuantidade"].Value = produto.Quantidade;
+
+            if (isConfeccao)
+            {
+                dgvRow.Cells["colTam"].Value = produto.Tam;
+                dgvRow.Cells["colCor"].Value = produto.Cores;
+            }
+
+            dgvRow.Cells["colSelecionar"].Value = false;
+            dgvRow.Cells["colRemover"].Value = "Remover";
+        }
+    }
+
+
     }
 
 
@@ -2409,4 +2535,5 @@ namespace EtiquetaFORNew
 
 
 
-}
+
+       

@@ -17,9 +17,9 @@ namespace EtiquetaFORNew.Data
         private static readonly string DbPath = Path.Combine(
             AppDomain.CurrentDomain.BaseDirectory,
             "LocalData.db");
-        
+
         private static readonly string ConnectionString = $"Data Source={DbPath};Version=3;";
-  
+
         /// <summary>
         /// Inicializa o banco local e cria as tabelas se não existirem
         /// </summary>
@@ -291,6 +291,120 @@ namespace EtiquetaFORNew.Data
             catch (Exception ex)
             {
                 throw new Exception($"Erro ao buscar mercadorias: {ex.Message}", ex);
+            }
+        }
+
+
+        /// <summary>
+        /// ⭐ CARREGAMENTO: Obtém valores distintos de um campo específico
+        /// </summary>
+        public static DataTable ObterValoresDistintos(string campo)
+        {
+            try
+            {
+                using (var conn = new SQLiteConnection(ConnectionString))
+                {
+                    conn.Open();
+
+                    string query = $@"
+                        SELECT DISTINCT {campo}
+                        FROM Mercadorias
+                        WHERE {campo} IS NOT NULL 
+                        AND {campo} != ''
+                        ORDER BY {campo}
+                    ";
+
+                    using (var cmd = new SQLiteCommand(query, conn))
+                    {
+                        DataTable dt = new DataTable();
+                        using (var adapter = new SQLiteDataAdapter(cmd))
+                        {
+                            adapter.Fill(dt);
+                        }
+                        return dt;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Erro ao obter valores distintos de {campo}: {ex.Message}");
+                return new DataTable();
+            }
+        }
+
+        /// <summary>
+        /// ⭐ CARREGAMENTO: Busca mercadorias por múltiplos filtros
+        /// </summary>
+        public static DataTable BuscarMercadoriasPorFiltros(string grupo = null, string fabricante = null, string fornecedor = null)
+        {
+            try
+            {
+                using (var conn = new SQLiteConnection(ConnectionString))
+                {
+                    conn.Open();
+
+                    string query = @"
+                        SELECT 
+                            CodigoMercadoria,
+                            CodFabricante,
+                            CodBarras,
+                            Mercadoria,
+                            PrecoVenda,
+                            VendaA,
+                            VendaB,
+                            VendaC,
+                            Fornecedor,
+                            Fabricante,
+                            Grupo,
+                            Prateleira,
+                            Tam,
+                            Cores,
+                            CodBarras_Grade,
+                            Registro
+                        FROM Mercadorias
+                        WHERE 1=1
+                    ";
+
+                    List<string> condicoes = new List<string>();
+
+                    if (!string.IsNullOrEmpty(grupo))
+                        condicoes.Add("Grupo = @grupo");
+
+                    if (!string.IsNullOrEmpty(fabricante))
+                        condicoes.Add("Fabricante = @fabricante");
+
+                    if (!string.IsNullOrEmpty(fornecedor))
+                        condicoes.Add("Fornecedor = @fornecedor");
+
+                    if (condicoes.Count > 0)
+                        query += " AND " + string.Join(" AND ", condicoes);
+
+                    query += " ORDER BY Mercadoria";
+
+                    using (var cmd = new SQLiteCommand(query, conn))
+                    {
+                        if (!string.IsNullOrEmpty(grupo))
+                            cmd.Parameters.AddWithValue("@grupo", grupo);
+
+                        if (!string.IsNullOrEmpty(fabricante))
+                            cmd.Parameters.AddWithValue("@fabricante", fabricante);
+
+                        if (!string.IsNullOrEmpty(fornecedor))
+                            cmd.Parameters.AddWithValue("@fornecedor", fornecedor);
+
+                        DataTable dt = new DataTable();
+                        using (var adapter = new SQLiteDataAdapter(cmd))
+                        {
+                            adapter.Fill(dt);
+                        }
+                        return dt;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Erro ao buscar mercadorias por filtros: {ex.Message}");
+                return new DataTable();
             }
         }
 
@@ -581,7 +695,7 @@ namespace EtiquetaFORNew.Data
         {
             var tamanhos = new List<string>();
             var cores = new List<string>();
-            
+
 
             try
             {
@@ -591,9 +705,9 @@ namespace EtiquetaFORNew.Data
                     conn.Open();
 
                     string query;
-                    
 
-                        query = @"
+
+                    query = @"
                         SELECT DISTINCT Tam, Cores
                         FROM Mercadorias
                         WHERE CodigoMercadoria = @codigo

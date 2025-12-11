@@ -17,6 +17,8 @@
         // ⭐ NOVOS CONTROLES PARA GERENCIAMENTO DE PRODUTOS
         private System.Windows.Forms.CheckBox chkSelecionarTodos;
         private System.Windows.Forms.Button btnLimparTodos;
+        private System.Windows.Forms.Button btnCarregar;
+  
 
         protected override void Dispose(bool disposing)
         {
@@ -69,6 +71,7 @@
             this.panel2 = new System.Windows.Forms.Panel();
             this.chkSelecionarTodos = new System.Windows.Forms.CheckBox();
             this.btnLimparTodos = new System.Windows.Forms.Button();
+            this.btnCarregar = new System.Windows.Forms.Button();
             this.groupProduto.SuspendLayout();
             this.panel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numQtd)).BeginInit();
@@ -502,6 +505,21 @@
             this.btnLimparTodos.UseVisualStyleBackColor = false;
             this.btnLimparTodos.Click += new System.EventHandler(this.btnLimparTodos_Click);
             // 
+            // btnCarregar
+            // 
+            this.btnCarregar.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(52)))), ((int)(((byte)(152)))), ((int)(((byte)(219)))));
+            this.btnCarregar.FlatAppearance.BorderSize = 0;
+            this.btnCarregar.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnCarregar.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
+            this.btnCarregar.ForeColor = System.Drawing.Color.White;
+            this.btnCarregar.Location = new System.Drawing.Point(790, 136);
+            this.btnCarregar.Name = "btnCarregar";
+            this.btnCarregar.Size = new System.Drawing.Size(116, 25);
+            this.btnCarregar.TabIndex = 7;
+            this.btnCarregar.Text = "📥 Carregar";
+            this.btnCarregar.UseVisualStyleBackColor = false;
+            this.btnCarregar.Click += new System.EventHandler(this.btnCarregar_Click);
+            // 
             // FormPrincipal
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
@@ -513,6 +531,7 @@
             this.Controls.Add(this.panelTop);
             this.Controls.Add(this.chkSelecionarTodos);
             this.Controls.Add(this.btnLimparTodos);
+            this.Controls.Add(this.btnCarregar);
             this.Controls.Add(this.panel2);
             this.Font = new System.Drawing.Font("Segoe UI", 9F);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
