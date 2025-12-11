@@ -564,7 +564,7 @@ namespace EtiquetaFORNew.Forms
             panelToolbox.Controls.Add(lblTitulo);
 
             int yPos = 45;
-           
+
             // Label Campos
             Label lblCampos = new Label
             {
@@ -1111,6 +1111,10 @@ namespace EtiquetaFORNew.Forms
                 elementoSelecionado.Fonte.FontFamily,
                 elementoSelecionado.Fonte.Size,
                 estilo);
+
+            // Salvar as flags no elemento
+            elementoSelecionado.Negrito = chkNegrito.Checked;
+            elementoSelecionado.Italico = chkItalico.Checked;
 
             pbCanvas.Invalidate();
         }
@@ -1786,7 +1790,7 @@ namespace EtiquetaFORNew.Forms
             // PROTEÇÃO: Verifica se pbCanvas foi inicializado
             if (pbCanvas == null || panelCanvas == null)
                 return;
-            
+
             int larguraPixels = (int)(configuracao.LarguraEtiqueta * MM_PARA_PIXEL * zoom);
             int alturaPixels = (int)(configuracao.AlturaEtiqueta * MM_PARA_PIXEL * zoom);
 
