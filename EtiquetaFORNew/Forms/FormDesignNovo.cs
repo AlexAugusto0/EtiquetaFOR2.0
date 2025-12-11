@@ -24,6 +24,7 @@ namespace EtiquetaFORNew.Forms
 
         // Controles do painel de configuração
         private Panel panelConfiguracao;
+        private Button btnToggleConfig;  // Botão para mostrar/ocultar painel de configurações
         private NumericUpDown numLargura;
         private NumericUpDown numAltura;
         private ComboBox cmbImpressora;
@@ -56,6 +57,7 @@ namespace EtiquetaFORNew.Forms
         private bool redimensionando = false;
         private Point pontoInicialMouse;
         private Rectangle boundsIniciais;
+        private Point deltaArrasto;  // Delta do movimento (em pixels) para aplicar no final
         private int handleSelecionado = -1;
 
         // Constantes
@@ -109,11 +111,21 @@ namespace EtiquetaFORNew.Forms
         {
             CriarInterface();
             CarregarDadosNaInterface();
+
+            // Posicionar o botão de toggle após a interface estar criada
+            if (btnToggleConfig != null && panelConfiguracao != null)
+            {
+                btnToggleConfig.Location = new Point(
+                    this.ClientSize.Width - panelConfiguracao.Width - btnToggleConfig.Width,
+                    (this.ClientSize.Height - btnToggleConfig.Height) / 2
+                );
+            }
         }
 
         private void ConfigurarFormulario()
         {
             this.WindowState = FormWindowState.Maximized;
+            this.MinimumSize = new Size(1000, 700);
             this.DoubleBuffered = true;
             this.BackColor = Color.FromArgb(240, 240, 240);
             this.KeyPreview = true;
@@ -232,6 +244,69 @@ namespace EtiquetaFORNew.Forms
 
             CriarPainelConfiguracao();
 
+            // Botão para ocultar/mostrar painel de configurações (flutuante)
+            btnToggleConfig = new Button
+            {
+                Text = "▶",  // Seta para DIREITA quando visível (clicar para ocultar)
+                Size = new Size(30, 80),
+                BackColor = Color.FromArgb(46, 204, 113),  // VERDE quando visível
+                ForeColor = Color.White,
+                FlatStyle = FlatStyle.Flat,
+                Font = new Font("Segoe UI", 14, FontStyle.Bold),
+                Cursor = Cursors.Hand
+            };
+            btnToggleConfig.FlatAppearance.BorderSize = 0;
+
+            this.Controls.Add(btnToggleConfig);
+            btnToggleConfig.BringToFront();
+
+            // Reposicionar ao redimensionar a janela
+            this.Resize += (s, e) =>
+            {
+                if (btnToggleConfig == null) return;
+
+                if (panelConfiguracao.Width > 0)
+                {
+                    btnToggleConfig.Location = new Point(
+                        this.ClientSize.Width - panelConfiguracao.Width - btnToggleConfig.Width,
+                        (this.ClientSize.Height - btnToggleConfig.Height) / 2
+                    );
+                }
+                else
+                {
+                    btnToggleConfig.Location = new Point(
+                        this.ClientSize.Width - btnToggleConfig.Width - 5,
+                        (this.ClientSize.Height - btnToggleConfig.Height) / 2
+                    );
+                }
+            };
+
+            btnToggleConfig.Click += (s, e) =>
+            {
+                if (panelConfiguracao.Width > 0)
+                {
+                    // Ocultar - botão fica AZUL com seta para ESQUERDA (mostrar)
+                    panelConfiguracao.Width = 0;
+                    btnToggleConfig.Text = "◀";  // Seta para ESQUERDA
+                    btnToggleConfig.BackColor = Color.FromArgb(52, 152, 219);  // AZUL
+                    btnToggleConfig.Location = new Point(
+                        this.ClientSize.Width - btnToggleConfig.Width - 5,
+                        btnToggleConfig.Location.Y
+                    );
+                }
+                else
+                {
+                    // Mostrar - botão fica VERDE com seta para DIREITA (ocultar)
+                    panelConfiguracao.Width = 350;
+                    btnToggleConfig.Text = "▶";  // Seta para DIREITA
+                    btnToggleConfig.BackColor = Color.FromArgb(46, 204, 113);  // VERDE
+                    btnToggleConfig.Location = new Point(
+                        this.ClientSize.Width - panelConfiguracao.Width - btnToggleConfig.Width,
+                        btnToggleConfig.Location.Y
+                    );
+                }
+            };
+
             // ==================== PAINEL LATERAL ESQUERDO - TOOLBOX ====================
             panelToolbox = new Panel
             {
@@ -253,19 +328,21 @@ namespace EtiquetaFORNew.Forms
                 BackColor = Color.FromArgb(189, 195, 199),
                 AutoScroll = true
             };
+            panelCanvas.Resize += (s, e) => AtualizarTamanhoCanvas();
             this.Controls.Add(panelCanvas);
 
             pbCanvas = new PictureBox
             {
                 BackColor = Color.White,
                 BorderStyle = BorderStyle.FixedSingle,
-                SizeMode = PictureBoxSizeMode.AutoSize,
-                Location = new Point(50, 50)
+                Location = new Point(50, 50),
+                Size = new Size(400, 300)  // Tamanho inicial, será atualizado
             };
             pbCanvas.Paint += PbCanvas_Paint;
             pbCanvas.MouseDown += PbCanvas_MouseDown;
             pbCanvas.MouseMove += PbCanvas_MouseMove;
             pbCanvas.MouseUp += PbCanvas_MouseUp;
+            pbCanvas.MouseWheel += PbCanvas_MouseWheel;
 
             panelCanvas.Controls.Add(pbCanvas);
 
@@ -1204,10 +1281,13 @@ namespace EtiquetaFORNew.Forms
             if (template.Elementos.Count == 0)
             {
                 string texto = "Adicione elementos usando a toolbox ←";
-                SizeF tamanho = g.MeasureString(texto, this.Font);
-                g.DrawString(texto, this.Font, Brushes.Gray,
-                    rectEtiqueta.X + (rectEtiqueta.Width - tamanho.Width) / 2,
-                    rectEtiqueta.Y + (rectEtiqueta.Height - tamanho.Height) / 2);
+                using (Font fonteComZoom = new Font(this.Font.FontFamily, this.Font.Size * zoom, this.Font.Style))
+                {
+                    SizeF tamanho = g.MeasureString(texto, fonteComZoom);
+                    g.DrawString(texto, fonteComZoom, Brushes.Gray,
+                        rectEtiqueta.X + (rectEtiqueta.Width - tamanho.Width) / 2,
+                        rectEtiqueta.Y + (rectEtiqueta.Height - tamanho.Height) / 2);
+                }
                 return;
             }
 
@@ -1217,7 +1297,14 @@ namespace EtiquetaFORNew.Forms
 
                 if (elem == elementoSelecionado)
                 {
+                    // Calcular bounds considerando o delta de arrasto se estiver arrastando
                     Rectangle bounds = ConverterParaPixels(elem.Bounds, rectEtiqueta);
+                    if (arrastando && deltaArrasto != Point.Empty)
+                    {
+                        bounds.X += deltaArrasto.X;
+                        bounds.Y += deltaArrasto.Y;
+                    }
+
                     using (Pen penSelecao = new Pen(Color.Blue, 2))
                     {
                         penSelecao.DashStyle = DashStyle.Dash;
@@ -1230,12 +1317,19 @@ namespace EtiquetaFORNew.Forms
 
         private void DesenharElemento(Graphics g, ElementoEtiqueta elem, RectangleF rectEtiqueta, Produto produto)
         {
+            // Calcular bounds considerando o delta de arrasto se este elemento está sendo arrastado
             Rectangle bounds = ConverterParaPixels(elem.Bounds, rectEtiqueta);
+            if (elem == elementoSelecionado && arrastando && deltaArrasto != Point.Empty)
+            {
+                bounds.X += deltaArrasto.X;
+                bounds.Y += deltaArrasto.Y;
+            }
 
             switch (elem.Tipo)
             {
                 case TipoElemento.Texto:
                     using (SolidBrush brush = new SolidBrush(elem.Cor))
+                    using (Font fonteComZoom = new Font(elem.Fonte.FontFamily, elem.Fonte.Size * zoom, elem.Fonte.Style))
                     {
                         StringFormat sf = new StringFormat
                         {
@@ -1244,13 +1338,14 @@ namespace EtiquetaFORNew.Forms
                             Trimming = StringTrimming.EllipsisCharacter,  // ← ADICIONAR
                             FormatFlags = StringFormatFlags.LineLimit     // ← ADICIONAR
                         };
-                        g.DrawString(elem.Conteudo ?? "Texto", elem.Fonte, brush, bounds, sf);
+                        g.DrawString(elem.Conteudo ?? "Texto", fonteComZoom, brush, bounds, sf);
                     }
                     break;
 
                 case TipoElemento.Campo:
                     string valor = ObterValorCampo(elem.Conteudo, produto);
                     using (SolidBrush brush = new SolidBrush(elem.Cor))
+                    using (Font fonteComZoom = new Font(elem.Fonte.FontFamily, elem.Fonte.Size * zoom, elem.Fonte.Style))
                     {
                         StringFormat sf = new StringFormat
                         {
@@ -1259,7 +1354,7 @@ namespace EtiquetaFORNew.Forms
                             Trimming = StringTrimming.EllipsisCharacter,  // ← ADICIONAR
                             FormatFlags = StringFormatFlags.LineLimit     // ← ADICIONAR
                         };
-                        g.DrawString(valor, elem.Fonte, brush, bounds, sf);
+                        g.DrawString(valor, fonteComZoom, brush, bounds, sf);
                     }
                     break;
 
@@ -1276,7 +1371,10 @@ namespace EtiquetaFORNew.Forms
                     else
                     {
                         g.FillRectangle(Brushes.LightGray, bounds);
-                        g.DrawString("Imagem", new Font("Arial", 8), Brushes.Black, bounds);
+                        using (Font fonteComZoom = new Font("Arial", 8 * zoom, FontStyle.Regular))
+                        {
+                            g.DrawString("Imagem", fonteComZoom, Brushes.Black, bounds);
+                        }
                     }
                     break;
             }
@@ -1291,10 +1389,10 @@ namespace EtiquetaFORNew.Forms
         private Rectangle ConverterParaPixels(Rectangle boundsEmMM, RectangleF rectEtiqueta)
         {
             return new Rectangle(
-                (int)(rectEtiqueta.X + boundsEmMM.X * MM_PARA_PIXEL),
-                (int)(rectEtiqueta.Y + boundsEmMM.Y * MM_PARA_PIXEL),
-                (int)(boundsEmMM.Width * MM_PARA_PIXEL),
-                (int)(boundsEmMM.Height * MM_PARA_PIXEL)
+                (int)(rectEtiqueta.X + boundsEmMM.X * MM_PARA_PIXEL * zoom),
+                (int)(rectEtiqueta.Y + boundsEmMM.Y * MM_PARA_PIXEL * zoom),
+                (int)(boundsEmMM.Width * MM_PARA_PIXEL * zoom),
+                (int)(boundsEmMM.Height * MM_PARA_PIXEL * zoom)
             );
         }
 
@@ -1303,10 +1401,10 @@ namespace EtiquetaFORNew.Forms
             const float pixelParaMM = 1f / MM_PARA_PIXEL;
 
             return new Rectangle(
-                (int)((boundsEmPixels.X - rectEtiqueta.X) * pixelParaMM),
-                (int)((boundsEmPixels.Y - rectEtiqueta.Y) * pixelParaMM),
-                (int)(boundsEmPixels.Width * pixelParaMM),
-                (int)(boundsEmPixels.Height * pixelParaMM)
+                (int)((boundsEmPixels.X - rectEtiqueta.X) * pixelParaMM / zoom),
+                (int)((boundsEmPixels.Y - rectEtiqueta.Y) * pixelParaMM / zoom),
+                (int)(boundsEmPixels.Width * pixelParaMM / zoom),
+                (int)(boundsEmPixels.Height * pixelParaMM / zoom)
             );
         }
 
@@ -1374,7 +1472,7 @@ namespace EtiquetaFORNew.Forms
 
         private void DesenharHandles(Graphics g, Rectangle bounds)
         {
-            int handleSize = 6;
+            int handleSize = 8;
             using (SolidBrush brush = new SolidBrush(Color.White))
             using (Pen pen = new Pen(Color.Blue, 1))
             {
@@ -1406,8 +1504,9 @@ namespace EtiquetaFORNew.Forms
 
         private int ObterHandleClicado(Point mouse, Rectangle bounds)
         {
-            int handleSize = 6;
-            int tolerance = 3;
+            // Mantém handleSize fixo em pixels, independente do zoom
+            int handleSize = 8;
+            int tolerance = 4;
 
             Point[] handles = new Point[]
             {
@@ -1448,17 +1547,27 @@ namespace EtiquetaFORNew.Forms
             if (e.Button != MouseButtons.Left) return;
 
             RectangleF rectEtiqueta = new RectangleF(25, 25,
-                configuracao.LarguraEtiqueta * MM_PARA_PIXEL,
-                configuracao.AlturaEtiqueta * MM_PARA_PIXEL);
+                configuracao.LarguraEtiqueta * MM_PARA_PIXEL * zoom,
+                configuracao.AlturaEtiqueta * MM_PARA_PIXEL * zoom);
 
             if (elementoSelecionado != null)
             {
                 Rectangle bounds = ConverterParaPixels(elementoSelecionado.Bounds, rectEtiqueta);
                 handleSelecionado = ObterHandleClicado(e.Location, bounds);
 
+
                 if (handleSelecionado >= 0)
                 {
                     redimensionando = true;
+                    pontoInicialMouse = e.Location;
+                    boundsIniciais = bounds;
+                    return;
+                }
+
+                // Se clicou dentro do elemento já selecionado (mas não em handle)
+                if (bounds.Contains(e.Location))
+                {
+                    arrastando = true;
                     pontoInicialMouse = e.Location;
                     boundsIniciais = bounds;
                     return;
@@ -1472,9 +1581,22 @@ namespace EtiquetaFORNew.Forms
                 if (bounds.Contains(e.Location))
                 {
                     elementoSelecionado = template.Elementos[i];
-                    //arrastando = true;
                     pontoInicialMouse = e.Location;
                     boundsIniciais = bounds;
+
+                    // Verificar se clicou em um handle
+                    handleSelecionado = ObterHandleClicado(e.Location, bounds);
+
+
+                    if (handleSelecionado >= 0)
+                    {
+                        redimensionando = true;
+                    }
+                    else
+                    {
+                        arrastando = true;  // Clicar dentro = arrastar
+                    }
+
                     AtualizarPainelPropriedades();
                     pbCanvas.Invalidate();
                     return;
@@ -1489,39 +1611,8 @@ namespace EtiquetaFORNew.Forms
         private void PbCanvas_MouseMove(object sender, MouseEventArgs e)
         {
             RectangleF rectEtiqueta = new RectangleF(25, 25,
-                configuracao.LarguraEtiqueta * MM_PARA_PIXEL,
-                configuracao.AlturaEtiqueta * MM_PARA_PIXEL);
-            const int DRAG_THRESHOLD = 5;
-
-            if (!arrastando && !redimensionando &&
-                elementoSelecionado != null &&
-                e.Button == MouseButtons.Left)
-            {
-                int deltaX = Math.Abs(e.X - pontoInicialMouse.X);
-                int deltaY = Math.Abs(e.Y - pontoInicialMouse.Y);
-
-                if (deltaX > DRAG_THRESHOLD || deltaY > DRAG_THRESHOLD)
-                {
-                    Rectangle bounds = ConverterParaPixels(elementoSelecionado.Bounds, rectEtiqueta);
-                    int handle = ObterHandleClicado(pontoInicialMouse, bounds);
-
-                    if (handle >= 0)
-                    {
-                        redimensionando = true;
-                        handleSelecionado = handle;
-                        boundsIniciais = bounds;
-                    }
-                    else if (bounds.Contains(pontoInicialMouse))
-                    {
-                        arrastando = true;
-                        boundsIniciais = bounds;
-                    }
-                }
-                else
-                {
-                    return;
-                }
-            }
+                configuracao.LarguraEtiqueta * MM_PARA_PIXEL * zoom,
+                configuracao.AlturaEtiqueta * MM_PARA_PIXEL * zoom);
 
             if (redimensionando && elementoSelecionado != null)
             {
@@ -1606,16 +1697,10 @@ namespace EtiquetaFORNew.Forms
             }
             else if (arrastando && elementoSelecionado != null)
             {
-                int deltaX = e.X - pontoInicialMouse.X;
-                int deltaY = e.Y - pontoInicialMouse.Y;
-
-                Rectangle newBounds = new Rectangle(
-                    boundsIniciais.X + deltaX,
-                    boundsIniciais.Y + deltaY,
-                    boundsIniciais.Width,
-                    boundsIniciais.Height);
-
-                elementoSelecionado.Bounds = ConverterParaMM(newBounds, rectEtiqueta);
+                deltaArrasto = new Point(
+                    e.X - pontoInicialMouse.X,
+                    e.Y - pontoInicialMouse.Y
+                );
                 pbCanvas.Invalidate();
             }
             else
@@ -1661,10 +1746,55 @@ namespace EtiquetaFORNew.Forms
 
         private void PbCanvas_MouseUp(object sender, MouseEventArgs e)
         {
+            // Se estava arrastando, aplicar o delta final diretamente em MM
+            if (arrastando && elementoSelecionado != null && deltaArrasto != Point.Empty)
+            {
+                // Converter o delta de pixels para MM
+                float deltaXMM = deltaArrasto.X / (MM_PARA_PIXEL * zoom);
+                float deltaYMM = deltaArrasto.Y / (MM_PARA_PIXEL * zoom);
+
+                // Aplicar ao bounds original
+                elementoSelecionado.Bounds = new Rectangle(
+                    (int)(elementoSelecionado.Bounds.X + deltaXMM),
+                    (int)(elementoSelecionado.Bounds.Y + deltaYMM),
+                    elementoSelecionado.Bounds.Width,
+                    elementoSelecionado.Bounds.Height
+                );
+
+                deltaArrasto = Point.Empty;
+            }
+
             arrastando = false;
             redimensionando = false;
             handleSelecionado = -1;
             pbCanvas.Cursor = Cursors.Default;
+        }
+
+        private void PbCanvas_MouseWheel(object sender, MouseEventArgs e)
+        {
+            // Zoom apenas com CTRL pressionado
+            if (ModifierKeys == Keys.Control)
+            {
+                // Aumentar ou diminuir o zoom com base na direção do scroll
+                if (e.Delta > 0)
+                {
+                    // Scroll para cima = aumentar zoom
+                    zoom += 0.1f;
+                    if (zoom > 3.0f) zoom = 3.0f; // Limitar zoom máximo
+                }
+                else
+                {
+                    // Scroll para baixo = diminuir zoom
+                    zoom -= 0.1f;
+                    if (zoom < 0.3f) zoom = 0.3f; // Limitar zoom mínimo
+                }
+
+                AtualizarTamanhoCanvas();
+                pbCanvas.Invalidate();
+
+                // Evitar que o scroll padrão também aconteça
+                ((HandledMouseEventArgs)e).Handled = true;
+            }
         }
 
         #endregion
@@ -1794,12 +1924,32 @@ namespace EtiquetaFORNew.Forms
             int larguraPixels = (int)(configuracao.LarguraEtiqueta * MM_PARA_PIXEL * zoom);
             int alturaPixels = (int)(configuracao.AlturaEtiqueta * MM_PARA_PIXEL * zoom);
 
+            // Adicionar margem ao redor do canvas (50 pixels no total)
             pbCanvas.Size = new Size(larguraPixels + 50, alturaPixels + 50);
 
-            pbCanvas.Location = new Point(
-                Math.Max(50, (panelCanvas.Width - pbCanvas.Width) / 2),
-                Math.Max(50, (panelCanvas.Height - pbCanvas.Height) / 2)
-            );
+            // Centralizar apenas se o canvas for menor que o painel
+            // Se for maior, posicionar em (0,0) para permitir scroll
+            int posX, posY;
+
+            if (pbCanvas.Width < panelCanvas.Width)
+            {
+                posX = (panelCanvas.Width - pbCanvas.Width) / 2;
+            }
+            else
+            {
+                posX = 0;
+            }
+
+            if (pbCanvas.Height < panelCanvas.Height)
+            {
+                posY = (panelCanvas.Height - pbCanvas.Height) / 2;
+            }
+            else
+            {
+                posY = 0;
+            }
+
+            pbCanvas.Location = new Point(posX, posY);
         }
 
         #endregion
