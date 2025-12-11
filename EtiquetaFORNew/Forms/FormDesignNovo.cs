@@ -5,6 +5,7 @@ using System.Drawing.Drawing2D;
 using System.Drawing.Printing;
 using System.Linq;
 using System.Windows.Forms;
+using System.Xml.Linq;
 
 namespace EtiquetaFORNew.Forms
 {
@@ -60,6 +61,11 @@ namespace EtiquetaFORNew.Forms
         private Rectangle boundsIniciais;
         private Point deltaArrasto;  // Delta do movimento (em pixels) para aplicar no final
         private int handleSelecionado = -1;
+
+        private List<ElementoEtiqueta> elementosSelecionados = new List<ElementoEtiqueta>();
+        private bool selecionandoComRetangulo = false;
+        private Point pontoInicialSelecao;
+        private Rectangle retanguloSelecao;
 
         // Constantes
         private const float MM_PARA_PIXEL = 3.78f;
@@ -1262,6 +1268,18 @@ namespace EtiquetaFORNew.Forms
 
             // Desenha elementos do template
             DesenharElementos(g, rectEtiqueta);
+
+            // NOVO: Desenhar retângulo de seleção múltipla
+            if (selecionandoComRetangulo)
+            {
+                using (Pen penSelecao = new Pen(Color.DodgerBlue, 1))
+                using (SolidBrush brushSelecao = new SolidBrush(Color.FromArgb(30, Color.DodgerBlue)))
+                {
+                    penSelecao.DashStyle = DashStyle.Dot;
+                    g.FillRectangle(brushSelecao, retanguloSelecao);
+                    g.DrawRectangle(penSelecao, retanguloSelecao);
+                }
+            }
         }
 
         private void DesenharGrid(Graphics g, RectangleF rect)
@@ -1313,11 +1331,14 @@ namespace EtiquetaFORNew.Forms
             {
                 DesenharElemento(g, elem, rectEtiqueta, null);
 
-                if (elem == elementoSelecionado)
+                bool estaSelecionado = (elem == elementoSelecionado) || elementosSelecionados.Contains(elem);
+
+                if (estaSelecionado)
                 {
-                    // Calcular bounds considerando o delta de arrasto se estiver arrastando
                     Rectangle bounds = ConverterParaPixels(elem.Bounds, rectEtiqueta);
-                    if (arrastando && deltaArrasto != Point.Empty)
+
+                    // Aplicar delta de arrasto se estiver arrastando
+                    if (arrastando)
                     {
                         bounds.X += deltaArrasto.X;
                         bounds.Y += deltaArrasto.Y;
@@ -1328,7 +1349,12 @@ namespace EtiquetaFORNew.Forms
                         penSelecao.DashStyle = DashStyle.Dash;
                         g.DrawRectangle(penSelecao, bounds);
                     }
-                    DesenharHandles(g, bounds);
+
+                    // Desenhar handles apenas se for seleção única
+                    if (elementoSelecionado == elem && elementosSelecionados.Count == 0)
+                    {
+                        DesenharHandles(g, bounds);
+                    }
                 }
             }
         }
@@ -1568,11 +1594,11 @@ namespace EtiquetaFORNew.Forms
                 configuracao.LarguraEtiqueta * MM_PARA_PIXEL * zoom,
                 configuracao.AlturaEtiqueta * MM_PARA_PIXEL * zoom);
 
+            // Verificar se clicou em um elemento já selecionado
             if (elementoSelecionado != null)
             {
                 Rectangle bounds = ConverterParaPixels(elementoSelecionado.Bounds, rectEtiqueta);
                 handleSelecionado = ObterHandleClicado(e.Location, bounds);
-
 
                 if (handleSelecionado >= 0)
                 {
@@ -1582,7 +1608,6 @@ namespace EtiquetaFORNew.Forms
                     return;
                 }
 
-                // Se clicou dentro do elemento já selecionado (mas não em handle)
                 if (bounds.Contains(e.Location))
                 {
                     arrastando = true;
@@ -1592,19 +1617,55 @@ namespace EtiquetaFORNew.Forms
                 }
             }
 
+            // Verificar se clicou em algum dos elementos da seleção múltipla
+            foreach (var elem in elementosSelecionados)
+            {
+                Rectangle bounds = ConverterParaPixels(elem.Bounds, rectEtiqueta);
+                if (bounds.Contains(e.Location))
+                {
+                    arrastando = true;
+                    pontoInicialMouse = e.Location;
+                    return;
+                }
+            }
+
+            // Procurar elemento clicado
+            ElementoEtiqueta elementoClicado = null;
             for (int i = template.Elementos.Count - 1; i >= 0; i--)
             {
                 Rectangle bounds = ConverterParaPixels(template.Elementos[i].Bounds, rectEtiqueta);
-
                 if (bounds.Contains(e.Location))
                 {
-                    elementoSelecionado = template.Elementos[i];
+                    elementoClicado = template.Elementos[i];
+                    break;
+                }
+            }
+
+            if (elementoClicado != null)
+            {
+                // CTRL pressionado = adicionar/remover da seleção múltipla
+                if (ModifierKeys == Keys.Control)
+                {
+                    if (elementosSelecionados.Contains(elementoClicado))
+                    {
+                        elementosSelecionados.Remove(elementoClicado);
+                    }
+                    else
+                    {
+                        elementosSelecionados.Add(elementoClicado);
+                        elementoSelecionado = null; // Limpar seleção única
+                    }
+                }
+                else
+                {
+                    // Clique normal = selecionar apenas este elemento
+                    elementoSelecionado = elementoClicado;
+                    elementosSelecionados.Clear();
                     pontoInicialMouse = e.Location;
+
+                    Rectangle bounds = ConverterParaPixels(elementoClicado.Bounds, rectEtiqueta);
                     boundsIniciais = bounds;
-
-                    // Verificar se clicou em um handle
                     handleSelecionado = ObterHandleClicado(e.Location, bounds);
-
 
                     if (handleSelecionado >= 0)
                     {
@@ -1612,16 +1673,22 @@ namespace EtiquetaFORNew.Forms
                     }
                     else
                     {
-                        arrastando = true;  // Clicar dentro = arrastar
+                        arrastando = true;
                     }
-
-                    AtualizarPainelPropriedades();
-                    pbCanvas.Invalidate();
-                    return;
                 }
+
+                AtualizarPainelPropriedades();
+                pbCanvas.Invalidate();
+                return;
             }
 
+            // Não clicou em nenhum elemento = iniciar seleção por retângulo
             elementoSelecionado = null;
+            elementosSelecionados.Clear();
+            selecionandoComRetangulo = true;
+            pontoInicialSelecao = e.Location;
+            retanguloSelecao = new Rectangle(e.Location, Size.Empty);
+
             AtualizarPainelPropriedades();
             pbCanvas.Invalidate();
         }
@@ -1632,6 +1699,20 @@ namespace EtiquetaFORNew.Forms
                 configuracao.LarguraEtiqueta * MM_PARA_PIXEL * zoom,
                 configuracao.AlturaEtiqueta * MM_PARA_PIXEL * zoom);
 
+            // Selecionando com retângulo
+            if (selecionandoComRetangulo)
+            {
+                int x = Math.Min(pontoInicialSelecao.X, e.X);
+                int y = Math.Min(pontoInicialSelecao.Y, e.Y);
+                int width = Math.Abs(e.X - pontoInicialSelecao.X);
+                int height = Math.Abs(e.Y - pontoInicialSelecao.Y);
+
+                retanguloSelecao = new Rectangle(x, y, width, height);
+                pbCanvas.Invalidate();
+                return;
+            }
+
+            // Redimensionando elemento único
             if (redimensionando && elementoSelecionado != null)
             {
                 int deltaX = e.X - pontoInicialMouse.X;
@@ -1673,7 +1754,6 @@ namespace EtiquetaFORNew.Forms
                             boundsIniciais.Height + deltaY);
                         break;
 
-                    // ========== ADICIONAR ESTES CASOS ==========
                     case 4:  // Lado superior (centro)
                         newBounds = new Rectangle(
                             boundsIniciais.X,
@@ -1713,7 +1793,8 @@ namespace EtiquetaFORNew.Forms
                     pbCanvas.Invalidate();
                 }
             }
-            else if (arrastando && elementoSelecionado != null)
+            // Arrastando elemento(s)
+            else if (arrastando)
             {
                 deltaArrasto = new Point(
                     e.X - pontoInicialMouse.X,
@@ -1721,6 +1802,7 @@ namespace EtiquetaFORNew.Forms
                 );
                 pbCanvas.Invalidate();
             }
+            // Atualizar cursor
             else
             {
                 if (elementoSelecionado != null)
@@ -1730,23 +1812,22 @@ namespace EtiquetaFORNew.Forms
 
                     if (handle >= 0)
                     {
-                        // Define cursor apropriado para cada handle
                         switch (handle)
                         {
-                            case 0: // Superior esquerdo
-                            case 2: // Inferior direito
+                            case 0:
+                            case 2:
                                 pbCanvas.Cursor = Cursors.SizeNWSE;
                                 break;
-                            case 1: // Superior direito
-                            case 3: // Inferior esquerdo
+                            case 1:
+                            case 3:
                                 pbCanvas.Cursor = Cursors.SizeNESW;
                                 break;
-                            case 4: // Superior
-                            case 6: // Inferior
+                            case 4:
+                            case 6:
                                 pbCanvas.Cursor = Cursors.SizeNS;
                                 break;
-                            case 5: // Direito
-                            case 7: // Esquerdo
+                            case 5:
+                            case 7:
                                 pbCanvas.Cursor = Cursors.SizeWE;
                                 break;
                             default:
@@ -1764,28 +1845,67 @@ namespace EtiquetaFORNew.Forms
 
         private void PbCanvas_MouseUp(object sender, MouseEventArgs e)
         {
-            // Se estava arrastando, aplicar o delta final diretamente em MM
-            if (arrastando && elementoSelecionado != null && deltaArrasto != Point.Empty)
+            RectangleF rectEtiqueta = new RectangleF(25, 25,
+                configuracao.LarguraEtiqueta * MM_PARA_PIXEL * zoom,
+                configuracao.AlturaEtiqueta * MM_PARA_PIXEL * zoom);
+
+            // Finalizar seleção por retângulo
+            if (selecionandoComRetangulo)
             {
-                // Converter o delta de pixels para MM
+                selecionandoComRetangulo = false;
+
+                // Selecionar todos os elementos dentro do retângulo
+                elementosSelecionados.Clear();
+                foreach (var elemento in template.Elementos)
+                {
+                    Rectangle bounds = ConverterParaPixels(elemento.Bounds, rectEtiqueta);
+                    if (retanguloSelecao.IntersectsWith(bounds))
+                    {
+                        elementosSelecionados.Add(elemento);
+                    }
+                }
+
+                pbCanvas.Invalidate();
+                return;
+            }
+
+            // Finalizar arrasto
+            if (arrastando && deltaArrasto != Point.Empty)
+            {
                 float deltaXMM = deltaArrasto.X / (MM_PARA_PIXEL * zoom);
                 float deltaYMM = deltaArrasto.Y / (MM_PARA_PIXEL * zoom);
 
-                // Aplicar ao bounds original
-                elementoSelecionado.Bounds = new Rectangle(
-                    (int)(elementoSelecionado.Bounds.X + deltaXMM),
-                    (int)(elementoSelecionado.Bounds.Y + deltaYMM),
-                    elementoSelecionado.Bounds.Width,
-                    elementoSelecionado.Bounds.Height
-                );
+                // Arrastar elemento único
+                if (elementoSelecionado != null)
+                {
+                    elementoSelecionado.Bounds = new Rectangle(
+                        (int)(elementoSelecionado.Bounds.X + deltaXMM),
+                        (int)(elementoSelecionado.Bounds.Y + deltaYMM),
+                        elementoSelecionado.Bounds.Width,
+                        elementoSelecionado.Bounds.Height
+                    );
+                }
+
+                // Arrastar múltiplos elementos
+                foreach (var elemento in elementosSelecionados)
+                {
+                    elemento.Bounds = new Rectangle(
+                        (int)(elemento.Bounds.X + deltaXMM),
+                        (int)(elemento.Bounds.Y + deltaYMM),
+                        elemento.Bounds.Width,
+                        elemento.Bounds.Height
+                    );
+                }
 
                 deltaArrasto = Point.Empty;
+                pbCanvas.Invalidate(); // Forçar redesenho imediato
             }
 
             arrastando = false;
             redimensionando = false;
             handleSelecionado = -1;
             pbCanvas.Cursor = Cursors.Default;
+            pbCanvas.Invalidate(); // Garantir redesenho final
         }
 
         private void PbCanvas_MouseWheel(object sender, MouseEventArgs e)
@@ -1976,38 +2096,76 @@ namespace EtiquetaFORNew.Forms
 
         private void FormDesignNovo_KeyDown(object sender, KeyEventArgs e)
         {
-            // Ignora se nenhum elemento selecionado
-            if (elementoSelecionado == null) return;
+            // Trabalhar com seleção múltipla ou única
+            List<ElementoEtiqueta> elementosParaMover = new List<ElementoEtiqueta>();
+
+            if (elementosSelecionados.Count > 0)
+            {
+                elementosParaMover.AddRange(elementosSelecionados);
+            }
+            else if (elementoSelecionado != null)
+            {
+                elementosParaMover.Add(elementoSelecionado);
+            }
+
+            if (elementosParaMover.Count == 0) return;
 
             bool houveAlteracao = false;
-            var novaPosicao = elementoSelecionado.Bounds;
             int passo = 1;
 
             // Verifica qual tecla foi pressionada
             switch (e.KeyCode)
             {
                 case Keys.Left:
-                    novaPosicao.X -= passo;
+                    foreach (var elem in elementosParaMover)
+                    {
+                        var novaPosicao = elem.Bounds;
+                        novaPosicao.X -= passo;
+                        elem.Bounds = novaPosicao;
+                    }
                     houveAlteracao = true;
                     break;
 
                 case Keys.Right:
-                    novaPosicao.X += passo;
+                    foreach (var elem in elementosParaMover)
+                    {
+                        var novaPosicao = elem.Bounds;
+                        novaPosicao.X += passo;
+                        elem.Bounds = novaPosicao;
+                    }
                     houveAlteracao = true;
                     break;
 
                 case Keys.Up:
-                    novaPosicao.Y -= passo;
+                    foreach (var elem in elementosParaMover)
+                    {
+                        var novaPosicao = elem.Bounds;
+                        novaPosicao.Y -= passo;
+                        elem.Bounds = novaPosicao;
+                    }
                     houveAlteracao = true;
                     break;
 
                 case Keys.Down:
-                    novaPosicao.Y += passo;
+                    foreach (var elem in elementosParaMover)
+                    {
+                        var novaPosicao = elem.Bounds;
+                        novaPosicao.Y += passo;
+                        elem.Bounds = novaPosicao;
+                    }
                     houveAlteracao = true;
                     break;
 
                 case Keys.Delete:
-                    RemoverElementoSelecionado();
+                    // Remover todos os elementos selecionados
+                    foreach (var elem in elementosParaMover)
+                    {
+                        template.Elementos.Remove(elem);
+                    }
+                    elementoSelecionado = null;
+                    elementosSelecionados.Clear();
+                    AtualizarPainelPropriedades();
+                    pbCanvas.Invalidate();
                     e.Handled = true;
                     e.SuppressKeyPress = true;
                     return;
@@ -2016,10 +2174,7 @@ namespace EtiquetaFORNew.Forms
             // Se moveu, atualiza
             if (houveAlteracao)
             {
-                elementoSelecionado.Bounds = novaPosicao;
                 pbCanvas.Invalidate();
-
-                // Marca evento como tratado para evitar duplicação
                 e.Handled = true;
                 e.SuppressKeyPress = true;
             }
