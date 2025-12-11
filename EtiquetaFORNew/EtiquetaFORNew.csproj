@@ -222,6 +222,9 @@
     <Compile Include="FormNomeTemplate.cs">
       <SubType>Form</SubType>
     </Compile>
+    <Compile Include="Forms\FormPreview.cs">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="Forms\ConfigForm.cs">
       <SubType>Form</SubType>
     </Compile>

@@ -1,9 +1,10 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Drawing2D;
-using System.Windows.Forms;
-using System.Collections.Generic;
+using System.Drawing.Printing;
 using System.Linq;
+using System.Windows.Forms;
 
 namespace EtiquetaFORNew.Forms
 {
@@ -174,7 +175,7 @@ namespace EtiquetaFORNew.Forms
             Panel panelBotoes = new Panel
             {
                 Dock = DockStyle.Right,
-                Width = 340,
+                Width = 450,  // Aumentado para caber mais um botão
                 Height = 60,
                 BackColor = Color.Transparent
             };
@@ -184,7 +185,7 @@ namespace EtiquetaFORNew.Forms
             Button btnFechar = new Button
             {
                 Text = "✕ Fechar",
-                Location = new Point(230, 15),
+                Location = new Point(340, 15),
                 Size = new Size(100, 30),
                 Font = new Font("Segoe UI", 9, FontStyle.Bold),
                 BackColor = Color.FromArgb(231, 76, 60),
@@ -196,6 +197,23 @@ namespace EtiquetaFORNew.Forms
             btnFechar.FlatAppearance.BorderColor = Color.Black;
             btnFechar.Click += BtnFechar_Click;
             panelBotoes.Controls.Add(btnFechar);
+
+            // Botão Preview
+            Button btnPreview = new Button
+            {
+                Text = "👁 Preview",
+                Location = new Point(230, 15),
+                Size = new Size(100, 30),
+                Font = new Font("Segoe UI", 9, FontStyle.Bold),
+                BackColor = Color.FromArgb(155, 89, 182),  // Roxo
+                ForeColor = Color.White,
+                FlatStyle = FlatStyle.Flat,
+                Cursor = Cursors.Hand
+            };
+            btnPreview.FlatAppearance.BorderSize = 1;
+            btnPreview.FlatAppearance.BorderColor = Color.Black;
+            btnPreview.Click += BtnPreview_Click;
+            panelBotoes.Controls.Add(btnPreview);
 
             // Botão Novo (meio)
             Button btnNovo = new Button
@@ -2074,6 +2092,43 @@ namespace EtiquetaFORNew.Forms
                 CarregarDadosNaInterface();
                 AtualizarConfiguracao();
             }
+        }
+
+        private void BtnPreview_Click(object sender, EventArgs e)
+        {
+            // Obter dimensões do papel selecionado
+            float larguraPapel = 210; // A4 padrão
+            float alturaPapel = 297;
+            string nomePapel = cmbPapel.SelectedItem?.ToString() ?? "A4";
+
+            // Tentar obter as dimensões reais do papel da impressora
+            if (cmbImpressora.SelectedItem != null)
+            {
+                try
+                {
+                    PrinterSettings printerSettings = new PrinterSettings();
+                    printerSettings.PrinterName = cmbImpressora.SelectedItem.ToString();
+
+                    foreach (PaperSize paperSize in printerSettings.PaperSizes)
+                    {
+                        if (paperSize.PaperName == nomePapel)
+                        {
+                            // Converter de centésimos de polegada para MM
+                            larguraPapel = (paperSize.Width / 100f) * 25.4f;
+                            alturaPapel = (paperSize.Height / 100f) * 25.4f;
+                            break;
+                        }
+                    }
+                }
+                catch
+                {
+                    // Se falhar, usar dimensões padrão baseadas no nome
+                }
+            }
+
+            // Criar e mostrar formulário de preview
+            FormPreview formPreview = new FormPreview(template, configuracao, nomePapel, larguraPapel, alturaPapel);
+            formPreview.ShowDialog();
         }
 
         private void BtnFechar_Click(object sender, EventArgs e)
