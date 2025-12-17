@@ -144,15 +144,30 @@ namespace EtiquetaFORNew.Data
         {
             string url = "http://softcomdevelop.com.br/webService/wsRegistro.asmx";
 
+            // Obter a versão do sistema
+            string versaoSistema = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version.ToString();
+            string nomeAppComVersao = $"Smart Print v{versaoSistema}";
+
             string parametrosJson = "{"
                 + "\"CNPJ\":\"" + cnpj.Replace("\"", "\\\"") + "\","
                 + "\"Empresa\":\"" + fantasia.Replace("\"", "\\\"") + "\","
                 + "\"CodigoApp\":\"41\","
-                + "\"App\":\"Smart Print\","
+                + "\"App\":\"" + nomeAppComVersao.Replace("\"", "\\\"") + "\","
                 + "\"Token\":\"{EFAC2E35-9FCC-480E-80AC-5EDDA66E8A9F}\","
                 + "\"CodigoSuporte\":\"" + codigoSuporte.Replace("\"", "\\\"") + "\","
                 + "\"ConfigApp\":\"{}\"" // <- Colocar aqui o link de download do backup em nuvem
                 + "}";
+
+
+            //string parametrosJson = "{"
+            //    + "\"CNPJ\":\"" + cnpj.Replace("\"", "\\\"") + "\","
+            //    + "\"Empresa\":\"" + fantasia.Replace("\"", "\\\"") + "\","
+            //    + "\"CodigoApp\":\"41\","
+            //    + "\"App\":\"Smart Print\","
+            //    + "\"Token\":\"{EFAC2E35-9FCC-480E-80AC-5EDDA66E8A9F}\","
+            //    + "\"CodigoSuporte\":\"" + codigoSuporte.Replace("\"", "\\\"") + "\","
+            //    + "\"ConfigApp\":\"{}\"" // <- Colocar aqui o link de download do backup em nuvem
+            //    + "}";
 
             string jsonEscapadoXml = System.Security.SecurityElement.Escape(parametrosJson);
 
