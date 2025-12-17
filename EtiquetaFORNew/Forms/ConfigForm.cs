@@ -86,7 +86,7 @@ namespace EtiquetaFORNew
                         {
                             case "server":
                             case "data source":
-                                // Separar servidor e porta se houver vírgula
+                                // Separar servidor e porta se houver vÃ­rgula
                                 if (value.Contains(","))
                                 {
                                     string[] serverPort = value.Split(',');
@@ -265,7 +265,7 @@ namespace EtiquetaFORNew
             }
             else
             {
-                // Caso contrário, usar autenticação Windows
+                // Caso contrário, usar autenticaço Windows
                 connStr += "Integrated Security=true;";
             }
 
@@ -302,7 +302,7 @@ namespace EtiquetaFORNew
                 }
                 else
                 {
-                    MessageBox.Show("Não foi possível conectar ao banco de dados!", "Erro",
+                    MessageBox.Show("Não foi possÃ­vel conectar ao banco de dados!", "Erro",
                         MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
             }
@@ -401,7 +401,7 @@ namespace EtiquetaFORNew
                     conn.Open();
 
                     string query = @"
-                        SELECT Loja 
+                        SELECT Loja
                         FROM Integrar_Lojas 
                         WHERE Desativado = 0
                         ORDER BY Loja";
@@ -466,6 +466,58 @@ namespace EtiquetaFORNew
             catch (Exception ex)
             {
                 MessageBox.Show("Erro ao carregar módulo app: " + ex.Message, "Erro",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private async void cmbLoja_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (cmbLoja.SelectedItem == null)
+                return;
+
+            try
+            {
+                string lojaSelecionada = cmbLoja.SelectedItem.ToString();
+                string connectionString = ConstruirConnectionString();
+
+                using (System.Data.SqlClient.SqlConnection conn = new System.Data.SqlClient.SqlConnection(connectionString))
+                {
+                    await conn.OpenAsync();
+
+                    string query = @"
+                        SELECT Fantasia, CGC, CodigoSuporte
+                        FROM Integrar_Lojas 
+                        WHERE Loja = @Loja";
+
+                    using (System.Data.SqlClient.SqlCommand cmd = new System.Data.SqlClient.SqlCommand(query, conn))
+                    {
+                        cmd.Parameters.AddWithValue("@Loja", lojaSelecionada);
+
+                        using (System.Data.SqlClient.SqlDataReader reader = await cmd.ExecuteReaderAsync())
+                        {
+                            if (await reader.ReadAsync())
+                            {
+                                string fantasia = reader.IsDBNull(0) ? "" : reader.GetString(0);
+                                string cgc = reader.IsDBNull(1) ? "" : reader.GetString(1);
+                                string codigoSuporte = reader.IsDBNull(2) ? "" : reader.GetString(2);
+
+                                // Chamar a função GetSetRegistroJsonAsync
+                                if (!string.IsNullOrEmpty(codigoSuporte) && !string.IsNullOrEmpty(cgc) && !string.IsNullOrEmpty(fantasia))
+                                {
+                                    string resultado = await DatabaseConfig.GetSetRegistroJsonAsync(codigoSuporte, cgc, fantasia);
+
+                                    // Opcional: você pode fazer algo com o resultado aqui
+                                    // Por exemplo, mostrar uma mensagem ou salvar em algum lugar
+                                    System.Diagnostics.Debug.WriteLine($"Resultado do registro: {resultado}");
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Erro ao processar seleção da loja: " + ex.Message, "Erro",
                     MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }

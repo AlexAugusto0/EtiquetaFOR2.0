@@ -293,6 +293,7 @@ namespace EtiquetaFORNew
             this.cmbLoja.Name = "cmbLoja";
             this.cmbLoja.Size = new System.Drawing.Size(246, 21);
             this.cmbLoja.TabIndex = 19;
+            this.cmbLoja.SelectedIndexChanged += new System.EventHandler(this.cmbLoja_SelectedIndexChanged);
             // 
             // ConfigForm
             // 

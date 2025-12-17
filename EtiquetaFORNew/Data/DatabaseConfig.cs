@@ -1,6 +1,9 @@
 using Newtonsoft.Json;
 using System;
 using System.IO;
+using System.Net;
+using System.Text;
+using System.Threading.Tasks;
 
 
 namespace EtiquetaFORNew.Data
@@ -52,7 +55,7 @@ namespace EtiquetaFORNew.Data
 
                 string servidor = config.Servidor;
 
-                // Adicionar porta se informada e diferente da padrÃ£o
+                // Adicionar porta se informada e diferente da padrão
                 if (!string.IsNullOrEmpty(config.Porta) && config.Porta != "1433")
                 {
                     servidor = $"{servidor},{config.Porta}";
@@ -86,7 +89,7 @@ namespace EtiquetaFORNew.Data
 
         public static void SaveConnectionString(string connectionString)
         {
-            // Este mÃ©todo Ã© mantido para compatibilidade, mas nÃ£o faz nada
+            // Este mÃ©todo Ã© mantido para compatibilidade, mas não faz nada
             // Use SaveConfiguration ao invÃ©s
         }
 
@@ -135,6 +138,46 @@ namespace EtiquetaFORNew.Data
         public static string GetConfigFilePath()
         {
             return ConfigFilePath;
+        }
+
+        public static async Task<string> GetSetRegistroJsonAsync(string codigoSuporte, string cnpj, string fantasia)
+        {
+            string url = "http://softcomdevelop.com.br/webService/wsRegistro.asmx";
+
+            string parametrosJson = "{"
+                + "\"CNPJ\":\"" + cnpj.Replace("\"", "\\\"") + "\","
+                + "\"Empresa\":\"" + fantasia.Replace("\"", "\\\"") + "\","
+                + "\"CodigoApp\":\"41\","
+                + "\"App\":\"Smart Print\","
+                + "\"Token\":\"{EFAC2E35-9FCC-480E-80AC-5EDDA66E8A9F}\","
+                + "\"CodigoSuporte\":\"" + codigoSuporte.Replace("\"", "\\\"") + "\","
+                + "\"ConfigApp\":\"{}\"" // <- Colocar aqui o link de download do backup em nuvem
+                + "}";
+
+            string jsonEscapadoXml = System.Security.SecurityElement.Escape(parametrosJson);
+
+            string soap =
+                "<?xml version=\"1.0\" encoding=\"utf-8\"?>"
+              + "<soap:Envelope xmlns:soap=\"http://schemas.xmlsoap.org/soap/envelope/\">"
+              + "  <soap:Body>"
+              + "    <getSetRegistroJson xmlns=\"http://tempuri.org/\">"
+              + "      <parametrosJson>" + jsonEscapadoXml + "</parametrosJson>"
+              + "    </getSetRegistroJson>"
+              + "  </soap:Body>"
+              + "</soap:Envelope>";
+
+            var req = (HttpWebRequest)WebRequest.Create(url);
+            req.Method = "POST";
+            req.ContentType = "text/xml; charset=utf-8";
+            req.Headers.Add("SOAPAction", "http://tempuri.org/getSetRegistroJson");
+
+            byte[] data = Encoding.UTF8.GetBytes(soap);
+            using (var reqStream = await req.GetRequestStreamAsync())
+                await reqStream.WriteAsync(data, 0, data.Length);
+
+            using (var resp = (HttpWebResponse)await req.GetResponseAsync())
+            using (var reader = new StreamReader(resp.GetResponseStream()))
+                return await reader.ReadToEndAsync();
         }
 
     }
