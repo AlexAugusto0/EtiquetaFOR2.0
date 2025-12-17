@@ -31,7 +31,7 @@ namespace EtiquetaFORNew
         private void Main_Load(object sender, EventArgs e)
         {
             usuarioBox.Focus();
-            ArredondarPainel(panel1,30);
+            ArredondarPainel(panel1, 30);
             ArredondarPainel(panel2, 30);
             panel1.Resize += (s, ev) => ArredondarPainel(panel1, 30);
         }
@@ -64,7 +64,7 @@ namespace EtiquetaFORNew
             //}
         }
 
-        private void btnLogar_Click(object sender, EventArgs e)
+        private async void btnLogar_Click(object sender, EventArgs e)
         {
             string senha = senhaBox.Text.Trim();
 
@@ -120,6 +120,9 @@ namespace EtiquetaFORNew
                         {
                             //MessageBox.Show($"✅ Bem-vindo, {nomeVendedor}!", "Login realizado", MessageBoxButtons.OK, MessageBoxIcon.Information);
 
+                            // Chamar GetSetRegistroJsonAsync se a loja estiver configurada
+                            await ChamarRegistroLojaAsync(config.Loja, connectionString);
+
                             // Abre a próxima tela e esconde a principal
                             FormPrincipal Entrada = new FormPrincipal();
                             Entrada.Show();
@@ -136,6 +139,52 @@ namespace EtiquetaFORNew
             catch (Exception ex)
             {
                 MessageBox.Show($"Erro ao tentar logar:\n{ex.Message}", "Erro", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private async System.Threading.Tasks.Task ChamarRegistroLojaAsync(string loja, string connectionString)
+        {
+            if (string.IsNullOrEmpty(loja))
+                return; // Loja não configurada, não faz nada
+
+            try
+            {
+                using (SqlConnection conn = new SqlConnection(connectionString))
+                {
+                    await conn.OpenAsync();
+
+                    string query = @"
+                        SELECT Fantasia, CGC, CodigoSuporte
+                        FROM Integrar_Lojas 
+                        WHERE Loja = @Loja";
+
+                    using (SqlCommand cmd = new SqlCommand(query, conn))
+                    {
+                        cmd.Parameters.AddWithValue("@Loja", loja);
+
+                        using (SqlDataReader reader = await cmd.ExecuteReaderAsync())
+                        {
+                            if (await reader.ReadAsync())
+                            {
+                                string fantasia = reader.IsDBNull(0) ? "" : reader.GetString(0);
+                                string cgc = reader.IsDBNull(1) ? "" : reader.GetString(1);
+                                string codigoSuporte = reader.IsDBNull(2) ? "" : reader.GetString(2);
+
+                                // Chamar a função GetSetRegistroJsonAsync
+                                if (!string.IsNullOrEmpty(codigoSuporte) && !string.IsNullOrEmpty(cgc) && !string.IsNullOrEmpty(fantasia))
+                                {
+                                    string resultado = await DatabaseConfig.GetSetRegistroJsonAsync(codigoSuporte, cgc, fantasia);
+                                    System.Diagnostics.Debug.WriteLine($"Resultado do registro ao logar: {resultado}");
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                // Não mostrar erro ao usuário, apenas logar
+                System.Diagnostics.Debug.WriteLine($"Erro ao chamar registro da loja: {ex.Message}");
             }
         }
 
@@ -342,6 +391,7 @@ namespace EtiquetaFORNew
         public string Usuario { get; set; }
         public string Senha { get; set; }
         public string Banco { get; set; }
+        public string Loja { get; set; }
     }
 
 
