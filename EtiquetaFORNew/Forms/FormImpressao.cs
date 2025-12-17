@@ -531,7 +531,10 @@ namespace EtiquetaFORNew
                 // Configurações do código de barras
                 b.Width = larguraPixels;
                 b.Height = alturaPixels;
-                b.IncludeLabel = true;
+
+                //Aparecer o digito do código de barras na impressão
+                    b.IncludeLabel = false;
+                //
                 b.Alignment = AlignmentPositions.Center;
                 b.ForeColor = SKColors.Black;
                 b.BackColor = SKColors.White;

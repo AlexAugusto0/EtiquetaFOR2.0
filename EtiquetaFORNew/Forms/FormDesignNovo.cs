@@ -1487,7 +1487,7 @@ namespace EtiquetaFORNew.Forms
             if (codigoLimpo.Length < 8) codigoLimpo = codigoLimpo.PadLeft(8, '0');
 
             float larguraBarra = (float)bounds.Width / (codigoLimpo.Length * 2);
-            float alturaBarras = bounds.Height * 0.7f;
+            float alturaBarras = bounds.Height;// * 0.7f;
 
             for (int i = 0; i < codigoLimpo.Length; i++)
             {
@@ -1502,16 +1502,16 @@ namespace EtiquetaFORNew.Forms
                 }
             }
 
-            using (Font fonte = new Font("Arial", 7 * zoom))  // Aplicar zoom na fonte
-            using (SolidBrush brush = new SolidBrush(Color.Black))
-            {
-                StringFormat sf = new StringFormat
-                {
-                    Alignment = StringAlignment.Center,
-                    LineAlignment = StringAlignment.Far
-                };
-                g.DrawString(codigoLimpo, fonte, brush, bounds, sf);
-            }
+            //using (Font fonte = new Font("Arial", 7 * zoom))  // Aplicar zoom na fonte
+            //using (SolidBrush brush = new SolidBrush(Color.Black))
+            //{
+            //    StringFormat sf = new StringFormat
+            //    {
+            //        Alignment = StringAlignment.Center,
+            //        LineAlignment = StringAlignment.Far
+            //    };
+            //    g.DrawString(codigoLimpo, fonte, brush, bounds, sf);
+            //}
         }
 
         private void DesenharHandles(Graphics g, Rectangle bounds)

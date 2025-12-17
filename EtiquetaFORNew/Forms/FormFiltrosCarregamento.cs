@@ -49,7 +49,7 @@ namespace EtiquetaFORNew
             this.Text = "SOFTSHOP - Carregar";
             this.BackColor = Color.White;
 
-            // Labels
+            //// Labels
             lblTipo = new Label
             {
                 Text = "Tipo:",
@@ -57,7 +57,10 @@ namespace EtiquetaFORNew
                 Size = new Size(100, 23),
                 TextAlign = ContentAlignment.MiddleLeft,
                 Font = new Font("Segoe UI", 9F)
+
             };
+
+            lblTipo.Visible = false;
 
             lblGrupo = new Label
             {
@@ -103,6 +106,8 @@ namespace EtiquetaFORNew
                 DropDownStyle = ComboBoxStyle.DropDownList,
                 Font = new Font("Segoe UI", 9F)
             };
+
+            cmbTipo.Visible = false;
 
             cmbGrupo = new ComboBox
             {
