@@ -1,7 +1,9 @@
 using Newtonsoft.Json;
 using System;
+using System.Diagnostics;
 using System.IO;
 using System.Net;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -145,7 +147,12 @@ namespace EtiquetaFORNew.Data
             string url = "http://softcomdevelop.com.br/webService/wsRegistro.asmx";
 
             // Obter a versão do sistema
-            string versaoSistema = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version.ToString();
+
+            var assembly = Assembly.GetExecutingAssembly();
+            var fileInfo = FileVersionInfo.GetVersionInfo(assembly.Location);
+        
+
+            string versaoSistema = fileInfo.FileVersion;//System.Reflection.Assembly.GetExecutingAssembly().GetName().Version.ToString();
             string nomeAppComVersao = $"Smart Print v{versaoSistema}";
 
             string parametrosJson = "{"

@@ -4,6 +4,7 @@ using Newtonsoft.Json;
 using System;
 using System.Data;
 using System.Data.SqlClient;
+using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.IO;
@@ -34,6 +35,12 @@ namespace EtiquetaFORNew
             ArredondarPainel(panel1, 30);
             ArredondarPainel(panel2, 30);
             panel1.Resize += (s, ev) => ArredondarPainel(panel1, 30);
+
+            var assembly = Assembly.GetExecutingAssembly();
+            var fileInfo = FileVersionInfo.GetVersionInfo(assembly.Location);
+            string versao = $"Smart Print v{fileInfo.FileVersion}"; 
+
+            Versao.Text = versao;
         }
 
 

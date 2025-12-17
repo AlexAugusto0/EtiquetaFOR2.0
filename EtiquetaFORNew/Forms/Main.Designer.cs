@@ -39,7 +39,7 @@
             this.panel2 = new System.Windows.Forms.Panel();
             this.label5 = new System.Windows.Forms.Label();
             this.label4 = new System.Windows.Forms.Label();
-            this.label3 = new System.Windows.Forms.Label();
+            this.Versao = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.pictureBox2 = new System.Windows.Forms.PictureBox();
@@ -130,7 +130,7 @@
             this.panel2.BackColor = System.Drawing.Color.WhiteSmoke;
             this.panel2.Controls.Add(this.label5);
             this.panel2.Controls.Add(this.label4);
-            this.panel2.Controls.Add(this.label3);
+            this.panel2.Controls.Add(this.Versao);
             this.panel2.Controls.Add(this.label2);
             this.panel2.Controls.Add(this.btnFechar);
             this.panel2.Controls.Add(this.btnLogar);
@@ -161,14 +161,14 @@
             this.label4.TabIndex = 14;
             this.label4.Text = "SmartPrint    |";
             // 
-            // label3
+            // Versao
             // 
-            this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(140, 195);
-            this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(58, 13);
-            this.label3.TabIndex = 13;
-            this.label3.Text = "Versão 1.0";
+            this.Versao.AutoSize = true;
+            this.Versao.Location = new System.Drawing.Point(140, 195);
+            this.Versao.Name = "Versao";
+            this.Versao.Size = new System.Drawing.Size(58, 13);
+            this.Versao.TabIndex = 13;
+            this.Versao.Text = "Versão 1.0";
             // 
             // label2
             // 
@@ -275,7 +275,7 @@
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Panel panel2;
         private System.Windows.Forms.PictureBox pictureBox3;
-        private System.Windows.Forms.Label label3;
+        private System.Windows.Forms.Label Versao;
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.PictureBox pictureBox5;
