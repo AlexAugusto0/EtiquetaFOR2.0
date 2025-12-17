@@ -1397,12 +1397,15 @@ namespace EtiquetaFORNew
                     decimal vendaA = row["VendaA"] != DBNull.Value ? Convert.ToDecimal(row["VendaA"]) : 0m;
                     decimal vendaB = row["VendaB"] != DBNull.Value ? Convert.ToDecimal(row["VendaB"]) : 0m;
                     decimal vendaC = row["VendaC"] != DBNull.Value ? Convert.ToDecimal(row["VendaC"]) : 0m;
+                    decimal vendaD = row["VendaD"] != DBNull.Value ? Convert.ToDecimal(row["VendaD"]) : 0m;
+                    decimal vendaE = row["VendaE"] != DBNull.Value ? Convert.ToDecimal(row["VendaE"]) : 0m;
 
                     // Campos de informação
                     string fornecedor = row["Fornecedor"]?.ToString();
                     string fabricante = row["Fabricante"]?.ToString();
                     string grupo = row["Grupo"]?.ToString();
                     string prateleira = row["Prateleira"]?.ToString();
+                    string garantia = row["Garantia"]?.ToString();
                     string tam = row["Tam"]?.ToString();
                     string cores = row["Cores"]?.ToString();
 
@@ -1594,10 +1597,17 @@ namespace EtiquetaFORNew
                     produto.VendaC = produtoAtualCompleto["VendaC"] != DBNull.Value
                         ? Convert.ToDecimal(produtoAtualCompleto["VendaC"])
                         : 0m;
+                    produto.VendaD = produtoAtualCompleto["VendaD"] != DBNull.Value
+                        ? Convert.ToDecimal(produtoAtualCompleto["VendaD"])
+                        : 0m;
+                    produto.VendaE = produtoAtualCompleto["VendaE"] != DBNull.Value
+                        ? Convert.ToDecimal(produtoAtualCompleto["VendaE"])
+                        : 0m;
                     produto.Fornecedor = produtoAtualCompleto["Fornecedor"]?.ToString();
                     produto.Fabricante = produtoAtualCompleto["Fabricante"]?.ToString();
                     produto.Grupo = produtoAtualCompleto["Grupo"]?.ToString();
                     produto.Prateleira = produtoAtualCompleto["Prateleira"]?.ToString();
+                    produto.Garantia = produtoAtualCompleto["Garantia"]?.ToString();
                     produto.Tam = produtoAtualCompleto["Tam"]?.ToString();
                     produto.Cores = produtoAtualCompleto["Cores"]?.ToString();
 
@@ -1650,10 +1660,17 @@ namespace EtiquetaFORNew
                         produto.VendaC = row["VendaC"] != DBNull.Value
                             ? Convert.ToDecimal(row["VendaC"])
                             : 0m;
+                        produto.VendaD = row["VendaD"] != DBNull.Value
+                            ? Convert.ToDecimal(row["VendaD"])
+                            : 0m;
+                        produto.VendaE = row["VendaE"] != DBNull.Value
+                            ? Convert.ToDecimal(row["VendaE"])
+                            : 0m;
                         produto.Fornecedor = row["Fornecedor"]?.ToString();
                         produto.Fabricante = row["Fabricante"]?.ToString();
                         produto.Grupo = row["Grupo"]?.ToString();
                         produto.Prateleira = row["Prateleira"]?.ToString();
+                        produto.Garantia = row["Garantia"]?.ToString();
                         produto.Tam = row["Tam"]?.ToString();
                         produto.Cores = row["Cores"]?.ToString();
 

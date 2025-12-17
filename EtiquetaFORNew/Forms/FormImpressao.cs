@@ -466,6 +466,10 @@ namespace EtiquetaFORNew
                     return produto.VendaB > 0 ? produto.VendaB.ToString("C2") : "-";
                 case "VendaC":
                     return produto.VendaC > 0 ? produto.VendaC.ToString("C2") : "-";
+                case "VendaD":
+                    return produto.VendaD > 0 ? produto.VendaD.ToString("C2") : "-";
+                case "VendaE":
+                    return produto.VendaE > 0 ? produto.VendaE.ToString("C2") : "-";
                 case "Fornecedor":
                     return produto.Fornecedor ?? "";
                 case "Fabricante":
@@ -474,6 +478,8 @@ namespace EtiquetaFORNew
                     return produto.Grupo ?? "";
                 case "Prateleira":
                     return produto.Prateleira ?? "";
+                case "Garantia":
+                    return produto.Garantia ?? "";
                 case "Tam":
                     return produto.Tam ?? "";
                 case "Cores":

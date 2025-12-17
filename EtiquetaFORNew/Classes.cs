@@ -17,10 +17,13 @@ namespace EtiquetaFORNew
         public decimal VendaA { get; set; }
         public decimal VendaB { get; set; }
         public decimal VendaC { get; set; }
+        public decimal VendaD { get; set; }
+        public decimal VendaE { get; set; }
         public string Fornecedor { get; set; }
         public string Fabricante { get; set; }
         public string Grupo { get; set; }
         public string Prateleira { get; set; }
+        public string Garantia { get; set; }
         public string Tam { get; set; }
         public string Cores { get; set; }
         public string CodBarras_Grade { get; set; }

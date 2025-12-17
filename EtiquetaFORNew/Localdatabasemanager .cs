@@ -48,10 +48,13 @@ namespace EtiquetaFORNew.Data
                             VendaA REAL,
                             VendaB REAL,
                             VendaC REAL,
+                            VendaD REAL,
+                            VendaE REAL,
                             Fornecedor TEXT,
                             Fabricante TEXT,
                             Grupo TEXT,
                             Prateleira TEXT,
+                            Garantia TEXT,
                             Tam TEXT,
                             Cores TEXT,
                             CodBarras_Grade TEXT,
@@ -130,10 +133,13 @@ namespace EtiquetaFORNew.Data
                             [VendaA] as VendaA,
                             [VendaB] as VendaB,
                             [VendaC] as VendaC,
+                            [VendaD] as VendaD,
+                            [VendaE] as VendaE,
                             [Fornecedor] as Fornecedor,
                             [Fabricante] as Fabricante,
                             [Grupo] as Grupo,
                             [Prateleira] as Prateleira,
+                            [Garantia] as Garantia,    
                             [Tam] as Tam,
                             [Cores] as Cores,
                             [CodBarras] as CodBarras_Grade
@@ -162,8 +168,8 @@ namespace EtiquetaFORNew.Data
                             {
                                 string insertQuery = @"
                                     INSERT INTO Mercadorias 
-                                    (CodigoMercadoria, CodFabricante, CodBarras, Mercadoria, PrecoVenda, VendaA, VendaB, VendaC, Fornecedor, Fabricante, Grupo, Prateleira, Tam, Cores,CodBarras_Grade)
-                                    VALUES (@cod, @fabr, @barras, @merc, @preco, @vendaA, @vendaB, @vendaC, @fornecedor, @fabricante, @grupo, @prateleira,@tam ,@cores, @codbarras_grade)
+                                    (CodigoMercadoria, CodFabricante, CodBarras, Mercadoria, PrecoVenda, VendaA, VendaB, VendaC,VendaD,VendaE, Fornecedor, Fabricante, Grupo, Prateleira,Garantia, Tam, Cores,CodBarras_Grade)
+                                    VALUES (@cod, @fabr, @barras, @merc, @preco, @vendaA, @vendaB, @vendaC, @vendaD, @vendaE, @fornecedor, @fabricante, @grupo, @prateleira, @garantia ,@tam ,@cores, @codbarras_grade)
                                 ";
 
                                 using (var insertCmd = new SQLiteCommand(insertQuery, localConn))
@@ -179,10 +185,13 @@ namespace EtiquetaFORNew.Data
                                         insertCmd.Parameters.AddWithValue("@vendaA", reader["VendaA"] ?? DBNull.Value);
                                         insertCmd.Parameters.AddWithValue("@vendaB", reader["VendaB"] ?? DBNull.Value);
                                         insertCmd.Parameters.AddWithValue("@vendaC", reader["VendaC"] ?? DBNull.Value);
+                                        insertCmd.Parameters.AddWithValue("@vendaD", reader["VendaD"] ?? DBNull.Value);
+                                        insertCmd.Parameters.AddWithValue("@vendaE", reader["VendaE"] ?? DBNull.Value);
                                         insertCmd.Parameters.AddWithValue("@fornecedor", reader["Fornecedor"] ?? DBNull.Value);
                                         insertCmd.Parameters.AddWithValue("@fabricante", reader["Fabricante"] ?? DBNull.Value);
                                         insertCmd.Parameters.AddWithValue("@grupo", reader["Grupo"] ?? DBNull.Value);
                                         insertCmd.Parameters.AddWithValue("@prateleira", reader["Prateleira"] ?? DBNull.Value);
+                                        insertCmd.Parameters.AddWithValue("@garantia", reader["Garantia"] ?? DBNull.Value);
                                         insertCmd.Parameters.AddWithValue("@tam", reader["Tam"] ?? DBNull.Value);
                                         insertCmd.Parameters.AddWithValue("@cores", reader["Cores"] ?? DBNull.Value);
                                         insertCmd.Parameters.AddWithValue("@codbarras_grade", reader["CodBarras_Grade"] ?? DBNull.Value);
@@ -239,10 +248,13 @@ namespace EtiquetaFORNew.Data
                             VendaA,
                             VendaB,
                             VendaC,
+                            VendaD,
+                            VendaE,
                             Fornecedor,
                             Fabricante,
                             Grupo,
                             Prateleira,
+                            Garantia,
                             Tam,
                             Cores,
                             CodBarras_Grade,
@@ -353,10 +365,13 @@ namespace EtiquetaFORNew.Data
                             VendaA,
                             VendaB,
                             VendaC,
+                            VendaD,         
+                            VendaE,
                             Fornecedor,
                             Fabricante,
                             Grupo,
                             Prateleira,
+                            Garantia,
                             Tam,
                             Cores,
                             CodBarras_Grade,
@@ -439,10 +454,13 @@ namespace EtiquetaFORNew.Data
                             VendaA,
                             VendaB,
                             VendaC,
+                            VendaD,
+                            VendaE,
                             Fornecedor,
                             Fabricante,
                             Grupo,
                             Prateleira,
+                            Garantia,
                             Tam,
                             Cores,
                             CodBarras_Grade,

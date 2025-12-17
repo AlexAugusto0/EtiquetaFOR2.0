@@ -695,10 +695,13 @@ namespace EtiquetaFORNew.Forms
                 "VendaA",
                 "VendaB",
                 "VendaC",
+                "VendaD",
+                "VendaE",
                 "Fornecedor",
                 "Fabricante",
                 "Grupo",
                 "Prateleira",
+                "Garantia",
                 "Tam",
                 "Cores",
                 "CodBarras_Grade"
@@ -1469,10 +1472,13 @@ namespace EtiquetaFORNew.Forms
                 case "VendaA": return produto.Preco.ToString("C2");
                 case "VendaB": return produto.Preco.ToString("C2");
                 case "VendaC": return produto.Preco.ToString("C2");
+                case "VendaD": return produto.Preco.ToString("C2");
+                case "VendaE": return produto.Preco.ToString("C2");
                 case "Fornecedor": return produto.Nome ?? "";
                 case "Fabricante": return produto.Nome ?? "";
                 case "Grupo": return "";
                 case "Prateleira": return "";
+                case "Garantia": return "";
                 case "Tam": return "";
                 case "Cores": return "";
                 case "CodBarras_Grade": return produto.CodBarras_Grade ?? "";
