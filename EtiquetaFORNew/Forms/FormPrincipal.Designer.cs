@@ -87,9 +87,9 @@
             this.groupProduto.BackColor = System.Drawing.Color.White;
             this.groupProduto.Controls.Add(this.panel1);
             this.groupProduto.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
-            this.groupProduto.Location = new System.Drawing.Point(7, 3);
+            this.groupProduto.Location = new System.Drawing.Point(-1, 3);
             this.groupProduto.Name = "groupProduto";
-            this.groupProduto.Size = new System.Drawing.Size(996, 85);
+            this.groupProduto.Size = new System.Drawing.Size(1004, 85);
             this.groupProduto.TabIndex = 1;
             this.groupProduto.TabStop = false;
             this.groupProduto.Text = "Adicionar Produto";
@@ -507,18 +507,17 @@
             // 
             // btnCarregar
             // 
-            this.btnCarregar.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(52)))), ((int)(((byte)(152)))), ((int)(((byte)(219)))));
+            this.btnCarregar.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(143)))), ((int)(((byte)(0)))));
             this.btnCarregar.FlatAppearance.BorderSize = 0;
             this.btnCarregar.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnCarregar.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
-            this.btnCarregar.ForeColor = System.Drawing.Color.White;
+            this.btnCarregar.ForeColor = System.Drawing.Color.Black;
             this.btnCarregar.Location = new System.Drawing.Point(790, 136);
             this.btnCarregar.Name = "btnCarregar";
             this.btnCarregar.Size = new System.Drawing.Size(116, 25);
             this.btnCarregar.TabIndex = 7;
             this.btnCarregar.Text = "📥 Carregar";
             this.btnCarregar.UseVisualStyleBackColor = false;
-            this.btnCarregar.Visible = false;
             this.btnCarregar.Click += new System.EventHandler(this.btnCarregar_Click);
             // 
             // FormPrincipal

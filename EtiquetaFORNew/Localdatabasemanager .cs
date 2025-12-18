@@ -104,6 +104,8 @@ namespace EtiquetaFORNew.Data
         /// </summary>
         /// <param name="filtro">Filtro opcional (ex: WHERE PrecoVenda > 0)</param>
         /// <param name="limite">Limite de registros (0 = todos)</param>
+ // ✅ VERSÃO SIMPLES - Se der erro, remove VendaD e VendaE e tenta novamente
+
         public static int SincronizarMercadorias(string filtro = "", int limite = 0)
         {
             try
@@ -118,105 +120,16 @@ namespace EtiquetaFORNew.Data
 
                 int registrosImportados = 0;
 
-                // Buscar dados do SQL Server
-                using (var sqlConn = new SqlConnection(sqlServerConnStr))
+                // ⭐ PRIMEIRA TENTATIVA: Com todos os campos (incluindo VendaD e VendaE)
+                try
                 {
-                    sqlConn.Open();
-
-                    string query = @"
-                        SELECT TOP " + (limite > 0 ? limite.ToString() : "999999") + @"
-                            [Código da Mercadoria] as CodigoMercadoria,
-                            [Cód Fabricante] as CodFabricante,
-                            [Cód Barra] as CodBarras,
-                            [Mercadoria],
-                            [Preço de Venda] as PrecoVenda,
-                            [VendaA] as VendaA,
-                            [VendaB] as VendaB,
-                            [VendaC] as VendaC,
-                            [VendaD] as VendaD,
-                            [VendaE] as VendaE,
-                            [Fornecedor] as Fornecedor,
-                            [Fabricante] as Fabricante,
-                            [Grupo] as Grupo,
-                            [Prateleira] as Prateleira,
-                            [Garantia] as Garantia,    
-                            [Tam] as Tam,
-                            [Cores] as Cores,
-                            [CodBarras] as CodBarras_Grade
-                        FROM [memoria_MercadoriasLojas]
-                        WHERE [Loja] = '" + config.Loja + @"'
-                        " + (string.IsNullOrEmpty(filtro) ? "" : "AND " + filtro) + @"
-                        ORDER BY [Código da Mercadoria]
-                    ";
-
-                    using (var sqlCmd = new SqlCommand(query, sqlConn))
-                    using (var reader = sqlCmd.ExecuteReader())
-                    {
-                        // Inserir no SQLite
-                        using (var localConn = new SQLiteConnection(ConnectionString))
-                        {
-                            localConn.Open();
-
-                            // Limpar dados antigos
-                            using (var deleteCmd = new SQLiteCommand("DELETE FROM Mercadorias", localConn))
-                            {
-                                deleteCmd.ExecuteNonQuery();
-                            }
-
-                            // Iniciar transação para performance
-                            using (var transaction = localConn.BeginTransaction())
-                            {
-                                string insertQuery = @"
-                                    INSERT INTO Mercadorias 
-                                    (CodigoMercadoria, CodFabricante, CodBarras, Mercadoria, PrecoVenda, VendaA, VendaB, VendaC,VendaD,VendaE, Fornecedor, Fabricante, Grupo, Prateleira,Garantia, Tam, Cores,CodBarras_Grade)
-                                    VALUES (@cod, @fabr, @barras, @merc, @preco, @vendaA, @vendaB, @vendaC, @vendaD, @vendaE, @fornecedor, @fabricante, @grupo, @prateleira, @garantia ,@tam ,@cores, @codbarras_grade)
-                                ";
-
-                                using (var insertCmd = new SQLiteCommand(insertQuery, localConn))
-                                {
-                                    while (reader.Read())
-                                    {
-                                        insertCmd.Parameters.Clear();
-                                        insertCmd.Parameters.AddWithValue("@cod", reader["CodigoMercadoria"]);
-                                        insertCmd.Parameters.AddWithValue("@fabr", reader["CodFabricante"] ?? DBNull.Value);
-                                        insertCmd.Parameters.AddWithValue("@barras", reader["CodBarras"] ?? DBNull.Value);
-                                        insertCmd.Parameters.AddWithValue("@merc", reader["Mercadoria"]);
-                                        insertCmd.Parameters.AddWithValue("@preco", reader["PrecoVenda"] ?? DBNull.Value);
-                                        insertCmd.Parameters.AddWithValue("@vendaA", reader["VendaA"] ?? DBNull.Value);
-                                        insertCmd.Parameters.AddWithValue("@vendaB", reader["VendaB"] ?? DBNull.Value);
-                                        insertCmd.Parameters.AddWithValue("@vendaC", reader["VendaC"] ?? DBNull.Value);
-                                        insertCmd.Parameters.AddWithValue("@vendaD", reader["VendaD"] ?? DBNull.Value);
-                                        insertCmd.Parameters.AddWithValue("@vendaE", reader["VendaE"] ?? DBNull.Value);
-                                        insertCmd.Parameters.AddWithValue("@fornecedor", reader["Fornecedor"] ?? DBNull.Value);
-                                        insertCmd.Parameters.AddWithValue("@fabricante", reader["Fabricante"] ?? DBNull.Value);
-                                        insertCmd.Parameters.AddWithValue("@grupo", reader["Grupo"] ?? DBNull.Value);
-                                        insertCmd.Parameters.AddWithValue("@prateleira", reader["Prateleira"] ?? DBNull.Value);
-                                        insertCmd.Parameters.AddWithValue("@garantia", reader["Garantia"] ?? DBNull.Value);
-                                        insertCmd.Parameters.AddWithValue("@tam", reader["Tam"] ?? DBNull.Value);
-                                        insertCmd.Parameters.AddWithValue("@cores", reader["Cores"] ?? DBNull.Value);
-                                        insertCmd.Parameters.AddWithValue("@codbarras_grade", reader["CodBarras_Grade"] ?? DBNull.Value);
-                                        //insertCmd.Parameters.AddWithValue("@reg", reader["Registro"] ?? DBNull.Value);
-
-                                        insertCmd.ExecuteNonQuery();
-                                        registrosImportados++;
-                                    }
-                                }
-
-                                transaction.Commit();
-                            }
-
-                            // Atualizar info de sincronização
-                            string updateSync = @"
-                                INSERT OR REPLACE INTO ConfiguracaoSync (Id, UltimaSincronizacao, TotalRegistros)
-                                VALUES (1, datetime('now'), @total)
-                            ";
-                            using (var syncCmd = new SQLiteCommand(updateSync, localConn))
-                            {
-                                syncCmd.Parameters.AddWithValue("@total", registrosImportados);
-                                syncCmd.ExecuteNonQuery();
-                            }
-                        }
-                    }
+                    registrosImportados = ExecutarSincronizacao(sqlServerConnStr, config.Loja, filtro, limite, true);
+                }
+                catch (SqlException)
+                {
+                    // ⭐ SEGUNDA TENTATIVA: Sem VendaD e VendaE
+                    System.Diagnostics.Debug.WriteLine("⚠️ Erro ao sincronizar com VendaD/VendaE. Tentando sem estes campos...");
+                    registrosImportados = ExecutarSincronizacao(sqlServerConnStr, config.Loja, filtro, limite, false);
                 }
 
                 return registrosImportados;
@@ -225,6 +138,128 @@ namespace EtiquetaFORNew.Data
             {
                 throw new Exception($"Erro ao sincronizar mercadorias: {ex.Message}", ex);
             }
+        }
+
+        /// <summary>
+        /// ⭐ NOVO: Executa a sincronização com ou sem VendaD/VendaE
+        /// </summary>
+        private static int ExecutarSincronizacao(string connectionString, string loja, string filtro, int limite, bool incluirVendaDE)
+        {
+            int registrosImportados = 0;
+
+            using (var sqlConn = new SqlConnection(connectionString))
+            {
+                sqlConn.Open();
+
+                // Montar query com ou sem VendaD/VendaE
+                string camposVendaDE = incluirVendaDE ? "[VendaD] as VendaD,\n                            [VendaE] as VendaE," : "";
+
+                string query = @"
+                    SELECT TOP " + (limite > 0 ? limite.ToString() : "999999") + @"
+                        [Código da Mercadoria] as CodigoMercadoria,
+                        [Cód Fabricante] as CodFabricante,
+                        [Cód Barra] as CodBarras,
+                        [Mercadoria],
+                        [Preço de Venda] as PrecoVenda,
+                        [VendaA] as VendaA,
+                        [VendaB] as VendaB,
+                        [VendaC] as VendaC,
+                        " + camposVendaDE + @"
+                        [Fornecedor] as Fornecedor,
+                        [Fabricante] as Fabricante,
+                        [Grupo] as Grupo,
+                        [Prateleira] as Prateleira,
+                        [Garantia] as Garantia,    
+                        [Tam] as Tam,
+                        [Cores] as Cores,
+                        [CodBarras] as CodBarras_Grade
+                    FROM [memoria_MercadoriasLojas]
+                    WHERE [Loja] = '" + loja + @"'
+                    " + (string.IsNullOrEmpty(filtro) ? "" : "AND " + filtro) + @"
+                    ORDER BY [Código da Mercadoria]
+                ";
+
+                using (var sqlCmd = new SqlCommand(query, sqlConn))
+                using (var reader = sqlCmd.ExecuteReader())
+                {
+                    // Inserir no SQLite
+                    using (var localConn = new SQLiteConnection(ConnectionString))
+                    {
+                        localConn.Open();
+
+                        // Limpar dados antigos
+                        using (var deleteCmd = new SQLiteCommand("DELETE FROM Mercadorias", localConn))
+                        {
+                            deleteCmd.ExecuteNonQuery();
+                        }
+
+                        // Iniciar transação para performance
+                        using (var transaction = localConn.BeginTransaction())
+                        {
+                            string insertQuery = @"
+                                INSERT INTO Mercadorias 
+                                (CodigoMercadoria, CodFabricante, CodBarras, Mercadoria, PrecoVenda, VendaA, VendaB, VendaC,VendaD,VendaE, Fornecedor, Fabricante, Grupo, Prateleira,Garantia, Tam, Cores,CodBarras_Grade)
+                                VALUES (@cod, @fabr, @barras, @merc, @preco, @vendaA, @vendaB, @vendaC, @vendaD, @vendaE, @fornecedor, @fabricante, @grupo, @prateleira, @garantia ,@tam ,@cores, @codbarras_grade)
+                            ";
+
+                            using (var insertCmd = new SQLiteCommand(insertQuery, localConn))
+                            {
+                                while (reader.Read())
+                                {
+                                    insertCmd.Parameters.Clear();
+                                    insertCmd.Parameters.AddWithValue("@cod", reader["CodigoMercadoria"]);
+                                    insertCmd.Parameters.AddWithValue("@fabr", reader["CodFabricante"] ?? DBNull.Value);
+                                    insertCmd.Parameters.AddWithValue("@barras", reader["CodBarras"] ?? DBNull.Value);
+                                    insertCmd.Parameters.AddWithValue("@merc", reader["Mercadoria"]);
+                                    insertCmd.Parameters.AddWithValue("@preco", reader["PrecoVenda"] ?? DBNull.Value);
+                                    insertCmd.Parameters.AddWithValue("@vendaA", reader["VendaA"] ?? DBNull.Value);
+                                    insertCmd.Parameters.AddWithValue("@vendaB", reader["VendaB"] ?? DBNull.Value);
+                                    insertCmd.Parameters.AddWithValue("@vendaC", reader["VendaC"] ?? DBNull.Value);
+
+                                    // ⭐ VendaD e VendaE: Se não incluir, usa DBNull
+                                    if (incluirVendaDE)
+                                    {
+                                        insertCmd.Parameters.AddWithValue("@vendaD", reader["VendaD"] ?? DBNull.Value);
+                                        insertCmd.Parameters.AddWithValue("@vendaE", reader["VendaE"] ?? DBNull.Value);
+                                    }
+                                    else
+                                    {
+                                        insertCmd.Parameters.AddWithValue("@vendaD", DBNull.Value);
+                                        insertCmd.Parameters.AddWithValue("@vendaE", DBNull.Value);
+                                    }
+
+                                    insertCmd.Parameters.AddWithValue("@fornecedor", reader["Fornecedor"] ?? DBNull.Value);
+                                    insertCmd.Parameters.AddWithValue("@fabricante", reader["Fabricante"] ?? DBNull.Value);
+                                    insertCmd.Parameters.AddWithValue("@grupo", reader["Grupo"] ?? DBNull.Value);
+                                    insertCmd.Parameters.AddWithValue("@prateleira", reader["Prateleira"] ?? DBNull.Value);
+                                    insertCmd.Parameters.AddWithValue("@garantia", reader["Garantia"] ?? DBNull.Value);
+                                    insertCmd.Parameters.AddWithValue("@tam", reader["Tam"] ?? DBNull.Value);
+                                    insertCmd.Parameters.AddWithValue("@cores", reader["Cores"] ?? DBNull.Value);
+                                    insertCmd.Parameters.AddWithValue("@codbarras_grade", reader["CodBarras_Grade"] ?? DBNull.Value);
+
+                                    insertCmd.ExecuteNonQuery();
+                                    registrosImportados++;
+                                }
+                            }
+
+                            transaction.Commit();
+                        }
+
+                        // Atualizar info de sincronização
+                        string updateSync = @"
+                            INSERT OR REPLACE INTO ConfiguracaoSync (Id, UltimaSincronizacao, TotalRegistros)
+                            VALUES (1, datetime('now'), @total)
+                        ";
+                        using (var syncCmd = new SQLiteCommand(updateSync, localConn))
+                        {
+                            syncCmd.Parameters.AddWithValue("@total", registrosImportados);
+                            syncCmd.ExecuteNonQuery();
+                        }
+                    }
+                }
+            }
+
+            return registrosImportados;
         }
 
         /// <summary>
@@ -347,7 +382,7 @@ namespace EtiquetaFORNew.Data
         /// <summary>
         /// ⭐ CARREGAMENTO: Busca mercadorias por múltiplos filtros
         /// </summary>
-        public static DataTable BuscarMercadoriasPorFiltros(string grupo = null, string fabricante = null, string fornecedor = null)
+        public static DataTable BuscarMercadoriasPorFiltros(string grupo = null, string fabricante = null, string fornecedor = null, bool isConfeccao = false)
         {
             try
             {
@@ -356,29 +391,29 @@ namespace EtiquetaFORNew.Data
                     conn.Open();
 
                     string query = @"
-                        SELECT 
-                            CodigoMercadoria,
-                            CodFabricante,
-                            CodBarras,
-                            Mercadoria,
-                            PrecoVenda,
-                            VendaA,
-                            VendaB,
-                            VendaC,
-                            VendaD,         
-                            VendaE,
-                            Fornecedor,
-                            Fabricante,
-                            Grupo,
-                            Prateleira,
-                            Garantia,
-                            Tam,
-                            Cores,
-                            CodBarras_Grade,
-                            Registro
-                        FROM Mercadorias
-                        WHERE 1=1
-                    ";
+                SELECT 
+                    CodigoMercadoria,
+                    CodFabricante,
+                    CodBarras,
+                    Mercadoria,
+                    PrecoVenda,
+                    VendaA,
+                    VendaB,
+                    VendaC,
+                    VendaD,         
+                    VendaE,
+                    Fornecedor,
+                    Fabricante,
+                    Grupo,
+                    Prateleira,
+                    Garantia,
+                    Tam,
+                    Cores,
+                    CodBarras_Grade,
+                    Registro
+                FROM Mercadorias
+                WHERE 1=1
+            ";
 
                     List<string> condicoes = new List<string>();
 
@@ -394,7 +429,16 @@ namespace EtiquetaFORNew.Data
                     if (condicoes.Count > 0)
                         query += " AND " + string.Join(" AND ", condicoes);
 
-                    query += " ORDER BY Mercadoria";
+                    // ⭐ MODO CONFECÇÃO: Ordenar por Mercadoria, Tam, Cores para trazer TODAS as combinações
+                    // ⭐ MODO NORMAL: Ordenar apenas por Mercadoria
+                    if (isConfeccao)
+                    {
+                        query += " ORDER BY Mercadoria, Tam, Cores";
+                    }
+                    else
+                    {
+                        query += " ORDER BY Mercadoria";
+                    }
 
                     using (var cmd = new SQLiteCommand(query, conn))
                     {
@@ -412,6 +456,10 @@ namespace EtiquetaFORNew.Data
                         {
                             adapter.Fill(dt);
                         }
+
+                        // ⭐ DEBUG
+                        System.Diagnostics.Debug.WriteLine($"BuscarMercadoriasPorFiltros (isConfeccao={isConfeccao}): {dt.Rows.Count} linhas");
+
                         return dt;
                     }
                 }

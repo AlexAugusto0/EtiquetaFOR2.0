@@ -269,12 +269,6 @@
     <Compile Include="Forms\FormMenuConfiguracao.Designer.cs">
       <DependentUpon>FormMenuConfiguracao.cs</DependentUpon>
     </Compile>
-    <Compile Include="Forms\FormMenuDesigner.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Forms\FormMenuDesigner.Designer.cs">
-      <DependentUpon>FormMenuDesigner.cs</DependentUpon>
-    </Compile>
     <Compile Include="Forms\FormNomeTemplate.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -324,9 +318,6 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\FormMenuConfiguracao.resx">
       <DependentUpon>FormMenuConfiguracao.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\FormMenuDesigner.resx">
-      <DependentUpon>FormMenuDesigner.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\FormPrincipal.resx">
       <DependentUpon>FormPrincipal.cs</DependentUpon>

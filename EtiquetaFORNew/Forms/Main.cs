@@ -38,7 +38,7 @@ namespace EtiquetaFORNew
 
             var assembly = Assembly.GetExecutingAssembly();
             var fileInfo = FileVersionInfo.GetVersionInfo(assembly.Location);
-            string versao = $"Smart Print v{fileInfo.FileVersion}"; 
+            string versao = $"{fileInfo.FileVersion}"; 
 
             Versao.Text = versao;
         }

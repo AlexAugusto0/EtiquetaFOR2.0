@@ -2437,7 +2437,7 @@ namespace EtiquetaFORNew
 
                         // Buscar mercadorias com os filtros
                         DataTable mercadoriasFiltradas = LocalDatabaseManager.BuscarMercadoriasPorFiltros(
-                            grupo, fabricante, fornecedor);
+                            grupo, fabricante, fornecedor,isConfeccao);
 
                         if (mercadoriasFiltradas != null && mercadoriasFiltradas.Rows.Count > 0)
                         {
@@ -2484,62 +2484,95 @@ namespace EtiquetaFORNew
             }
         }
 
+        // ✅ MÉTODO CORRIGIDO - SUBSTITUIR NO FormPrincipal.cs A PARTIR DA LINHA 2487
+
         /// <summary>
         /// ⭐ CARREGAMENTO: Adiciona um produto ao painel a partir de um DataRow
+        /// REFATORADO para seguir EXATAMENTE o padrão do AdicionarProdutoPelaBusca
         /// </summary>
         private void AdicionarProdutoAoPanel(DataRow row)
         {
-            string codigoParaExibir = "";
+            // ========================================
+            // ⭐ ETAPA 1: CRIAR PRODUTO COM DADOS BÁSICOS (igual lançamento manual linhas 1571-1577)
+            // ========================================
+            string codigo = row["CodigoMercadoria"]?.ToString();
+            string nome = row["Mercadoria"]?.ToString();
+            decimal precoVenda = row["PrecoVenda"] != DBNull.Value ? Convert.ToDecimal(row["PrecoVenda"]) : 0m;
 
-            // ⭐ CONFECÇÃO: Usar CodBarras_Grade específico de cada Tam+Cor
-            if (isConfeccao && row.Table.Columns.Contains("CodBarras_Grade") &&
-                !string.IsNullOrEmpty(row["CodBarras_Grade"]?.ToString()))
+            var produto = new Produto
             {
-                codigoParaExibir = row["CodBarras_Grade"].ToString();
-            }
-            // Fallback: Se não tiver CodBarras_Grade ou não for confecção
-            else
-            {
-                codigoParaExibir = row["CodFabricante"]?.ToString() ??
-                                   row["CodBarras"]?.ToString() ?? "";
-            }
-
-            // Criar um novo produto
-            Produto produto = new Produto
-            {
-                Nome = row["Mercadoria"].ToString(),
-                Codigo = codigoParaExibir,
-                Preco = Convert.ToDecimal(row["PrecoVenda"] ?? 0),
-                Quantidade = 1 // Quantidade padrão
+                Nome = nome,
+                Codigo = codigo,
+                Preco = precoVenda,
+                Quantidade = 1
             };
 
-            // Adicionar campos de confecção se disponíveis
-            if (isConfeccao && row.Table.Columns.Contains("Tam") && row.Table.Columns.Contains("Cores"))
+            // ========================================
+            // ⭐ ETAPA 2: POPULAR CAMPOS ADICIONAIS DO DATAROW (igual lançamento manual linhas 1582-1619)
+            // ========================================
+            try
             {
-                produto.Tam = row["Tam"]?.ToString() ?? "";
-                produto.Cores = row["Cores"]?.ToString() ?? "";
+                // Popula todos os campos adicionais
+                produto.CodFabricante = row["CodFabricante"]?.ToString();
+                produto.CodBarras = row["CodBarras"]?.ToString();
+                produto.CodBarras_Grade = row["CodBarras_Grade"]?.ToString();
+                produto.PrecoVenda = row["PrecoVenda"] != DBNull.Value
+                    ? Convert.ToDecimal(row["PrecoVenda"])
+                    : precoVenda;
+                produto.VendaA = row["VendaA"] != DBNull.Value
+                    ? Convert.ToDecimal(row["VendaA"])
+                    : 0m;
+                produto.VendaB = row["VendaB"] != DBNull.Value
+                    ? Convert.ToDecimal(row["VendaB"])
+                    : 0m;
+                produto.VendaC = row["VendaC"] != DBNull.Value
+                    ? Convert.ToDecimal(row["VendaC"])
+                    : 0m;
+                produto.VendaD = row["VendaD"] != DBNull.Value
+                    ? Convert.ToDecimal(row["VendaD"])
+                    : 0m;
+                produto.VendaE = row["VendaE"] != DBNull.Value
+                    ? Convert.ToDecimal(row["VendaE"])
+                    : 0m;
+                produto.Fornecedor = row["Fornecedor"]?.ToString();
+                produto.Fabricante = row["Fabricante"]?.ToString();
+                produto.Grupo = row["Grupo"]?.ToString();
+                produto.Prateleira = row["Prateleira"]?.ToString();
+                produto.Garantia = row["Garantia"]?.ToString();
+                produto.Tam = row["Tam"]?.ToString();
+                produto.Cores = row["Cores"]?.ToString();
+
+                // ⭐ CONFECÇÃO: Sobrescreve Tam e Cor se necessário (igual lançamento manual linhas 1614-1619)
+                if (isConfeccao && cmbTamanho != null && cmbCor != null)
+                {
+                    produto.Tam = cmbTamanho.SelectedItem?.ToString() ?? produto.Tam ?? "";
+                    produto.Cores = cmbCor.SelectedItem?.ToString() ?? produto.Cores ?? "";
+                }
+            }
+            catch
+            {
+                // Se falhar ao ler campos adicionais, continua com dados básicos
             }
 
-            // Adicionar à lista de produtos
+            // ========================================
+            // ⭐ ETAPA 3: ADICIONAR À LISTA (igual lançamento manual linha 1692)
+            // ========================================
             produtos.Add(produto);
 
-            // Adicionar à DataGridView
-            int rowIndex = dgvProdutos.Rows.Add();
-            DataGridViewRow dgvRow = dgvProdutos.Rows[rowIndex];
-
-            dgvRow.Cells["colNome"].Value = produto.Nome;
-            dgvRow.Cells["colCodigo"].Value = produto.Codigo;
-            dgvRow.Cells["colPreco"].Value = produto.Preco.ToString("N2");
-            dgvRow.Cells["colQuantidade"].Value = produto.Quantidade;
-
-            if (isConfeccao)
+            // ========================================
+            // ⭐ ETAPA 4: ADICIONAR AO DATAGRIDVIEW (igual lançamento manual linhas 1695-1703)
+            // ========================================
+            if (isConfeccao && dgvProdutos.Columns.Contains("colTam") && dgvProdutos.Columns.Contains("colCor"))
             {
-                dgvRow.Cells["colTam"].Value = produto.Tam;
-                dgvRow.Cells["colCor"].Value = produto.Cores;
+                dgvProdutos.Rows.Add(false, produto.Nome, produto.CodBarras_Grade,
+                    produto.Preco.ToString("C2"), produto.Quantidade,
+                    produto.Tam ?? "", produto.Cores ?? "");
             }
-
-            dgvRow.Cells["colSelecionar"].Value = false;
-            dgvRow.Cells["colRemover"].Value = "Remover";
+            else
+            {
+                dgvProdutos.Rows.Add(false, produto.Nome, produto.Codigo,
+                    produto.Preco.ToString("C2"), produto.Quantidade);
+            }
         }
     }
 
