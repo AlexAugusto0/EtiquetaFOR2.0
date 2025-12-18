@@ -62,13 +62,18 @@ namespace EtiquetaFORNew
                     return;
                 }
 
-                // Cria pasta temporária
-                string pastaTemp = Path.Combine(Path.GetTempPath(), "EtiquetaFOR_Drivers");
-                if (!Directory.Exists(pastaTemp))
-                    Directory.CreateDirectory(pastaTemp);
+
+                // Cria pasta na pasta Downloads do usuário
+                string pastaDownloads = Path.Combine(
+                    Environment.GetFolderPath(Environment.SpecialFolder.UserProfile),
+                    "Downloads",
+                    "SmartPrint_Drivers");
+
+                if (!Directory.Exists(pastaDownloads))
+                    Directory.CreateDirectory(pastaDownloads);
 
                 string nomeArquivo = ObterNomeArquivo(_urlDriver, impressora.Nome);
-                _caminhoDownload = Path.Combine(pastaTemp, nomeArquivo);
+                _caminhoDownload = Path.Combine(pastaDownloads, nomeArquivo);
 
                 // Se já existe, usa direto (sem perguntar)
                 if (File.Exists(_caminhoDownload))
